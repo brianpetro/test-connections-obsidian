@@ -24,7 +24,7 @@ build_plugin({
     'http',
     'url',
   ],
-  plugin_id: 'smart-connections',
+  plugin_id: 'test-connections',
   styles_path: path.join(process.cwd(), 'src', 'styles.css'),
 }).catch((err) => {
   console.error('Error in build process:', err);

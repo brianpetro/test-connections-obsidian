@@ -1,6 +1,6 @@
 {
-  "id": "smart-connections",
-  "name": "Smart Connections",
+  "id": "test-connections",
+  "name": "Test Connections",
   "author": "Brian Petro",
   "description": "Chat with your notes & see links to related content with Local or Remote models.",
   "minAppVersion": "1.1.0",
