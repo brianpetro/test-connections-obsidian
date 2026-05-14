@@ -1,0 +1,67 @@
+{
+  "name": "smart-connections-obsidian",
+  "version": "4.5.1",
+  "type": "module",
+  "description": "Link and chat with your notes using ChatGPT and embedding artificial intelligence from OpenAI.",
+  "scripts": {
+    "build": "node esbuild.js",
+    "release": "node release.js",
+    "prepare-release": "node --env-file=.env releases/run_format_release_notes.js",
+    "test": "npx ava --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brianpetro/obsidian-smart-connections.git"
+  },
+  "keywords": [
+    "Obsidian",
+    "Smart",
+    "Connections",
+    "AI",
+    "ChatGPT",
+    "Embeddings",
+    "Notes"
+  ],
+  "author": "🌴 Brian (Brian Petro)",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/brianpetro/obsidian-smart-connections/issues"
+  },
+  "homepage": "https://smartconnections.app",
+  "devDependencies": {
+    "ava": "^6.0.1",
+    "esbuild": "^0.25.9",
+    "eslint": "^10.3.0",
+    "swagger-jsdoc": "^6.2.8"
+  },
+  "dependencies": {
+    "js-tiktoken": "^1.0.19",
+    "obsidian": "latest",
+    "obsidian-smart-env": "file:../obsidian-smart-env",
+    "smart-blocks": "file:../jsbrains/smart-blocks",
+    "smart-chat-model": "file:../jsbrains/smart-chat-model",
+    "smart-collections": "file:../jsbrains/smart-collections",
+    "smart-embed-model": "file:../jsbrains/smart-embed-model",
+    "smart-entities": "file:../jsbrains/smart-entities",
+    "smart-file-system": "file:../jsbrains/smart-fs",
+    "smart-http-request": "file:../jsbrains/smart-http-request",
+    "smart-model": "file:../jsbrains/smart-model",
+    "smart-notices": "file:../jsbrains/smart-notices",
+    "smart-settings": "file:../jsbrains/smart-settings",
+    "smart-sources": "file:../jsbrains/smart-sources",
+    "smart-utils": "file:../jsbrains/smart-utils",
+    "smart-view": "file:../jsbrains/smart-view"
+  },
+  "ava": {
+    "files": [
+      "*.test.js",
+      "smart-chat/*.test.js",
+      "src/*.test.js",
+      "src/utils/*.test.js"
+    ],
+    "require": []
+  },
+  "workspaces": [
+    "../jsbrains/*"
+  ]
+}
