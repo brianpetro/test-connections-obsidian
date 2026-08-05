@@ -1,8 +1,8 @@
 /**
  * Merge pinned results ahead of scored results while avoiding duplicates.
- * @param {import('jsbrains/smart-types/index.js').ConnectionResult[]} base_results
- * @param {import('jsbrains/smart-types/index.js').ConnectionsQueryParams} params
- * @returns {import('jsbrains/smart-types/index.js').ConnectionResult[]}
+ * @param {import('jsbrains/smart-types').ConnectionResult[]} base_results
+ * @param {import('jsbrains/smart-types').ConnectionsQueryParams} params
+ * @returns {import('jsbrains/smart-types').ConnectionResult[]}
  */
 export function merge_pinned_results(base_results, params) {
   if (!params.pinned?.length) return base_results;

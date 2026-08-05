@@ -6,7 +6,7 @@ export const SMART_GRAPH_URL = 'https://smartconnections.app/smart-graph/';
  * Smart Graph Pro replaces this placeholder with an actual graph action via
  * its own `connections:list_menu` menu action.
  *
- * @this {import('jsbrains/smart-types/index.js').ConnectionsListScope}
+ * @this {import('jsbrains/smart-types').ConnectionsListScope}
  * @returns {void}
  */
 export function connections_list_send_to_smart_graph() {
@@ -26,7 +26,7 @@ export function connections_list_send_to_smart_graph() {
   return;
 }
 
-/** @type {import('jsbrains/smart-types/index.js').ConnectionsMenusConfig} */
+/** @type {import('jsbrains/smart-types').ConnectionsMenusConfig} */
 export const menus = {
   'connections:list_menu': {
     title: 'Explore in Smart Graph',

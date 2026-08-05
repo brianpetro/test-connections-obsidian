@@ -1,8 +1,8 @@
 /**
  * @param {string} anchor_key
- * @param {import('jsbrains/smart-types/index.js').SettingsConfig} config
- * @param {import('jsbrains/smart-types/index.js').SettingsConfig} merge_object
- * @returns {import('jsbrains/smart-types/index.js').SettingsConfig}
+ * @param {import('jsbrains/smart-types').SettingsConfig} config
+ * @param {import('jsbrains/smart-types').SettingsConfig} merge_object
+ * @returns {import('jsbrains/smart-types').SettingsConfig}
  */
 export function insert_settings_after(anchor_key, config, merge_object) {
   const config_entries = Object.entries({ ...config });

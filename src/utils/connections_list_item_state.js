@@ -13,10 +13,10 @@ export function build_prefixed_connection_key(collection_key, item_key) {
 
 /**
  * Applies the hidden flag to a connection entry.
- * @param {import('jsbrains/smart-types/index.js').ConnectionsState} connections
+ * @param {import('jsbrains/smart-types').ConnectionsState} connections
  * @param {string} prefixed_key
  * @param {number} [hidden_at]
- * @returns {import('jsbrains/smart-types/index.js').ConnectionsState}
+ * @returns {import('jsbrains/smart-types').ConnectionsState}
  */
 export function apply_hidden_state(connections, prefixed_key, hidden_at = Date.now()) {
   if (!connections || typeof connections !== 'object') return connections;
@@ -29,10 +29,10 @@ export function apply_hidden_state(connections, prefixed_key, hidden_at = Date.n
 
 /**
  * Applies the pinned flag to a connection entry.
- * @param {import('jsbrains/smart-types/index.js').ConnectionsState} connections
+ * @param {import('jsbrains/smart-types').ConnectionsState} connections
  * @param {string} prefixed_key
  * @param {number} [pinned_at]
- * @returns {import('jsbrains/smart-types/index.js').ConnectionsState}
+ * @returns {import('jsbrains/smart-types').ConnectionsState}
  */
 export function apply_pinned_state(connections, prefixed_key, pinned_at = Date.now()) {
   if (!connections || typeof connections !== 'object') return connections;
@@ -45,9 +45,9 @@ export function apply_pinned_state(connections, prefixed_key, pinned_at = Date.n
 
 /**
  * Removes the hidden flag from a connection entry.
- * @param {import('jsbrains/smart-types/index.js').ConnectionsState} connections
+ * @param {import('jsbrains/smart-types').ConnectionsState} connections
  * @param {string} prefixed_key
- * @returns {import('jsbrains/smart-types/index.js').ConnectionsState}
+ * @returns {import('jsbrains/smart-types').ConnectionsState}
  */
 export function remove_hidden_state(connections, prefixed_key) {
   if (!connections || typeof connections !== 'object') return connections;
@@ -61,9 +61,9 @@ export function remove_hidden_state(connections, prefixed_key) {
 
 /**
  * Removes the pinned flag from a connection entry.
- * @param {import('jsbrains/smart-types/index.js').ConnectionsState} connections
+ * @param {import('jsbrains/smart-types').ConnectionsState} connections
  * @param {string} prefixed_key
- * @returns {import('jsbrains/smart-types/index.js').ConnectionsState}
+ * @returns {import('jsbrains/smart-types').ConnectionsState}
  */
 export function remove_pinned_state(connections, prefixed_key) {
   if (!connections || typeof connections !== 'object') return connections;
@@ -77,7 +77,7 @@ export function remove_pinned_state(connections, prefixed_key) {
 
 /**
  * Removes hidden flags from all connection entries.
- * @param {import('jsbrains/smart-types/index.js').ConnectionsState} connections
+ * @param {import('jsbrains/smart-types').ConnectionsState} connections
  * @returns {boolean} true when at least one hidden flag removed
  */
 export function remove_all_hidden_states(connections) {
@@ -95,7 +95,7 @@ export function remove_all_hidden_states(connections) {
 
 /**
  * Removes pinned flags from all connection entries.
- * @param {import('jsbrains/smart-types/index.js').ConnectionsState} connections
+ * @param {import('jsbrains/smart-types').ConnectionsState} connections
  * @returns {boolean} true when at least one pinned flag removed
  */
 export function remove_all_pinned_states(connections) {
@@ -113,7 +113,7 @@ export function remove_all_pinned_states(connections) {
 
 /**
  * Counts the number of connections with hidden flags.
- * @param {import('jsbrains/smart-types/index.js').ConnectionsState} connections
+ * @param {import('jsbrains/smart-types').ConnectionsState} connections
  * @returns {number}
  */
 export function count_hidden_connections(connections) {
@@ -128,7 +128,7 @@ export function count_hidden_connections(connections) {
 
 /**
  * Counts the number of connections with pinned flags.
- * @param {import('jsbrains/smart-types/index.js').ConnectionsState} connections
+ * @param {import('jsbrains/smart-types').ConnectionsState} connections
  * @returns {number}
  */
 export function count_pinned_connections(connections) {
@@ -143,7 +143,7 @@ export function count_pinned_connections(connections) {
 
 /**
  * Determines whether a connection entry is pinned.
- * @param {import('jsbrains/smart-types/index.js').ConnectionsState} connections
+ * @param {import('jsbrains/smart-types').ConnectionsState} connections
  * @param {string} prefixed_key
  * @returns {boolean}
  */
@@ -157,7 +157,7 @@ export function is_connection_pinned(connections, prefixed_key) {
 
 /**
  * Determines whether a connection entry is hidden.
- * @param {import('jsbrains/smart-types/index.js').ConnectionsState} connections
+ * @param {import('jsbrains/smart-types').ConnectionsState} connections
  * @param {string} prefixed_key
  * @returns {boolean}
  */

@@ -6,15 +6,15 @@ import { Platform } from 'obsidian';
 import { render as render_connections_footer_view_component } from '../components/connections_footer_view.js';
 import { set_connections_footer_dom_effect } from './connections_footer_deco.js';
 
-/** @typedef {import('jsbrains/smart-types/index.js').ConnectionItem} ConnectionItem */
-/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsComponentOptions} ConnectionsComponentOptions */
-/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsDomElement} ConnectionsDomElement */
-/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsEditorView} ConnectionsEditorView */
-/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types/index.js').ConnectionsEnvExtensions>} SmartEnv */
-/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsEventDisposer} ConnectionsEventDisposer */
-/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsEventPayload} ConnectionsEventPayload */
-/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsPlugin} ConnectionsPlugin */
-/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsWorkspace} ConnectionsWorkspace */
+/** @typedef {import('jsbrains/smart-types').ConnectionItem} ConnectionItem */
+/** @typedef {import('jsbrains/smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
+/** @typedef {import('jsbrains/smart-types').ConnectionsDomElement} ConnectionsDomElement */
+/** @typedef {import('jsbrains/smart-types').ConnectionsEditorView} ConnectionsEditorView */
+/** @typedef {import('jsbrains/smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
+/** @typedef {import('jsbrains/smart-types').ConnectionsEventDisposer} ConnectionsEventDisposer */
+/** @typedef {import('jsbrains/smart-types').ConnectionsEventPayload} ConnectionsEventPayload */
+/** @typedef {import('jsbrains/smart-types').ConnectionsPlugin} ConnectionsPlugin */
+/** @typedef {import('jsbrains/smart-types').ConnectionsWorkspace} ConnectionsWorkspace */
 
 /**
  * Resolve the Smart Sources entity for the active file.

@@ -3,7 +3,7 @@ const DISPLAY_SEPARATOR = ' › ';
 const PATH_SEPARATOR = '/';
 
 /**
- * @param {import('jsbrains/smart-types/index.js').ConnectionItem} item
+ * @param {import('jsbrains/smart-types').ConnectionItem} item
  * @returns {[string, string]}
  */
 export function get_context_lines(item) {

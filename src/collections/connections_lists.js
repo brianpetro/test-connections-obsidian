@@ -4,9 +4,9 @@ import { ConnectionsList } from '../items/connections_list.js';
 import { migrate_connections_lists_settings } from '../../migrations/migrate_connections_lists_settings.js';
 import { insert_settings_after } from '../utils/insert_settings_after.js';
 
-/** @typedef {import('jsbrains/smart-types/index.js').ConnectionItem} ConnectionItem */
-/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types/index.js').ConnectionsEnvExtensions>} SmartEnv */
-/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsListsCollection} ConnectionsListsCollection */
+/** @typedef {import('jsbrains/smart-types').ConnectionItem} ConnectionItem */
+/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
+/** @typedef {import('jsbrains/smart-types').ConnectionsListsCollection} ConnectionsListsCollection */
 
 /**
  * Configuration for filtering connections results.
@@ -33,7 +33,7 @@ export class ConnectionsLists extends Collection {
 
   /**
    * @param {SmartEnv} env
-   * @param {import('jsbrains/smart-types/index.js').CollectionOptions} [opts]
+   * @param {import('jsbrains/smart-types').CollectionOptions} [opts]
    */
   constructor(env, opts = {}) {
     (/** @type {(env: SmartEnv) => void} */ (migrate_connections_lists_settings))(env); // probably should be removed soon
@@ -71,7 +71,7 @@ export class ConnectionsLists extends Collection {
   /**
    * @this {ConnectionsListsCollection}
    * @param {ConnectionItem} item
-   * @returns {import('jsbrains/smart-types/index.js').ConnectionsListScope}
+   * @returns {import('jsbrains/smart-types').ConnectionsListScope}
    */
   new_item(item) {
     const connections_list = new this.item_type(this.env, {
@@ -140,10 +140,10 @@ export class ConnectionsLists extends Collection {
     if(!component_key || component_key === 'none') return null;
     const component_module = this.env.config.components?.[component_key];
     const config = typeof component_module?.settings_config === 'function'
-      ? /** @type {(scope: ConnectionsListsCollection) => import('jsbrains/smart-types/index.js').SettingsConfig} */ (
+      ? /** @type {(scope: ConnectionsListsCollection) => import('jsbrains/smart-types').SettingsConfig} */ (
         component_module.settings_config
       )(this)
-      : /** @type {import('jsbrains/smart-types/index.js').SettingsConfig|undefined} */ (component_module?.settings_config)
+      : /** @type {import('jsbrains/smart-types').SettingsConfig|undefined} */ (component_module?.settings_config)
     ;
     if (!config) return null;
     // prepend `components.${key}.` to each config key
@@ -158,10 +158,10 @@ export class ConnectionsLists extends Collection {
 
 /**
  * @param {ConnectionsListsCollection} scope
- * @returns {import('jsbrains/smart-types/index.js').SettingsConfig}
+ * @returns {import('jsbrains/smart-types').SettingsConfig}
  */
 export function settings_config(scope) {
-  /** @type {import('jsbrains/smart-types/index.js').SettingsConfig} */
+  /** @type {import('jsbrains/smart-types').SettingsConfig} */
   let config = {
     "results_collection_key": {
       name: "Connection results type",

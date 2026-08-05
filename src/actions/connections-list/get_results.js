@@ -1,5 +1,5 @@
 /**
- * @this {import('jsbrains/smart-types/index.js').ConnectionsListsCollection}
+ * @this {import('jsbrains/smart-types').ConnectionsListsCollection}
  * @param {{to?: unknown}} [params={}]
  */
 export async function connections_list_get_results(params = {}) {
@@ -20,7 +20,7 @@ export async function connections_list_get_results(params = {}) {
     throw new Error('Unable to create Smart Connections list.');
   }
 
-  const results = /** @type {import('jsbrains/smart-types/index.js').ConnectionResult[]} */ (
+  const results = /** @type {import('jsbrains/smart-types').ConnectionResult[]} */ (
     await connections_list.get_results?.({})
   );
   const normalized_results = Array.isArray(results)
@@ -79,7 +79,7 @@ export const action_scope = {
 };
 export const tool = {
   name: 'smart_connections_list',
-  /** @param {{env: import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types/index.js').ConnectionsEnvExtensions>}} context */
+  /** @param {{env: import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>}} context */
   when({ env }) {
     return Boolean(env.connections_lists && env.smart_sources);
   },
@@ -91,7 +91,7 @@ export const tool = {
 };
 
 /**
- * @param {import('jsbrains/smart-types/index.js').ConnectionResult} result
+ * @param {import('jsbrains/smart-types').ConnectionResult} result
  */
 function to_result(result) {
   const item = result?.item;

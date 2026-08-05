@@ -1,12 +1,12 @@
 import { setIcon, requestUrl } from "obsidian";
 import { enable_plugin } from "obsidian-smart-env/src/utils/smart_plugins.js";
 
-/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsComponentContext} ConnectionsComponentContext */
-/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsComponentOptions} ConnectionsComponentOptions */
-/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsPlugin} ConnectionsPlugin */
-/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsReleaseResponse} ConnectionsReleaseResponse */
-/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsRequestResponse<unknown>} ConnectionsRequestResponse */
-/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsVault} ConnectionsVault */
+/** @typedef {import('jsbrains/smart-types').ConnectionsComponentContext} ConnectionsComponentContext */
+/** @typedef {import('jsbrains/smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
+/** @typedef {import('jsbrains/smart-types').ConnectionsPlugin} ConnectionsPlugin */
+/** @typedef {import('jsbrains/smart-types').ConnectionsReleaseResponse} ConnectionsReleaseResponse */
+/** @typedef {import('jsbrains/smart-types').ConnectionsRequestResponse<unknown>} ConnectionsRequestResponse */
+/** @typedef {import('jsbrains/smart-types').ConnectionsVault} ConnectionsVault */
 
 /**
  * @this {ConnectionsComponentContext}
@@ -103,7 +103,7 @@ async function install_smart_lookup(plugin) {
     }
   }
 
-  const { json: response } = /** @type {import('jsbrains/smart-types/index.js').ConnectionsRequestResponse<ConnectionsReleaseResponse>} */ (await requestUrl({
+  const { json: response } = /** @type {import('jsbrains/smart-types').ConnectionsRequestResponse<ConnectionsReleaseResponse>} */ (await requestUrl({
     url: "https://api.github.com/repos/brianpetro/smart-lookup-obsidian/releases/latest",
     method: "GET",
     headers: {

@@ -1,9 +1,9 @@
 import { SmartPluginSettingsTab } from "obsidian-smart-env";
 import {render_settings_config} from "obsidian-smart-env/src/utils/render_settings_config.js";
 
-/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsDomElement} ConnectionsDomElement */
-/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsPlugin} ConnectionsPlugin */
-/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsSettingsTabScope} ConnectionsSettingsTabScope */
+/** @typedef {import('jsbrains/smart-types').ConnectionsDomElement} ConnectionsDomElement */
+/** @typedef {import('jsbrains/smart-types').ConnectionsPlugin} ConnectionsPlugin */
+/** @typedef {import('jsbrains/smart-types').ConnectionsSettingsTabScope} ConnectionsSettingsTabScope */
 
 export class ScEarlySettingsTab extends SmartPluginSettingsTab {
   /**
@@ -48,7 +48,7 @@ export class ScEarlySettingsTab extends SmartPluginSettingsTab {
     });
     cl_container.createEl('h1', { text: 'Connections' });
     
-    const connections_lists_settings_config = /** @type {import('jsbrains/smart-types/index.js').SettingsConfig} */ (
+    const connections_lists_settings_config = /** @type {import('jsbrains/smart-types').SettingsConfig} */ (
       this.env.config.collections.connections_lists.settings_config
     );
     render_settings_config(

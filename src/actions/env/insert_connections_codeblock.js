@@ -15,7 +15,7 @@ export function env_insert_connections_codeblock(params = {}) {
   return true;
 }
 
-/** @type {import('jsbrains/smart-types/index.js').ConnectionsCommandsConfig} */
+/** @type {import('jsbrains/smart-types').ConnectionsCommandsConfig} */
 export const commands = {
   'insert-connections-codeblock': {
     name: 'Insert: Connections codeblock',

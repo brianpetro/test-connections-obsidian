@@ -1,8 +1,8 @@
 /**
  * Select and render a Connections target in this item view.
  *
- * @this {import('jsbrains/smart-types/index.js').ConnectionsItemViewScope}
- * @param {import('jsbrains/smart-types/index.js').ConnectionsActionParams} [params={}]
+ * @this {import('jsbrains/smart-types').ConnectionsItemViewScope}
+ * @param {import('jsbrains/smart-types').ConnectionsActionParams} [params={}]
  * @returns {Promise<boolean>}
  */
 export async function connections_list_select_target(params = {}) {
@@ -16,7 +16,7 @@ export async function connections_list_select_target(params = {}) {
 
 export const display_name = 'Select Connections target';
 
-/** @type {import('jsbrains/smart-types/index.js').ConnectionsMenusConfig} */
+/** @type {import('jsbrains/smart-types').ConnectionsMenusConfig} */
 export const menus = {
   'connections:item_view_list_menu': {
     title: 'Change target',
@@ -29,7 +29,7 @@ export const menus = {
           .setIcon('crosshair')
         ;
 
-        const submenu = /** @type {import('jsbrains/smart-types/index.js').ConnectionsMenu} */ (
+        const submenu = /** @type {import('jsbrains/smart-types').ConnectionsMenu} */ (
           /** @type {unknown} */ (item.setSubmenu())
         );
         this.env.build_menu?.(

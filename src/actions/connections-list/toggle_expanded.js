@@ -1,8 +1,8 @@
 /**
  * Toggle all rendered Connections results between expanded and collapsed.
  *
- * @this {import('jsbrains/smart-types/index.js').ConnectionsListScope}
- * @param {import('jsbrains/smart-types/index.js').ConnectionsActionParams} [params={}]
+ * @this {import('jsbrains/smart-types').ConnectionsListScope}
+ * @param {import('jsbrains/smart-types').ConnectionsActionParams} [params={}]
  * @returns {boolean}
  */
 export function connections_list_toggle_expanded(params = {}) {
@@ -25,8 +25,8 @@ export function connections_list_toggle_expanded(params = {}) {
   return true;
 }
 
-/** @type {import('jsbrains/smart-types/index.js').ConnectionsMenusConfig} */
-export const menus = /** @type {import('jsbrains/smart-types/index.js').ConnectionsMenusConfig & {'connections:list_menu': {title: (this: import('jsbrains/smart-types/index.js').ConnectionsMenuContext & {scope: import('jsbrains/smart-types/index.js').ConnectionsListScope}) => string, icon: (this: import('jsbrains/smart-types/index.js').ConnectionsMenuContext & {scope: import('jsbrains/smart-types/index.js').ConnectionsListScope}) => string}}} */ ({
+/** @type {import('jsbrains/smart-types').ConnectionsMenusConfig} */
+export const menus = /** @type {import('jsbrains/smart-types').ConnectionsMenusConfig & {'connections:list_menu': {title: (this: import('jsbrains/smart-types').ConnectionsMenuContext & {scope: import('jsbrains/smart-types').ConnectionsListScope}) => string, icon: (this: import('jsbrains/smart-types').ConnectionsMenuContext & {scope: import('jsbrains/smart-types').ConnectionsListScope}) => string}}} */ ({
   'connections:list_menu': {
     title() {
       const connections_settings = this.params.connections_settings ?? this.scope?.settings;

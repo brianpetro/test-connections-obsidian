@@ -1,8 +1,8 @@
 /**
  * Open the Smart Connections view.
  *
- * @this {import('jsbrains/smart-types/index.js').ConnectionsListScope|import('jsbrains/smart-types/index.js').ConnectionsListsCollection}
- * @param {import('jsbrains/smart-types/index.js').ConnectionsActionParams} [params={}]
+ * @this {import('jsbrains/smart-types').ConnectionsListScope|import('jsbrains/smart-types').ConnectionsListsCollection}
+ * @param {import('jsbrains/smart-types').ConnectionsActionParams} [params={}]
  * @returns {Promise<boolean>}
  */
 export async function connections_list_open_view(params = {}) {
@@ -13,7 +13,7 @@ export async function connections_list_open_view(params = {}) {
   return true;
 }
 
-/** @type {import('jsbrains/smart-types/index.js').ConnectionsRibbonConfigMap} */
+/** @type {import('jsbrains/smart-types').ConnectionsRibbonConfigMap} */
 export const ribbon_icons = {
   connections: {
     icon_name: 'smart-connections',
@@ -33,7 +33,7 @@ export const ribbon_icons = {
   },
 };
 
-/** @type {import('jsbrains/smart-types/index.js').ConnectionsCommandsConfig} */
+/** @type {import('jsbrains/smart-types').ConnectionsCommandsConfig} */
 export const commands = {
   'smart-connections-view': {
     name: 'Open: Connections view',

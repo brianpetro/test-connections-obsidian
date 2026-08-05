@@ -6,8 +6,8 @@ import {
 /**
  * Remove all pinned flags from the current source item's Connections state.
  *
- * @this {import('jsbrains/smart-types/index.js').ConnectionsListScope}
- * @param {import('jsbrains/smart-types/index.js').ConnectionsActionParams} [params={}]
+ * @this {import('jsbrains/smart-types').ConnectionsListScope}
+ * @param {import('jsbrains/smart-types').ConnectionsActionParams} [params={}]
  * @returns {boolean}
  */
 export function connections_list_unpin_all(params = {}) {
@@ -39,18 +39,18 @@ export function connections_list_unpin_all(params = {}) {
   }
 }
 
-/** @type {import('jsbrains/smart-types/index.js').ConnectionsMenusConfig} */
+/** @type {import('jsbrains/smart-types').ConnectionsMenusConfig} */
 export const menus = {
   'connections:list_menu': {
     title() {
-      const scope = /** @type {import('jsbrains/smart-types/index.js').ConnectionsListScope} */ (this.scope);
+      const scope = /** @type {import('jsbrains/smart-types').ConnectionsListScope} */ (this.scope);
       const pinned_count = count_pinned_connections(scope.item?.data?.connections);
       return `Unpin All (${pinned_count})`;
     },
     icon: 'pin-off',
     order: 70,
     disabled() {
-      const scope = /** @type {import('jsbrains/smart-types/index.js').ConnectionsListScope} */ (this.scope);
+      const scope = /** @type {import('jsbrains/smart-types').ConnectionsListScope} */ (this.scope);
       return !count_pinned_connections(scope.item?.data?.connections);
     },
   },
