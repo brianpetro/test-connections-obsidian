@@ -39,7 +39,7 @@
     "@codemirror/state": "6.5.0",
     "@codemirror/view": "6.38.6",
     "js-tiktoken": "^1.0.19",
-    "jsbrains": "github:brianpetro/jsbrains#bfe3681022b384b24605bfdcdeceecbbbf6910f7",
+    "jsbrains": "github:brianpetro/jsbrains#d2e9de31993ae771c7c3579b86065b4ea4c2c395",
     "obsidian": "latest",
     "obsidian-smart-env": "file:../obsidian-smart-env",
     "smart-blocks": "file:../jsbrains/smart-blocks",
