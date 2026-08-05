@@ -1,8 +1,8 @@
 import { StoryModal } from 'obsidian-smart-env/src/modals/story.js';
 
-/** @typedef {import('smart-types').ConnectionsComponentContext} ConnectionsComponentContext */
-/** @typedef {import('smart-types').ConnectionsDomElement} ConnectionsDomElement */
-/** @typedef {import('smart-types').ConnectionsPlugin} ConnectionsPlugin */
+/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsComponentContext} ConnectionsComponentContext */
+/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsDomElement} ConnectionsDomElement */
+/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsPlugin} ConnectionsPlugin */
 
 /**
  * @this {ConnectionsComponentContext}

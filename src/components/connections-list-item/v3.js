@@ -17,9 +17,9 @@ const SC_RESULT_HIDDEN_CLASS = 'sc-result-hidden-by-feedback';
 /**
  * Builds the HTML string for the result component.
  * .temp-container is used so listeners can be added to .sc-result (otherwise does not persist) 
- * @this {import('smart-types').ConnectionsComponentContext}
- * @param {import('smart-types').ConnectionResult} result - The results a <Result> object 
- * @param {import('smart-types').ConnectionsComponentOptions} [params={}] - Optional parameters.
+ * @this {import('jsbrains/smart-types/index.js').ConnectionsComponentContext}
+ * @param {import('jsbrains/smart-types/index.js').ConnectionResult} result - The results a <Result> object 
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsComponentOptions} [params={}] - Optional parameters.
  * @returns {Promise<string>} A promise that resolves to the HTML string.
  */
 export async function build_html(result, params = {}) {
@@ -59,9 +59,9 @@ export async function build_html(result, params = {}) {
 
 /**
  * Renders the result component by building the HTML and post-processing it.
- * @this {import('smart-types').ConnectionsComponentContext}
- * @param {import('smart-types').ConnectionResult} result_scope - The result object containing component data.
- * @param {import('smart-types').ConnectionsComponentOptions} [params={}] - Optional parameters.
+ * @this {import('jsbrains/smart-types/index.js').ConnectionsComponentContext}
+ * @param {import('jsbrains/smart-types/index.js').ConnectionResult} result_scope - The result object containing component data.
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsComponentOptions} [params={}] - Optional parameters.
  * @returns {Promise<HTMLElement>} A promise that resolves to the processed document fragment.
  */
 export async function render(result_scope, params = {}) {
@@ -75,16 +75,16 @@ export async function render(result_scope, params = {}) {
 
 /**
  * Post-processes the rendered document fragment by adding event listeners and rendering entity details.
- * @this {import('smart-types').ConnectionsComponentContext}
- * @param {import('smart-types').ConnectionResult} result_scope - The result object containing component data.
+ * @this {import('jsbrains/smart-types/index.js').ConnectionsComponentContext}
+ * @param {import('jsbrains/smart-types/index.js').ConnectionResult} result_scope - The result object containing component data.
  * @param {HTMLElement} container - The document fragment to be post-processed.
- * @param {import('smart-types').ConnectionsComponentOptions} [params={}] - Optional parameters.
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsComponentOptions} [params={}] - Optional parameters.
  * @returns {Promise<HTMLElement>} A promise that resolves to the post-processed document fragment.
  */
 export async function post_process(result_scope, container, params = {}) {
   const { item } = result_scope;
   const env = item.env;
-  const plugin = /** @type {import('smart-types').ConnectionsPlugin} */ (env.smart_connections_plugin);
+  const plugin = /** @type {import('jsbrains/smart-types/index.js').ConnectionsPlugin} */ (env.smart_connections_plugin);
   const app = plugin.app;
   const connections_settings = params.connections_settings
     ?? env.connections_lists.settings
@@ -109,8 +109,8 @@ export async function post_process(result_scope, container, params = {}) {
   /** @param {HTMLElement} _result_elm */
   const render_result = async (_result_elm) => {
     if (!_result_elm.querySelector('li').innerHTML) {
-      const collection_key = /** @type {import('smart-types').ConnectionsCollectionKey} */ (_result_elm.dataset.collection);
-      const entity = /** @type {import('smart-types').ConnectionItem} */ (
+      const collection_key = /** @type {import('jsbrains/smart-types/index.js').ConnectionsCollectionKey} */ (_result_elm.dataset.collection);
+      const entity = /** @type {import('jsbrains/smart-types/index.js').ConnectionItem} */ (
         env[collection_key].get(/** @type {string} */ (_result_elm.dataset.path))
       );
       /** @type {string} */
@@ -161,7 +161,7 @@ export async function post_process(result_scope, container, params = {}) {
     if(!source_item) return;
     source_item.data.connections ||= {};
 
-    const connections_list = /** @type {import('smart-types').ConnectionsListScope} */ (result_scope.connections_list);
+    const connections_list = /** @type {import('jsbrains/smart-types/index.js').ConnectionsListScope} */ (result_scope.connections_list);
     const raw_results = Array.isArray(connections_list?.results) ? connections_list.results : [];
     const visible_results = filter_hidden_results(raw_results, source_item.data.connections);
     const list_container = /** @type {HTMLElement} */ (container.closest('.connections-list') || container);
@@ -169,7 +169,7 @@ export async function post_process(result_scope, container, params = {}) {
       /** @type {import('smart-collections').CollectionItem} */ (/** @type {unknown} */ (item)),
       component_settings,
     )) || item.key;
-    const menu = /** @type {import('smart-types').ConnectionsMenu} */ (new Menu());
+    const menu = /** @type {import('jsbrains/smart-types/index.js').ConnectionsMenu} */ (new Menu());
 
     env.build_menu?.('connections:list_item_menu', menu, connections_list, {
       container,
@@ -199,8 +199,8 @@ export async function post_process(result_scope, container, params = {}) {
 
 /**
  * @param {number|string|null} score
- * @param {import('smart-types').ConnectionItem} item
- * @param {import('smart-types').ConnectionsComponentSettings} [component_settings]
+ * @param {import('jsbrains/smart-types/index.js').ConnectionItem} item
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsComponentSettings} [component_settings]
  * @returns {string}
  */
 function get_result_header_html(score, item, component_settings = {}) {
@@ -240,7 +240,7 @@ function format_item_parts(parts, lines = []) {
 }
 
 /**
- * @param {import('smart-types').ConnectionItem|null|undefined} entity
+ * @param {import('jsbrains/smart-types/index.js').ConnectionItem|null|undefined} entity
  * @returns {boolean}
  */
 export function should_render_embed(entity) {

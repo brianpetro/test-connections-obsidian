@@ -1,7 +1,7 @@
 /**
- * @this {import('smart-types').ConnectionsComponentContext}
- * @param {import('smart-types').ConnectionsListScope} connections_list
- * @param {import('smart-types').ConnectionsComponentOptions} [opts]
+ * @this {import('jsbrains/smart-types/index.js').ConnectionsComponentContext}
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsListScope} connections_list
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsComponentOptions} [opts]
  * @returns {Promise<string>} A promise that resolves to the .sc-list HTML string.
  */
 export async function build_html(connections_list, opts = {}) {
@@ -12,9 +12,9 @@ export async function build_html(connections_list, opts = {}) {
 }
 
 /**
- * @this {import('smart-types').ConnectionsComponentContext}
- * @param {import('smart-types').ConnectionsListScope} connections_list
- * @param {import('smart-types').ConnectionsComponentOptions} [opts={}] - Optional parameters, including `opts.results`.
+ * @this {import('jsbrains/smart-types/index.js').ConnectionsComponentContext}
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsListScope} connections_list
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsComponentOptions} [opts={}] - Optional parameters, including `opts.results`.
  * @returns {Promise<HTMLElement>} A promise that resolves to the .sc-list fragment with appended children.
  */
 export async function render(connections_list, opts = {}) {
@@ -26,10 +26,10 @@ export async function render(connections_list, opts = {}) {
 }
 
 /**
- * @this {import('smart-types').ConnectionsComponentContext}
- * @param {import('smart-types').ConnectionsListScope} connections_list
+ * @this {import('jsbrains/smart-types/index.js').ConnectionsComponentContext}
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsListScope} connections_list
  * @param {HTMLElement} container
- * @param {import('smart-types').ConnectionsComponentOptions} [opts]
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsComponentOptions} [opts]
  * @returns {Promise<HTMLElement>}
  */
 export async function post_process(connections_list, container, opts = {}) {
@@ -74,14 +74,14 @@ const GRAPH_FOCUS_TIMEOUT_MS = 2400;
 function register_graph_events(graph, list_container) {
   if (!graph || !list_container) return;
   graph.addEventListener('connections:result', (event) => {
-    const detail = /** @type {CustomEvent<import('smart-types').ConnectionsGraphResultEventDetail>} */ (event).detail;
+    const detail = /** @type {CustomEvent<import('jsbrains/smart-types/index.js').ConnectionsGraphResultEventDetail>} */ (event).detail;
     focus_result_from_graph(list_container, detail || {});
   });
 }
 
 /**
  * @param {HTMLElement} list_container
- * @param {Partial<import('smart-types').ConnectionsGraphResultEventDetail>} [detail]
+ * @param {Partial<import('jsbrains/smart-types/index.js').ConnectionsGraphResultEventDetail>} [detail]
  */
 function focus_result_from_graph(list_container, detail = {}) {
   const target = find_result_element(list_container, detail);
@@ -94,7 +94,7 @@ function focus_result_from_graph(list_container, detail = {}) {
 
 /**
  * @param {HTMLElement} list_container
- * @param {Partial<import('smart-types').ConnectionsGraphResultEventDetail>} [detail]
+ * @param {Partial<import('jsbrains/smart-types/index.js').ConnectionsGraphResultEventDetail>} [detail]
  * @returns {HTMLElement|null}
  */
 function find_result_element(list_container, detail = {}) {

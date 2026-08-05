@@ -3,9 +3,9 @@ import { filter_hidden_results } from '../utils/filter_hidden_results.js';
 
 /**
  * Build a Smart Connections codeblock view toolbar + list container.
- * @this {import('smart-types').ConnectionsComponentContext}
- * @param {import('smart-types').ConnectionsListScope} connections_list
- * @param {import('smart-types').ConnectionsComponentOptions} opts
+ * @this {import('jsbrains/smart-types/index.js').ConnectionsComponentContext}
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsListScope} connections_list
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsComponentOptions} opts
  * @returns {Promise<string>}
  */
 export async function build_html(connections_list, opts = {}) {
@@ -69,27 +69,27 @@ export async function build_html(connections_list, opts = {}) {
 }
 
 /**
- * @this {import('smart-types').ConnectionsComponentContext}
- * @param {import('smart-types').ConnectionsListScope} connections_list
- * @param {import('smart-types').ConnectionsComponentOptions} [opts]
+ * @this {import('jsbrains/smart-types/index.js').ConnectionsComponentContext}
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsListScope} connections_list
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsComponentOptions} [opts]
  * @returns {Promise<DocumentFragment>}
  */
 export async function render(connections_list, opts = {}) {
   const html = /** @type {string} */ (await build_html.call(this, connections_list, opts));
   const frag = this.create_doc_fragment(html);
   this.apply_style_sheet(styles);
-  const container = /** @type {import('smart-types').ConnectionsViewElement} */ (frag.firstElementChild);
+  const container = /** @type {import('jsbrains/smart-types/index.js').ConnectionsViewElement} */ (frag.firstElementChild);
   post_process.call(this, connections_list, container, opts);
   return frag;
 }
 
 /**
  * Post-process DOM fragment for codeblock behavior.
- * @this {import('smart-types').ConnectionsComponentContext}
- * @param {import('smart-types').ConnectionsListScope} connections_list
- * @param {import('smart-types').ConnectionsViewElement} container
- * @param {import('smart-types').ConnectionsComponentOptions} opts
- * @returns {Promise<import('smart-types').ConnectionsViewElement>}
+ * @this {import('jsbrains/smart-types/index.js').ConnectionsComponentContext}
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsListScope} connections_list
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsViewElement} container
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsComponentOptions} opts
+ * @returns {Promise<import('jsbrains/smart-types/index.js').ConnectionsViewElement>}
  */
 export async function post_process(connections_list, container, opts = {}) {
   const list_container = container.querySelector('.connections-list-container');
@@ -115,7 +115,7 @@ export async function post_process(connections_list, container, opts = {}) {
 
   /**
    * @param {string} action_key
-   * @param {import('smart-types').ConnectionsActionParams} [params]
+   * @param {import('jsbrains/smart-types/index.js').ConnectionsActionParams} [params]
    */
   const run_action = (action_key, params = {}) => {
     const action = connections_list.actions?.[action_key];
@@ -195,9 +195,9 @@ export async function post_process(connections_list, container, opts = {}) {
 }
 
 /**
- * @param {import('smart-types').ConnectionsListScope} connections_list
- * @param {import('smart-types').ConnectionsComponentOptions} [opts]
- * @returns {Promise<import('smart-types').ConnectionResult[]>}
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsListScope} connections_list
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsComponentOptions} [opts]
+ * @returns {Promise<import('jsbrains/smart-types/index.js').ConnectionResult[]>}
  */
 async function get_visible_results_fallback(connections_list, opts = {}) {
   const raw_results = await get_results_fallback(connections_list, opts);
@@ -206,9 +206,9 @@ async function get_visible_results_fallback(connections_list, opts = {}) {
 }
 
 /**
- * @param {import('smart-types').ConnectionsListScope} connections_list
- * @param {import('smart-types').ConnectionsComponentOptions} [opts]
- * @returns {Promise<import('smart-types').ConnectionResult[]>}
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsListScope} connections_list
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsComponentOptions} [opts]
+ * @returns {Promise<import('jsbrains/smart-types/index.js').ConnectionResult[]>}
  */
 async function get_results_fallback(connections_list, opts = {}) {
   const cached = Array.isArray(connections_list?.results) ? connections_list.results : [];

@@ -1,6 +1,6 @@
 const DEFAULT_RESULTS_LIMIT = 20;
 
-/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('smart-types').ConnectionsEnvExtensions>} SmartEnv */
+/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types/index.js').ConnectionsEnvExtensions>} SmartEnv */
 
 /**
  * Returns a random connection for a given file path.
@@ -8,7 +8,7 @@ const DEFAULT_RESULTS_LIMIT = 20;
  * @param {string} file_path - Path of the current file.
  * @param {Object} [opts]
  * @param {() => number} [opts.rng=Math.random]
- * @returns {Promise<import('smart-types').ConnectionResult|null>}
+ * @returns {Promise<import('jsbrains/smart-types/index.js').ConnectionResult|null>}
  */
 export async function get_random_connection(env, file_path, { rng = Math.random } = {}) {
   if (!env?.smart_sources || !file_path) return null;
@@ -20,7 +20,7 @@ export async function get_random_connection(env, file_path, { rng = Math.random 
 
   let connections = [];
   try {
-    connections = /** @type {import('smart-types').ConnectionResult[]} */ (
+    connections = /** @type {import('jsbrains/smart-types/index.js').ConnectionResult[]} */ (
       await connections_list.get_results({ limit: DEFAULT_RESULTS_LIMIT })
     );
   } catch (err) {
@@ -34,9 +34,9 @@ export async function get_random_connection(env, file_path, { rng = Math.random 
 }
 
 /**
- * @param {import('smart-types').ConnectionResult[]} connections
+ * @param {import('jsbrains/smart-types/index.js').ConnectionResult[]} connections
  * @param {{rng: () => number}} options
- * @returns {import('smart-types').ConnectionResult|undefined}
+ * @returns {import('jsbrains/smart-types/index.js').ConnectionResult|undefined}
  */
 function pick_weighted_connection(connections, { rng }) {
   const scored_connections = connections.map(connection => ({

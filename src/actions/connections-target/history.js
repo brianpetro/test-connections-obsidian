@@ -6,8 +6,8 @@ const HISTORY_LIMIT = 10;
  * This synchronous query keeps one target-provider module independently
  * includable while child selection delegates to the shared semantic action.
  *
- * @this {import('smart-types').ConnectionsItemViewScope}
- * @returns {import('smart-types').ConnectionItem[]}
+ * @this {import('jsbrains/smart-types/index.js').ConnectionsItemViewScope}
+ * @returns {import('jsbrains/smart-types/index.js').ConnectionItem[]}
  */
 export function connections_target_history() {
   const history = Array.isArray(this.connections_target_history)
@@ -22,7 +22,7 @@ export function connections_target_history() {
   ;
 }
 
-/** @type {import('smart-types').ConnectionsMenusConfig} */
+/** @type {import('jsbrains/smart-types/index.js').ConnectionsMenusConfig} */
 export const menus = {
   'connections:target_menu': {
     title: 'History',
@@ -57,11 +57,11 @@ export const menus = {
 };
 
 /**
- * @param {import('smart-types').ConnectionsMenuContext} menu_ctx
- * @returns {import('smart-types').ConnectionItem[]}
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsMenuContext} menu_ctx
+ * @returns {import('jsbrains/smart-types/index.js').ConnectionItem[]}
  */
 function resolve_target_candidates(menu_ctx) {
-  const action = /** @type {((params: import('smart-types').ConnectionsActionParams) => import('smart-types').ConnectionItem[])|undefined} */ (
+  const action = /** @type {((params: import('jsbrains/smart-types/index.js').ConnectionsActionParams) => import('jsbrains/smart-types/index.js').ConnectionItem[])|undefined} */ (
     menu_ctx.resolve_action?.()
   );
   if (typeof action !== 'function') return [];
@@ -71,12 +71,12 @@ function resolve_target_candidates(menu_ctx) {
 }
 
 /**
- * @param {import('smart-types').ConnectionsMenuContext} menu_ctx
- * @param {import('smart-types').ConnectionItem} target_item
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsMenuContext} menu_ctx
+ * @param {import('jsbrains/smart-types/index.js').ConnectionItem} target_item
  * @returns {Promise<boolean>}
  */
 async function run_select_target(menu_ctx, target_item) {
-  const action = /** @type {((params: import('smart-types').ConnectionsActionParams) => boolean|Promise<boolean>)|undefined} */ (
+  const action = /** @type {((params: import('jsbrains/smart-types/index.js').ConnectionsActionParams) => boolean|Promise<boolean>)|undefined} */ (
     menu_ctx.env.config?.actions?.connections_list_select_target?.action
   );
   if (typeof action !== 'function') return false;

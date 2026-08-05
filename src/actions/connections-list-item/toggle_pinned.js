@@ -6,11 +6,11 @@ import {
 } from '../../utils/connections_list_item_state.js';
 
 /**
- * @param {import('smart-types').ConnectionsMenuContext} menu_ctx
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsMenuContext} menu_ctx
  * @returns {boolean}
  */
 function get_menu_pinned_state(menu_ctx) {
-  const source_item = /** @type {import('smart-types').ConnectionsListScope} */ (
+  const source_item = /** @type {import('jsbrains/smart-types/index.js').ConnectionsListScope} */ (
     /** @type {unknown} */ (menu_ctx.scope)
   ).item;
   const target_item = menu_ctx.params.target_item;
@@ -23,8 +23,8 @@ function get_menu_pinned_state(menu_ctx) {
 /**
  * Toggle a Connections result pinned state for the current source item.
  *
- * @this {import('smart-types').ConnectionsListScope}
- * @param {import('smart-types').ConnectionsActionParams} [params={}]
+ * @this {import('jsbrains/smart-types/index.js').ConnectionsListScope}
+ * @param {import('jsbrains/smart-types/index.js').ConnectionsActionParams} [params={}]
  * @returns {boolean}
  */
 export function connections_list_item_toggle_pinned(params = {}) {
@@ -68,7 +68,7 @@ export function connections_list_item_toggle_pinned(params = {}) {
   }
 }
 
-/** @type {import('smart-types').ConnectionsMenusConfig} */
+/** @type {import('jsbrains/smart-types/index.js').ConnectionsMenusConfig} */
 export const menus = {
   'connections:list_item_menu': {
     title() {

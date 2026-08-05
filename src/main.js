@@ -1,7 +1,7 @@
 import Obsidian from "obsidian";
 const {
   requestUrl,
-} = /** @type {{requestUrl: (params: object) => Promise<import('smart-types').ConnectionsRequestResponse<unknown>>}} */ (Obsidian);
+} = /** @type {{requestUrl: (params: object) => Promise<import('jsbrains/smart-types/index.js').ConnectionsRequestResponse<unknown>>}} */ (Obsidian);
 
 import { SmartEnv } from 'obsidian-smart-env';
 import { smart_env_config } from "../smart_env.config.js";
@@ -24,15 +24,15 @@ import { connections_footer_plugin } from './views/connections_footer_deco.js';
 import { ConnectionsFooterView } from './views/connections_footer_view.js';
 import { register_smart_connections_codeblock } from "./views/connections_codeblock.js";
 
-/** @typedef {import('smart-types').ConnectionsEditorView} ConnectionsEditorView */
-/** @typedef {import('smart-types').ConnectionsEventDisposer} ConnectionsEventDisposer */
-/** @typedef {import('smart-types').ConnectionsFile} ConnectionsFile */
-/** @typedef {import('smart-types').ConnectionsMarkdownView} ConnectionsMarkdownView */
-/** @typedef {import('smart-types').ConnectionsReleaseResponse} ConnectionsReleaseResponse */
-/** @typedef {import('smart-types').ConnectionsRequestResponse<ConnectionsReleaseResponse>} ConnectionsReleaseRequestResponse */
-/** @typedef {import('smart-types').ConnectionsWorkspace} ConnectionsWorkspace */
-/** @typedef {import('smart-types').ConnectionsWorkspaceLeaf} ConnectionsWorkspaceLeaf */
-/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('smart-types').ConnectionsEnvExtensions>} ConnectionsSmartEnv */
+/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsEditorView} ConnectionsEditorView */
+/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsEventDisposer} ConnectionsEventDisposer */
+/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsFile} ConnectionsFile */
+/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsMarkdownView} ConnectionsMarkdownView */
+/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsReleaseResponse} ConnectionsReleaseResponse */
+/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsRequestResponse<ConnectionsReleaseResponse>} ConnectionsReleaseRequestResponse */
+/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsWorkspace} ConnectionsWorkspace */
+/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsWorkspaceLeaf} ConnectionsWorkspaceLeaf */
+/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types/index.js').ConnectionsEnvExtensions>} ConnectionsSmartEnv */
 
 export default class SmartConnectionsPlugin extends SmartPlugin {
   /** @type {unknown} */
@@ -73,7 +73,7 @@ export default class SmartConnectionsPlugin extends SmartPlugin {
       void this.initialize();
     });
     this.SmartEnv.create(this, this.smart_env_config);
-    this.addSettingTab(new this.ConnectionsSettingsTab(this.app, /** @type {import('smart-types').ConnectionsPlugin} */ (/** @type {unknown} */ (this))));
+    this.addSettingTab(new this.ConnectionsSettingsTab(this.app, /** @type {import('jsbrains/smart-types/index.js').ConnectionsPlugin} */ (/** @type {unknown} */ (this))));
     add_smart_dice_icon();
     this.register_item_views({skip_command_registration: true});
   }
@@ -109,10 +109,10 @@ export default class SmartConnectionsPlugin extends SmartPlugin {
     this.wrap_connections_view_open();
     this.apply_connections_view_location();
     this.register_connections_view_location_listener();
-    register_smart_connections_codeblock(/** @type {import('smart-types').ConnectionsPlugin} */ (/** @type {unknown} */ (this)));
+    register_smart_connections_codeblock(/** @type {import('jsbrains/smart-types/index.js').ConnectionsPlugin} */ (/** @type {unknown} */ (this)));
     if (!this.connections_footer_view) {
       this.registerEditorExtension(connections_footer_plugin);
-      this.connections_footer_view = new ConnectionsFooterView(/** @type {import('smart-types').ConnectionsPlugin} */ (/** @type {unknown} */ (this)));
+      this.connections_footer_view = new ConnectionsFooterView(/** @type {import('jsbrains/smart-types/index.js').ConnectionsPlugin} */ (/** @type {unknown} */ (this)));
     }
     this.toggled_footer_connections();
     await this.check_for_updates();

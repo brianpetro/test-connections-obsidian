@@ -26,14 +26,14 @@ import {
   resolve_drag_item,
 } from './v1.util.js';
 
-/** @typedef {import('smart-types').ConnectionItem} ConnectionItem */
-/** @typedef {import('smart-types').ConnectionResult} ConnectionResult */
-/** @typedef {import('smart-types').ConnectionsCollection} ConnectionsCollection */
-/** @typedef {import('smart-types').ConnectionsComponentContext} ConnectionsComponentContext */
-/** @typedef {import('smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
-/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('smart-types').ConnectionsEnvExtensions>} SmartEnv */
-/** @typedef {import('smart-types').ConnectionsListScope} ConnectionsListScope */
-/** @typedef {import('smart-types').ConnectionsState} ConnectionsState */
+/** @typedef {import('jsbrains/smart-types/index.js').ConnectionItem} ConnectionItem */
+/** @typedef {import('jsbrains/smart-types/index.js').ConnectionResult} ConnectionResult */
+/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsCollection} ConnectionsCollection */
+/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsComponentContext} ConnectionsComponentContext */
+/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsComponentOptions} ConnectionsComponentOptions */
+/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types/index.js').ConnectionsEnvExtensions>} SmartEnv */
+/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsListScope} ConnectionsListScope */
+/** @typedef {import('jsbrains/smart-types/index.js').ConnectionsState} ConnectionsState */
 
 /** @typedef {ConnectionResult} ConnectionsGraphResult */
 
