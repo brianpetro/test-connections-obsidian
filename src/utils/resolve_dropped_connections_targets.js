@@ -17,13 +17,13 @@ const SMART_CONNECTIONS_COLLECTION_KEYS = new Set([
 /** @typedef {{items: SmartDragItem[]}} SmartDragData */
 /** @typedef {{normalized_path: string}} DroppedObsidianEntry */
 /** @typedef {{status: string, kind: string|null, path: string|null}} ClassifiedDroppedEntry */
-/** @typedef {{get?: (key: string) => unknown, items?: Object.<string, unknown>, fs?: import('smart-types').ConnectionsFs}} ConnectionsTargetCollection */
-/** @typedef {Record<string, unknown> & {smart_sources?: ConnectionsTargetCollection, smart_blocks?: ConnectionsTargetCollection, fs?: import('smart-types').ConnectionsFs}} DroppedConnectionsEnv */
+/** @typedef {{get?: (key: string) => unknown, items?: Object.<string, unknown>, fs?: import('../smart-types/index.js').ConnectionsFs}} ConnectionsTargetCollection */
+/** @typedef {Record<string, unknown> & {smart_sources?: ConnectionsTargetCollection, smart_blocks?: ConnectionsTargetCollection, fs?: import('../smart-types/index.js').ConnectionsFs}} DroppedConnectionsEnv */
 
 
 /**
  * @param {DroppedConnectionsEnv} env
- * @param {import('smart-types').ConnectionsCollectionKey} collection_key
+ * @param {import('../smart-types/index.js').ConnectionsCollectionKey} collection_key
  * @param {string} item_key
  * @returns {unknown}
  */
@@ -37,17 +37,17 @@ function get_collection_item(env, collection_key, item_key) {
 
 /**
  * @param {unknown} item
- * @returns {item is import('smart-types').ConnectionItem}
+ * @returns {item is import('../smart-types/index.js').ConnectionItem}
  */
 function is_connections_target(item) {
-  const candidate = /** @type {Partial<import('smart-types').ConnectionItem>|null|undefined} */ (item);
+  const candidate = /** @type {Partial<import('../smart-types/index.js').ConnectionItem>|null|undefined} */ (item);
   return Boolean(candidate?.key && candidate?.vec);
 }
 
 /**
  * @param {DroppedConnectionsEnv} env
  * @param {DataTransfer|object} data_transfer
- * @returns {import('smart-types').ConnectionItem[]}
+ * @returns {import('../smart-types/index.js').ConnectionItem[]}
  */
 function get_smart_targets(env, data_transfer) {
   const smart_drag_data = /** @type {SmartDragData|null} */ (
@@ -62,7 +62,7 @@ function get_smart_targets(env, data_transfer) {
 
     const target = get_collection_item(
       env,
-      /** @type {import('smart-types').ConnectionsCollectionKey} */ (collection_key),
+      /** @type {import('../smart-types/index.js').ConnectionsCollectionKey} */ (collection_key),
       item_key,
     );
     if (!is_connections_target(target)) return [];
@@ -76,7 +76,7 @@ function get_smart_targets(env, data_transfer) {
 /**
  * @param {DroppedConnectionsEnv} env
  * @param {DataTransfer|object} data_transfer
- * @returns {import('smart-types').ConnectionItem[]}
+ * @returns {import('../smart-types/index.js').ConnectionItem[]}
  */
 function get_native_targets(env, data_transfer) {
   const entries = /** @type {DroppedObsidianEntry[]} */ (
@@ -86,7 +86,7 @@ function get_native_targets(env, data_transfer) {
 
   const smart_sources = env?.smart_sources;
   const smart_fs = smart_sources?.fs || env?.fs;
-  const source_items = /** @type {Array<Partial<import('smart-types').ConnectionItem>>} */ (
+  const source_items = /** @type {Array<Partial<import('../smart-types/index.js').ConnectionItem>>} */ (
     Object.values(smart_sources?.items || {})
   );
   const file_paths = Array.from(new Set([
@@ -149,7 +149,7 @@ function get_native_targets(env, data_transfer) {
  *
  * @param {DroppedConnectionsEnv} env
  * @param {DataTransfer|object} data_transfer
- * @returns {import('smart-types').ConnectionItem[]}
+ * @returns {import('../smart-types/index.js').ConnectionItem[]}
  */
 export function resolve_dropped_connections_targets(env, data_transfer) {
   const targets = has_smart_drag_data(data_transfer)

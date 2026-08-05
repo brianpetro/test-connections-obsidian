@@ -6,15 +6,15 @@ import { Platform } from 'obsidian';
 import { render as render_connections_footer_view_component } from '../components/connections_footer_view.js';
 import { set_connections_footer_dom_effect } from './connections_footer_deco.js';
 
-/** @typedef {import('smart-types').ConnectionItem} ConnectionItem */
-/** @typedef {import('smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
-/** @typedef {import('smart-types').ConnectionsDomElement} ConnectionsDomElement */
-/** @typedef {import('smart-types').ConnectionsEditorView} ConnectionsEditorView */
-/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('smart-types').ConnectionsEnvExtensions>} SmartEnv */
-/** @typedef {import('smart-types').ConnectionsEventDisposer} ConnectionsEventDisposer */
-/** @typedef {import('smart-types').ConnectionsEventPayload} ConnectionsEventPayload */
-/** @typedef {import('smart-types').ConnectionsPlugin} ConnectionsPlugin */
-/** @typedef {import('smart-types').ConnectionsWorkspace} ConnectionsWorkspace */
+/** @typedef {import('../smart-types/index.js').ConnectionItem} ConnectionItem */
+/** @typedef {import('../smart-types/index.js').ConnectionsComponentOptions} ConnectionsComponentOptions */
+/** @typedef {import('../smart-types/index.js').ConnectionsDomElement} ConnectionsDomElement */
+/** @typedef {import('../smart-types/index.js').ConnectionsEditorView} ConnectionsEditorView */
+/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('../smart-types/index.js').ConnectionsEnvExtensions>} SmartEnv */
+/** @typedef {import('../smart-types/index.js').ConnectionsEventDisposer} ConnectionsEventDisposer */
+/** @typedef {import('../smart-types/index.js').ConnectionsEventPayload} ConnectionsEventPayload */
+/** @typedef {import('../smart-types/index.js').ConnectionsPlugin} ConnectionsPlugin */
+/** @typedef {import('../smart-types/index.js').ConnectionsWorkspace} ConnectionsWorkspace */
 
 /**
  * Resolve the Smart Sources entity for the active file.

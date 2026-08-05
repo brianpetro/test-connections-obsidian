@@ -334,8 +334,8 @@ export function is_hover_preview_eligible(node = {}) {
 
 /**
  * Resolve a draggable item from a graph node.
- * @param {{item?: import('smart-types').ConnectionItem}} node
- * @returns {import('smart-types').ConnectionItem|null}
+ * @param {{item?: import('../../smart-types/index.js').ConnectionItem}} node
+ * @returns {import('../../smart-types/index.js').ConnectionItem|null}
  */
 export function resolve_drag_item(node = {}) {
   const item = node?.item;

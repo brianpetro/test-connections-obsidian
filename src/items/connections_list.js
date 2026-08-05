@@ -4,10 +4,10 @@ import { sort_by_score_descending } from 'smart-utils/sort_by_score.js';
 import { merge_pinned_results } from '../utils/merge_pinned_results.js';
 import { migrate_hidden_connections } from '../../migrations/migrate_hidden_connections.js';
 
-/** @typedef {import('smart-types').ConnectionItem} ConnectionItem */
-/** @typedef {import('smart-types').ConnectionResult} ConnectionResult */
-/** @typedef {import('smart-types').ConnectionsListScope} ConnectionsListScope */
-/** @typedef {import('smart-types').ConnectionsQueryParams} ConnectionsQueryParams */
+/** @typedef {import('../smart-types/index.js').ConnectionItem} ConnectionItem */
+/** @typedef {import('../smart-types/index.js').ConnectionResult} ConnectionResult */
+/** @typedef {import('../smart-types/index.js').ConnectionsListScope} ConnectionsListScope */
+/** @typedef {import('../smart-types/index.js').ConnectionsQueryParams} ConnectionsQueryParams */
 
 export class ConnectionsList extends CollectionItem {
   static key = 'connections_list';

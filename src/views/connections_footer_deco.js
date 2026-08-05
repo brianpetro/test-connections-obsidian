@@ -1,10 +1,10 @@
 import { ViewPlugin } from '@codemirror/view';
 import { StateEffect } from '@codemirror/state';
 
-/** @typedef {import('smart-types').ConnectionsDomElement} ConnectionsDomElement */
-/** @typedef {import('smart-types').ConnectionsEditorUpdate} ConnectionsEditorUpdate */
-/** @typedef {import('smart-types').ConnectionsEditorView} ConnectionsEditorView */
-/** @typedef {import('smart-types').ConnectionsStateEffectType<ConnectionsDomElement|null>} ConnectionsFooterStateEffect */
+/** @typedef {import('../smart-types/index.js').ConnectionsDomElement} ConnectionsDomElement */
+/** @typedef {import('../smart-types/index.js').ConnectionsEditorUpdate} ConnectionsEditorUpdate */
+/** @typedef {import('../smart-types/index.js').ConnectionsEditorView} ConnectionsEditorView */
+/** @typedef {import('../smart-types/index.js').ConnectionsStateEffectType<ConnectionsDomElement|null>} ConnectionsFooterStateEffect */
 
 export const set_connections_footer_dom_effect = /** @type {ConnectionsFooterStateEffect} */ (StateEffect.define());
 

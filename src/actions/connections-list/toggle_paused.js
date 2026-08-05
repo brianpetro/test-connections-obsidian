@@ -2,8 +2,8 @@
  * Toggle Connections auto-refresh for this item view.
  * When resuming, refresh the view target to the current active note.
  *
- * @this {import('smart-types').ConnectionsItemViewScope}
- * @param {import('smart-types').ConnectionsActionParams} [params={}]
+ * @this {import('../../smart-types/index.js').ConnectionsItemViewScope}
+ * @param {import('../../smart-types/index.js').ConnectionsActionParams} [params={}]
  * @returns {Promise<boolean>}
  */
 export async function connections_list_toggle_paused(params = {}) {
@@ -15,15 +15,15 @@ export async function connections_list_toggle_paused(params = {}) {
   return true;
 }
 
-/** @type {import('smart-types').ConnectionsMenusConfig} */
+/** @type {import('../../smart-types/index.js').ConnectionsMenusConfig} */
 export const menus = {
   'connections:item_view_list_menu': {
     title() {
-      const scope = /** @type {import('smart-types').ConnectionsItemViewScope} */ (this.scope);
+      const scope = /** @type {import('../../smart-types/index.js').ConnectionsItemViewScope} */ (this.scope);
       return scope.paused ? 'Resume auto-refresh' : 'Pause auto-refresh';
     },
     icon() {
-      const scope = /** @type {import('smart-types').ConnectionsItemViewScope} */ (this.scope);
+      const scope = /** @type {import('../../smart-types/index.js').ConnectionsItemViewScope} */ (this.scope);
       return scope.paused ? 'play-circle' : 'pause-circle';
     },
     order: 0,

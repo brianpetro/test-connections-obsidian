@@ -2,8 +2,8 @@ import { copy_to_clipboard } from 'obsidian-smart-env/src/utils/copy_to_clipboar
 import { format_connections_as_links } from '../../utils/format_connections_as_links.js';
 
 /**
- * @param {import('smart-types').ConnectionsListScope} connections_list
- * @param {import('smart-types').ConnectionsActionParams} [params={}]
+ * @param {import('../../smart-types/index.js').ConnectionsListScope} connections_list
+ * @param {import('../../smart-types/index.js').ConnectionsActionParams} [params={}]
  * @returns {string}
  */
 function get_links_payload(connections_list, params = {}) {
@@ -17,8 +17,8 @@ function get_links_payload(connections_list, params = {}) {
 /**
  * Copy visible Connections results as a list of links.
  *
- * @this {import('smart-types').ConnectionsListScope}
- * @param {import('smart-types').ConnectionsActionParams} [params={}]
+ * @this {import('../../smart-types/index.js').ConnectionsListScope}
+ * @param {import('../../smart-types/index.js').ConnectionsActionParams} [params={}]
  * @returns {Promise<boolean>}
  */
 export async function connections_list_copy_as_links(params = {}) {
@@ -49,7 +49,7 @@ export async function connections_list_copy_as_links(params = {}) {
   return true;
 }
 
-/** @type {import('smart-types').ConnectionsMenusConfig} */
+/** @type {import('../../smart-types/index.js').ConnectionsMenusConfig} */
 export const menus = {
   'connections:list_menu': {
     title: 'Copy as list of links',
@@ -57,7 +57,7 @@ export const menus = {
     order: 20,
     disabled() {
       return !get_links_payload(
-        /** @type {import('smart-types').ConnectionsListScope} */ (/** @type {unknown} */ (this.scope)),
+        /** @type {import('../../smart-types/index.js').ConnectionsListScope} */ (/** @type {unknown} */ (this.scope)),
         this.params,
       );
     },

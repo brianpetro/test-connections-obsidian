@@ -1,7 +1,7 @@
 /**
  * Toggle footer Connections for the current environment.
  *
- * @this {import('smart-types').ConnectionsListsCollection}
+ * @this {import('../../smart-types/index.js').ConnectionsListsCollection}
  * @returns {boolean}
  */
 export function connections_list_toggle_footer_connections() {
@@ -12,7 +12,7 @@ export function connections_list_toggle_footer_connections() {
   return true;
 }
 
-/** @type {import('smart-types').ConnectionsCommandsConfig} */
+/** @type {import('../../smart-types/index.js').ConnectionsCommandsConfig} */
 export const commands = {
   'toggle-footer-connections': {
     name: 'Toggle: Footer connections',
@@ -27,7 +27,7 @@ export const commands = {
   },
 };
 
-/** @type {import('smart-types').ConnectionsRibbonConfigMap} */
+/** @type {import('../../smart-types/index.js').ConnectionsRibbonConfigMap} */
 export const ribbon_icons = {
   footer_connections: {
     icon_name: 'smart-footer-connections',

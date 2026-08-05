@@ -1,7 +1,7 @@
-/** @typedef {import('smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
-/** @typedef {import('smart-types').ConnectionsDomElement} ConnectionsDomElement */
-/** @typedef {import('smart-types').ConnectionsMarkdownCodeBlockContext} ConnectionsMarkdownCodeBlockContext */
-/** @typedef {import('smart-types').ConnectionsPlugin} ConnectionsPlugin */
+/** @typedef {import('../smart-types/index.js').ConnectionsComponentOptions} ConnectionsComponentOptions */
+/** @typedef {import('../smart-types/index.js').ConnectionsDomElement} ConnectionsDomElement */
+/** @typedef {import('../smart-types/index.js').ConnectionsMarkdownCodeBlockContext} ConnectionsMarkdownCodeBlockContext */
+/** @typedef {import('../smart-types/index.js').ConnectionsPlugin} ConnectionsPlugin */
 
 /**
  * Register markdown processor for smart-connections codeblocks.

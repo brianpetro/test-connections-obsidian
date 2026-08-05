@@ -4,13 +4,13 @@ import styles from './connections_footer_view.css';
 const FOOTER_FOLDED_STORAGE_KEY = 'sc_footer_connections_folded';
 const FOOTER_LIST_COLLAPSED_CLASS = 'sc-footer-list-collapsed';
 
-/** @param {import('smart-types').ConnectionsApp} app */
+/** @param {import('../smart-types/index.js').ConnectionsApp} app */
 function get_footer_connections_folded(app) {
   return app.loadLocalStorage(FOOTER_FOLDED_STORAGE_KEY) === 'true';
 }
 
 /**
- * @param {import('smart-types').ConnectionsApp} app
+ * @param {import('../smart-types/index.js').ConnectionsApp} app
  * @param {boolean} folded
  */
 function set_footer_connections_folded(app, folded) {
@@ -36,9 +36,9 @@ function apply_footer_fold_state(header_container, list_container, folded) {
 
 /**
  * Build the main HTML structure for the footer connections view.
- * @this {import('smart-types').ConnectionsComponentContext}
- * @param {import('smart-types').ConnectionsFooterViewScope} view
- * @param {import('smart-types').ConnectionsComponentOptions} opts
+ * @this {import('../smart-types/index.js').ConnectionsComponentContext}
+ * @param {import('../smart-types/index.js').ConnectionsFooterViewScope} view
+ * @param {import('../smart-types/index.js').ConnectionsComponentOptions} opts
  * @returns {Promise<string>}
  */
 export async function build_html(view, opts = {}) {
@@ -68,9 +68,9 @@ export async function build_html(view, opts = {}) {
 
 /**
  * Render the footer connections fragment.
- * @this {import('smart-types').ConnectionsComponentContext}
- * @param {import('smart-types').ConnectionsFooterViewScope} view
- * @param {import('smart-types').ConnectionsComponentOptions} opts
+ * @this {import('../smart-types/index.js').ConnectionsComponentContext}
+ * @param {import('../smart-types/index.js').ConnectionsFooterViewScope} view
+ * @param {import('../smart-types/index.js').ConnectionsComponentOptions} opts
  * @returns {Promise<HTMLElement>}
  */
 export async function render(view, opts = {}) {
@@ -84,10 +84,10 @@ export async function render(view, opts = {}) {
 
 /**
  * Post-process DOM fragment for footer connections behavior.
- * @this {import('smart-types').ConnectionsComponentContext}
- * @param {import('smart-types').ConnectionsFooterViewScope} view
+ * @this {import('../smart-types/index.js').ConnectionsComponentContext}
+ * @param {import('../smart-types/index.js').ConnectionsFooterViewScope} view
  * @param {HTMLElement} container
- * @param {import('smart-types').ConnectionsComponentOptions} opts
+ * @param {import('../smart-types/index.js').ConnectionsComponentOptions} opts
  * @returns {Promise<HTMLElement>}
  */
 export async function post_process(view, container, opts = {}) {
@@ -122,7 +122,7 @@ export async function post_process(view, container, opts = {}) {
     connections_list,
     {
       ...opts,
-      render_connections: /** @type {(params?: import('smart-types').ConnectionsComponentOptions) => Promise<void>|void} */ (view.render_view.bind(view)),
+      render_connections: /** @type {(params?: import('../smart-types/index.js').ConnectionsComponentOptions) => Promise<void>|void} */ (view.render_view.bind(view)),
     },
   );
 

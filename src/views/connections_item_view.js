@@ -1,16 +1,16 @@
 import { SmartItemView } from 'obsidian-smart-env/views/smart_item_view.js';
 
-/** @typedef {import('smart-types').ConnectionItem} ConnectionItem */
-/** @typedef {import('smart-types').ConnectionsActionParams} ConnectionsActionParams */
-/** @typedef {import('smart-types').ConnectionsCollection} ConnectionsCollection */
-/** @typedef {import('smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
-/** @typedef {import('smart-types').ConnectionsDomElement} ConnectionsDomElement */
-/** @typedef {import('smart-types').ConnectionsEventDisposer} ConnectionsEventDisposer */
-/** @typedef {import('smart-types').ConnectionsEventPayload} ConnectionsEventPayload */
-/** @typedef {import('smart-types').ConnectionsItemViewScope} ConnectionsItemViewScope */
-/** @typedef {import('smart-types').ConnectionsPauseControls} ConnectionsPauseControls */
-/** @typedef {import('smart-types').ConnectionsPlugin} ConnectionsPlugin */
-/** @typedef {import('smart-types').ConnectionsWorkspaceLeaf} ConnectionsWorkspaceLeaf */
+/** @typedef {import('../smart-types/index.js').ConnectionItem} ConnectionItem */
+/** @typedef {import('../smart-types/index.js').ConnectionsActionParams} ConnectionsActionParams */
+/** @typedef {import('../smart-types/index.js').ConnectionsCollection} ConnectionsCollection */
+/** @typedef {import('../smart-types/index.js').ConnectionsComponentOptions} ConnectionsComponentOptions */
+/** @typedef {import('../smart-types/index.js').ConnectionsDomElement} ConnectionsDomElement */
+/** @typedef {import('../smart-types/index.js').ConnectionsEventDisposer} ConnectionsEventDisposer */
+/** @typedef {import('../smart-types/index.js').ConnectionsEventPayload} ConnectionsEventPayload */
+/** @typedef {import('../smart-types/index.js').ConnectionsItemViewScope} ConnectionsItemViewScope */
+/** @typedef {import('../smart-types/index.js').ConnectionsPauseControls} ConnectionsPauseControls */
+/** @typedef {import('../smart-types/index.js').ConnectionsPlugin} ConnectionsPlugin */
+/** @typedef {import('../smart-types/index.js').ConnectionsWorkspaceLeaf} ConnectionsWorkspaceLeaf */
 
 export class ConnectionsItemView extends SmartItemView {
   static get view_type() { return 'smart-connections-view'; }

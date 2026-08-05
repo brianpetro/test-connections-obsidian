@@ -6,14 +6,14 @@ import { resolve_dropped_connections_targets } from '../../utils/resolve_dropped
 
 const CONNECTIONS_TARGET_HISTORY_LIMIT = 10;
 
-/** @typedef {import('smart-types').ConnectionItem} ConnectionItem */
-/** @typedef {import('smart-types').ConnectionsComponentContext} ConnectionsComponentContext */
-/** @typedef {import('smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
-/** @typedef {import('smart-types').ConnectionsItemViewScope} ConnectionsItemViewScope */
-/** @typedef {import('smart-types').ConnectionsListScope} ConnectionsListScope */
-/** @typedef {import('smart-types').ConnectionsListSettings} ConnectionsListSettings */
-/** @typedef {import('smart-types').ConnectionsMenu} ConnectionsMenu */
-/** @typedef {import('smart-types').ConnectionsViewElement} ConnectionsViewElement */
+/** @typedef {import('../../smart-types/index.js').ConnectionItem} ConnectionItem */
+/** @typedef {import('../../smart-types/index.js').ConnectionsComponentContext} ConnectionsComponentContext */
+/** @typedef {import('../../smart-types/index.js').ConnectionsComponentOptions} ConnectionsComponentOptions */
+/** @typedef {import('../../smart-types/index.js').ConnectionsItemViewScope} ConnectionsItemViewScope */
+/** @typedef {import('../../smart-types/index.js').ConnectionsListScope} ConnectionsListScope */
+/** @typedef {import('../../smart-types/index.js').ConnectionsListSettings} ConnectionsListSettings */
+/** @typedef {import('../../smart-types/index.js').ConnectionsMenu} ConnectionsMenu */
+/** @typedef {import('../../smart-types/index.js').ConnectionsViewElement} ConnectionsViewElement */
 
 /**
  * Build the main HTML structure for 'Smart Connections Pro' view.
@@ -162,7 +162,7 @@ export async function post_process(view, container, opts = {}) {
           container: state.container,
           connections_settings: state.connections_settings,
           visible_results,
-          render_connections: /** @type {import('smart-types').ConnectionsActionParams['render_connections']} */ (
+          render_connections: /** @type {import('../../smart-types/index.js').ConnectionsActionParams['render_connections']} */ (
             state.view.render_view.bind(state.view)
           ),
         },
@@ -248,7 +248,7 @@ export async function post_process(view, container, opts = {}) {
   const list = await env.smart_components.render_component(connections_list_component_key, connections_list, {
     ...opts,
     container,
-    render_connections: /** @type {import('smart-types').ConnectionsActionParams['render_connections']} */ (
+    render_connections: /** @type {import('../../smart-types/index.js').ConnectionsActionParams['render_connections']} */ (
       view.render_view.bind(view)
     ),
   });

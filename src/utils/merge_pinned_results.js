@@ -1,8 +1,8 @@
 /**
  * Merge pinned results ahead of scored results while avoiding duplicates.
- * @param {import('smart-types').ConnectionResult[]} base_results
- * @param {import('smart-types').ConnectionsQueryParams} params
- * @returns {import('smart-types').ConnectionResult[]}
+ * @param {import('../smart-types/index.js').ConnectionResult[]} base_results
+ * @param {import('../smart-types/index.js').ConnectionsQueryParams} params
+ * @returns {import('../smart-types/index.js').ConnectionResult[]}
  */
 export function merge_pinned_results(base_results, params) {
   if (!params.pinned?.length) return base_results;

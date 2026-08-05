@@ -2,7 +2,7 @@ import { Notice } from 'obsidian';
 import { open_note } from 'obsidian-smart-env/utils/open_note.js';
 import { get_random_connection } from '../../utils/get_random_connection.js';
 
-/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('smart-types').ConnectionsEnvExtensions>} SmartEnv */
+/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('../../smart-types/index.js').ConnectionsEnvExtensions>} SmartEnv */
 
 const NATIVE_RANDOM_NOTE_COMMAND_IDS = [
   'random-note:open',
@@ -13,14 +13,14 @@ const NATIVE_RANDOM_NOTE_COMMAND_IDS = [
  * Open a weighted random connection for the current Connections target or active note.
  * Falls back to Obsidian's native random note command when no note is active.
  *
- * @this {import('smart-types').ConnectionsListScope|import('smart-types').ConnectionsListsCollection}
- * @param {import('smart-types').ConnectionsActionParams} [params={}]
+ * @this {import('../../smart-types/index.js').ConnectionsListScope|import('../../smart-types/index.js').ConnectionsListsCollection}
+ * @param {import('../../smart-types/index.js').ConnectionsActionParams} [params={}]
  * @returns {Promise<boolean>}
  */
 export async function connections_list_open_random_connection(params = {}) {
   const env = this?.env || params.plugin?.env || params.env;
   const app = get_app(env, params);
-  const scope_item = /** @type {{item?: import('smart-types').ConnectionItem}} */ (
+  const scope_item = /** @type {{item?: import('../../smart-types/index.js').ConnectionItem}} */ (
     /** @type {unknown} */ (this)
   ).item;
   const file_path = resolve_file_path(scope_item, params, app);
@@ -59,23 +59,23 @@ export async function connections_list_open_random_connection(params = {}) {
 
 /**
  * @param {SmartEnv|undefined} env
- * @param {import('smart-types').ConnectionsActionParams} [params]
- * @returns {import('smart-types').ConnectionsApp|null}
+ * @param {import('../../smart-types/index.js').ConnectionsActionParams} [params]
+ * @returns {import('../../smart-types/index.js').ConnectionsApp|null}
  */
 function get_app(env, params = {}) {
   return params.app
     || params.plugin?.app
     || env?.obsidian_app
     || env?.plugin?.app
-    || /** @type {Window & {app?: import('smart-types').ConnectionsApp}} */ (activeWindow).app
+    || /** @type {Window & {app?: import('../../smart-types/index.js').ConnectionsApp}} */ (activeWindow).app
     || null
   ;
 }
 
 /**
- * @param {import('smart-types').ConnectionItem|undefined} scope_item
- * @param {import('smart-types').ConnectionsActionParams} [params]
- * @param {import('smart-types').ConnectionsApp|null} [app]
+ * @param {import('../../smart-types/index.js').ConnectionItem|undefined} scope_item
+ * @param {import('../../smart-types/index.js').ConnectionsActionParams} [params]
+ * @param {import('../../smart-types/index.js').ConnectionsApp|null} [app]
  * @returns {string}
  */
 function resolve_file_path(scope_item, params = {}, app = null) {
@@ -92,7 +92,7 @@ function resolve_file_path(scope_item, params = {}, app = null) {
 /**
  * @param {SmartEnv} env
  * @param {string} target_path
- * @param {import('smart-types').ConnectionsActionParams} [params]
+ * @param {import('../../smart-types/index.js').ConnectionsActionParams} [params]
  * @returns {Promise<void>}
  */
 async function open_random_connection_target(env, target_path, params = {}) {
@@ -115,7 +115,7 @@ async function open_random_connection_target(env, target_path, params = {}) {
 }
 
 /**
- * @param {import('smart-types').ConnectionsApp|null} app
+ * @param {import('../../smart-types/index.js').ConnectionsApp|null} app
  * @returns {boolean}
  */
 function run_native_random_note_command(app) {
@@ -126,7 +126,7 @@ function run_native_random_note_command(app) {
 }
 
 /**
- * @param {import('smart-types').ConnectionsApp|null} app
+ * @param {import('../../smart-types/index.js').ConnectionsApp|null} app
  * @returns {string}
  */
 function get_native_random_note_command_id(app) {
@@ -143,7 +143,7 @@ function get_native_random_note_command_id(app) {
   return match?.[0] || '';
 }
 
-/** @type {import('smart-types').ConnectionsCommandsConfig} */
+/** @type {import('../../smart-types/index.js').ConnectionsCommandsConfig} */
 export const commands = {
   'smart-connections-random': {
     name: 'Open: Random note from connections',
@@ -162,7 +162,7 @@ export const commands = {
   },
 };
 
-/** @type {import('smart-types').ConnectionsRibbonConfigMap} */
+/** @type {import('../../smart-types/index.js').ConnectionsRibbonConfigMap} */
 export const ribbon_icons = {
   random_note: {
     icon_name: 'smart-dice',
@@ -178,14 +178,14 @@ export const ribbon_icons = {
   },
 };
 
-/** @type {import('smart-types').ConnectionsMenusConfig} */
+/** @type {import('../../smart-types/index.js').ConnectionsMenusConfig} */
 export const menus = {
   'connections:list_menu': {
     title: 'Open random connection',
     icon: 'smart-dice',
     order: 40,
     /**
-     * @param {import('smart-types').ConnectionsMenuContext} _menu_ctx
+     * @param {import('../../smart-types/index.js').ConnectionsMenuContext} _menu_ctx
      * @param {Event} [event]
      */
     params(_menu_ctx, event) {

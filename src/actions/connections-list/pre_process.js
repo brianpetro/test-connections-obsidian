@@ -1,6 +1,6 @@
 /**
- * @this {import('smart-types').ConnectionsListScope}
- * @param {import('smart-types').ConnectionsQueryParams} params
+ * @this {import('../../smart-types/index.js').ConnectionsListScope}
+ * @param {import('../../smart-types/index.js').ConnectionsQueryParams} params
  * @returns {void}
  */
 export function pre_process(params) {
@@ -68,8 +68,8 @@ export function pre_process(params) {
  * - If a connection is hidden and not pinned → counts as "hidden" only.
  * - If a connection is pinned (with or without hidden) → counts as "pinned".
  *
- * @param {import('smart-types').ConnectionsListScope} connections_list
- * @param {import('smart-types').ConnectionsQueryParams} params
+ * @param {import('../../smart-types/index.js').ConnectionsListScope} connections_list
+ * @param {import('../../smart-types/index.js').ConnectionsQueryParams} params
  */
 function get_connections_feedback_items(connections_list, params) {
   // Always rebuild derived arrays to avoid duplicates.
@@ -87,7 +87,7 @@ function get_connections_feedback_items(connections_list, params) {
     if (!collection_key || !item_key_parts.length) return;
 
     const item_key = item_key_parts.join(':');
-    const collection = connections_list.env[/** @type {import('smart-types').ConnectionsCollectionKey} */ (collection_key)];
+    const collection = connections_list.env[/** @type {import('../../smart-types/index.js').ConnectionsCollectionKey} */ (collection_key)];
     if (!collection) return;
 
     const item = collection.get(item_key);

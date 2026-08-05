@@ -3,7 +3,7 @@ const DISPLAY_SEPARATOR = ' › ';
 const PATH_SEPARATOR = '/';
 
 /**
- * @param {import('smart-types').ConnectionItem} item
+ * @param {import('../smart-types/index.js').ConnectionItem} item
  * @returns {[string, string]}
  */
 export function get_context_lines(item) {
