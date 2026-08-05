@@ -2,6 +2,8 @@ import { Notice } from 'obsidian';
 import { open_note } from 'obsidian-smart-env/utils/open_note.js';
 import { get_random_connection } from '../../utils/get_random_connection.js';
 
+/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('smart-types').ConnectionsEnvExtensions>} SmartEnv */
+
 const NATIVE_RANDOM_NOTE_COMMAND_IDS = [
   'random-note:open',
   'random-note',
@@ -18,7 +20,10 @@ const NATIVE_RANDOM_NOTE_COMMAND_IDS = [
 export async function connections_list_open_random_connection(params = {}) {
   const env = this?.env || params.plugin?.env || params.env;
   const app = get_app(env, params);
-  const file_path = resolve_file_path(this, params, app);
+  const scope_item = /** @type {{item?: import('smart-types').ConnectionItem}} */ (
+    /** @type {unknown} */ (this)
+  ).item;
+  const file_path = resolve_file_path(scope_item, params, app);
 
   if (!file_path) {
     if (run_native_random_note_command(app)) return true;
@@ -53,7 +58,7 @@ export async function connections_list_open_random_connection(params = {}) {
 }
 
 /**
- * @param {import('smart-types').ConnectionsEnv|undefined} env
+ * @param {SmartEnv|undefined} env
  * @param {import('smart-types').ConnectionsActionParams} [params]
  * @returns {import('smart-types').ConnectionsApp|null}
  */
@@ -68,16 +73,16 @@ function get_app(env, params = {}) {
 }
 
 /**
- * @param {{item?: import('smart-types').ConnectionItem}} scope
+ * @param {import('smart-types').ConnectionItem|undefined} scope_item
  * @param {import('smart-types').ConnectionsActionParams} [params]
  * @param {import('smart-types').ConnectionsApp|null} [app]
  * @returns {string}
  */
-function resolve_file_path(scope, params = {}, app = null) {
+function resolve_file_path(scope_item, params = {}, app = null) {
   const key = params.file_path
     || params.target_item?.key
     || params.source_item?.key
-    || scope?.item?.key
+    || scope_item?.key
     || ''
   ;
   if (key) return String(key).split('#')[0];
@@ -85,7 +90,7 @@ function resolve_file_path(scope, params = {}, app = null) {
 }
 
 /**
- * @param {import('smart-types').ConnectionsEnv} env
+ * @param {SmartEnv} env
  * @param {string} target_path
  * @param {import('smart-types').ConnectionsActionParams} [params]
  * @returns {Promise<void>}
@@ -179,6 +184,10 @@ export const menus = {
     title: 'Open random connection',
     icon: 'smart-dice',
     order: 40,
+    /**
+     * @param {import('smart-types').ConnectionsMenuContext} _menu_ctx
+     * @param {Event} [event]
+     */
     params(_menu_ctx, event) {
       return { event };
     },

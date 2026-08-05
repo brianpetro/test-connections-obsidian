@@ -32,7 +32,7 @@ export function connections_list_unpin_all(params = {}) {
     this.env?.events?.emit?.('connections:unpin_failed', {
       level: 'error',
       message: 'Unpin failed - check console',
-      details: err?.message || '',
+      details: (/** @type {Error|undefined} */ (err))?.message || '',
       event_source: 'connections_list.unpin_all',
     });
     console.error(err);

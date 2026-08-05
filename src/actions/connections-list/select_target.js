@@ -29,7 +29,9 @@ export const menus = {
           .setIcon('crosshair')
         ;
 
-        const submenu = item.setSubmenu();
+        const submenu = /** @type {import('smart-types').ConnectionsMenu} */ (
+          /** @type {unknown} */ (item.setSubmenu())
+        );
         this.env.build_menu?.(
           'connections:target_menu',
           submenu,

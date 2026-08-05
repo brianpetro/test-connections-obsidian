@@ -5,7 +5,7 @@ import { migrate_connections_lists_settings } from '../../migrations/migrate_con
 import { insert_settings_after } from '../utils/insert_settings_after.js';
 
 /** @typedef {import('smart-types').ConnectionItem} ConnectionItem */
-/** @typedef {import('smart-types').ConnectionsEnv} ConnectionsEnv */
+/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('smart-types').ConnectionsEnvExtensions>} SmartEnv */
 /** @typedef {import('smart-types').ConnectionsListsCollection} ConnectionsListsCollection */
 
 /**
@@ -29,10 +29,10 @@ export const connections_filter_config = {
 
 export class ConnectionsLists extends Collection {
   static version = 1;
-  process_load_queue() {} // no persisting data (for now)
+  async process_load_queue() {} // no persisting data (for now)
 
   /**
-   * @param {ConnectionsEnv} env
+   * @param {SmartEnv} env
    * @param {object} [opts]
    */
   constructor(env, opts = {}) {
@@ -63,6 +63,7 @@ export class ConnectionsLists extends Collection {
     };
   }
 
+  /** @this {ConnectionsListsCollection} */
   get settings_config() {
     return settings_config(this);
   }
@@ -160,6 +161,7 @@ export class ConnectionsLists extends Collection {
  * @returns {import('smart-types').SettingsConfig}
  */
 export function settings_config(scope) {
+  /** @type {import('smart-types').SettingsConfig} */
   let config = {
     "results_collection_key": {
       name: "Connection results type",

@@ -31,7 +31,7 @@ export function connections_list_unhide_all(params = {}) {
     this.env?.events?.emit?.('connections:unhide_failed', {
       level: 'error',
       message: 'Unhide failed - check console',
-      details: err?.message || '',
+      details: (/** @type {Error|undefined} */ (err))?.message || '',
       event_source: 'connections_list.unhide_all',
     });
     console.error(err);

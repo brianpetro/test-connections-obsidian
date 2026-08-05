@@ -134,7 +134,7 @@ export async function post_process(view, container, opts = {}) {
 
     const menu_button = container.querySelector('[data-action="open-menu"]');
     menu_button?.addEventListener('click', (event) => {
-      const menu = /** @type {ConnectionsMenu} */ (new Menu(view.plugin.app));
+      const menu = /** @type {ConnectionsMenu} */ (new Menu());
       const state = container._connections_menu_state;
 
       env.build_menu?.(
@@ -167,7 +167,7 @@ export async function post_process(view, container, opts = {}) {
           ),
         },
       );
-      menu.showAtMouseEvent(event);
+      menu.showAtMouseEvent(/** @type {MouseEvent} */ (event));
     });
 
     /** @param {Event} event */
@@ -176,7 +176,7 @@ export async function post_process(view, container, opts = {}) {
       event.stopPropagation();
 
       const state = container._connections_menu_state;
-      const menu = /** @type {ConnectionsMenu} */ (new Menu(view.plugin.app));
+      const menu = /** @type {ConnectionsMenu} */ (new Menu());
       env.build_menu?.('connections:target_menu', menu, state.view);
       if (!(menu.items?.length > 0)) return;
 
@@ -206,7 +206,7 @@ export async function post_process(view, container, opts = {}) {
     };
     /** @param {DragEvent} event */
     const on_target_dragleave = (event) => {
-      if (event.relatedTarget && container.contains(event.relatedTarget)) return;
+      if (event.relatedTarget && container.contains(/** @type {Node} */ (event.relatedTarget))) return;
       set_target_drag_over(false);
     };
     /** @param {DragEvent} event */
@@ -273,7 +273,7 @@ export async function post_process(view, container, opts = {}) {
   sc_top_bar_context.title = 'Change connections target';
 
   // Keep pause button in sync with view.paused
-  const pause_btn = container.querySelector('[data-action="toggle-pause"]');
+  const pause_btn = /** @type {HTMLElement|null} */ (container.querySelector('[data-action="toggle-pause"]'));
   if (pause_btn) {
     /** @param {boolean} paused */
     const update_pause_button = (paused) => {

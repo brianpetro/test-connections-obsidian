@@ -6,6 +6,7 @@ import { enable_plugin } from "obsidian-smart-env/src/utils/smart_plugins.js";
 /** @typedef {import('smart-types').ConnectionsPlugin} ConnectionsPlugin */
 /** @typedef {import('smart-types').ConnectionsReleaseResponse} ConnectionsReleaseResponse */
 /** @typedef {import('smart-types').ConnectionsRequestResponse<unknown>} ConnectionsRequestResponse */
+/** @typedef {import('smart-types').ConnectionsVault} ConnectionsVault */
 
 /**
  * @this {ConnectionsComponentContext}
@@ -75,7 +76,8 @@ function post_process(plugin, container) {
 async function install_smart_lookup(plugin) {
   const app = plugin.app;
   const env = plugin.env;
-  const adapter = app.vault.adapter;
+  const vault = /** @type {ConnectionsVault} */ (app.vault);
+  const adapter = vault.adapter;
 
   /**
    * @param {string} url
@@ -126,7 +128,7 @@ async function install_smart_lookup(plugin) {
   const manifest_url = manifest_asset.browser_download_url;
   const styles_url = styles_asset.browser_download_url;
   // download and write each to ${app.vault.configDir}/plugins/smart-lookup/..
-  const plugin_folder = `${app.vault.configDir}/plugins/smart-lookup`;
+  const plugin_folder = `${vault.configDir}/plugins/smart-lookup`;
   if (!await adapter.exists(plugin_folder)) {
     await adapter.mkdir(plugin_folder);
   }

@@ -1,6 +1,9 @@
+/** @typedef {{parent?: WorkspaceLocationNode|null}} WorkspaceLocationNode */
+/** @typedef {{leftSplit?: WorkspaceLocationNode|null, rightSplit?: WorkspaceLocationNode|null}} WorkspaceLocation */
+
 /**
- * @param {import('smart-types').ConnectionsWorkspaceParent|import('smart-types').ConnectionsWorkspaceLeaf|null} node
- * @param {import('smart-types').ConnectionsWorkspaceParent} ancestor
+ * @param {WorkspaceLocationNode|null} node
+ * @param {WorkspaceLocationNode|null|undefined} ancestor
  * @returns {boolean}
  */
 export const is_descendant_of = (node, ancestor) => {
@@ -15,7 +18,7 @@ export const is_descendant_of = (node, ancestor) => {
 };
 
 /**
- * @param {{workspace: import('smart-types').ConnectionsWorkspace, leaf: import('smart-types').ConnectionsWorkspaceLeaf|null}} params
+ * @param {{workspace: WorkspaceLocation, leaf: WorkspaceLocationNode|null}} params
  * @returns {'left'|'right'|'root'}
  */
 export const get_leaf_location = ({ workspace, leaf }) => {
@@ -33,7 +36,7 @@ export const get_leaf_location = ({ workspace, leaf }) => {
 };
 
 /**
- * @param {{workspace: import('smart-types').ConnectionsWorkspace, leaf: import('smart-types').ConnectionsWorkspaceLeaf|null, desired_location: string}} params
+ * @param {{workspace: WorkspaceLocation, leaf: WorkspaceLocationNode|null, desired_location: string}} params
  * @returns {boolean}
  */
 export const should_relocate_leaf = ({ workspace, leaf, desired_location }) => {

@@ -1,6 +1,9 @@
+/** @typedef {{key?: string, lines?: number[]}} ConnectionLinkItem */
+/** @typedef {{item?: ConnectionLinkItem|null}} ConnectionLinkResult */
+
 /**
  * Formats connection results as a bullet list of links.
- * @param {import('smart-types').ConnectionResult[]} results
+ * @param {ConnectionLinkResult[]} results
  * @returns {string}
  */
 
@@ -14,7 +17,7 @@ export function format_connections_as_links(results = []) {
 
 /**
  * Formats a single connection item into a bullet link with optional line info.
- * @param {import('smart-types').ConnectionItem} item
+ * @param {ConnectionLinkItem|null|undefined} item
  * @returns {string}
  */
 function format_connection_item(item) {
@@ -28,7 +31,7 @@ function format_connection_item(item) {
 
 /**
  * Returns a line label for block keys with line metadata.
- * @param {import('smart-types').ConnectionItem} item
+ * @param {ConnectionLinkItem|null|undefined} item
  * @returns {string}
  */
 function get_lines_label(item) {
@@ -39,7 +42,7 @@ function get_lines_label(item) {
 
 
 /**
- * @param {import('smart-types').ConnectionItem} item
+ * @param {ConnectionLinkItem|null|undefined} item
  * @returns {string}
  */
 function get_wikilink(item) {

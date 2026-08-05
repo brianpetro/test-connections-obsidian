@@ -40,7 +40,7 @@ export async function source_view_connections(params = {}) {
  */
 async function get_or_open_connections_view(workspace) {
   const existing_view = /** @type {import('smart-types').ConnectionsItemViewScope|null|undefined} */ (
-    ConnectionsItemView.get_view?.(workspace)
+    /** @type {unknown} */ (ConnectionsItemView.get_view?.(workspace))
   );
   if (existing_view) {
     await reveal_connections_leaf(workspace, existing_view.leaf);
@@ -53,16 +53,16 @@ async function get_or_open_connections_view(workspace) {
   if (existing_leaf) {
     await reveal_connections_leaf(workspace, existing_leaf);
     return /** @type {import('smart-types').ConnectionsItemViewScope|null} */ (
-      ConnectionsItemView.get_view?.(workspace) || existing_leaf.view || null
+      /** @type {unknown} */ (ConnectionsItemView.get_view?.(workspace) || existing_leaf.view || null)
     );
   }
 
   const opened = /** @type {import('smart-types').ConnectionsItemViewScope|null|undefined} */ (
-    await ConnectionsItemView.open?.(workspace, { active: true })
+    /** @type {unknown} */ (await ConnectionsItemView.open?.(workspace, { active: true }))
   );
 
   const opened_view = /** @type {import('smart-types').ConnectionsItemViewScope|null} */ (
-    ConnectionsItemView.get_view?.(workspace) || opened || null
+    /** @type {unknown} */ (ConnectionsItemView.get_view?.(workspace) || opened || null)
   );
   const opened_leaf = /** @type {import('smart-types').ConnectionsWorkspaceLeaf|null|undefined} */ (
     ConnectionsItemView.get_leaf?.(workspace) || opened_view?.leaf
@@ -126,7 +126,8 @@ export const menus = {
     icon: 'smart-connections',
     order: 20,
     disabled() {
-      return !this.scope?.key || !this.env?.connections_lists;
+      const scope = /** @type {{key?: string}} */ (/** @type {unknown} */ (this.scope));
+      return !scope.key || !this.env?.connections_lists;
     },
   },
 };

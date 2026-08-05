@@ -1,7 +1,7 @@
 /**
  * Apply a paused state to a target and notify any registered controls.
  * @param {{ paused: boolean, pause_controls?: { update?: (value: boolean) => void } }} target
- * @param {boolean} paused
+ * @param {unknown} paused
  * @returns {boolean}
  */
 export function apply_pause_state(target, paused) {

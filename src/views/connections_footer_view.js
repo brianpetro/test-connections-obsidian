@@ -10,7 +10,7 @@ import { set_connections_footer_dom_effect } from './connections_footer_deco.js'
 /** @typedef {import('smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
 /** @typedef {import('smart-types').ConnectionsDomElement} ConnectionsDomElement */
 /** @typedef {import('smart-types').ConnectionsEditorView} ConnectionsEditorView */
-/** @typedef {import('smart-types').ConnectionsEnv} ConnectionsEnv */
+/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('smart-types').ConnectionsEnvExtensions>} SmartEnv */
 /** @typedef {import('smart-types').ConnectionsEventDisposer} ConnectionsEventDisposer */
 /** @typedef {import('smart-types').ConnectionsEventPayload} ConnectionsEventPayload */
 /** @typedef {import('smart-types').ConnectionsPlugin} ConnectionsPlugin */
@@ -18,7 +18,7 @@ import { set_connections_footer_dom_effect } from './connections_footer_deco.js'
 
 /**
  * Resolve the Smart Sources entity for the active file.
- * @param {ConnectionsEnv} env
+ * @param {SmartEnv} env
  * @param {ConnectionsWorkspace} workspace
  * @returns {ConnectionItem|null}
  */
@@ -70,7 +70,7 @@ export class ConnectionsFooterView {
     this._detach_visibility_guard = null;
   }
 
-  /** @returns {ConnectionsEnv} */
+  /** @returns {SmartEnv} */
   get env() {
     return this.plugin.env;
   }

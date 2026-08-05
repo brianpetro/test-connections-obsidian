@@ -15,9 +15,10 @@ export class ConnectionsList extends CollectionItem {
     return { data: {} };
   }
 
-  /** @this {ConnectionsListScope} */
+  /** @returns {string} */
   get_key() {
-    return `${this.data.collection_key}:${this.data.item_key}`;
+    const scope = /** @type {ConnectionsListScope} */ (/** @type {unknown} */ (this));
+    return `${scope.data.collection_key}:${scope.data.item_key}`;
   }
 
   /**
@@ -85,12 +86,12 @@ export class ConnectionsList extends CollectionItem {
   }
 
   /**
-   * @this {ConnectionsListScope}
    * @param {ConnectionsQueryParams} [params]
    * @returns {ConnectionResult[]}
    */
   filter_and_score (params = {}) {
-    const collection = this.env[params.results_collection_key];
+    const scope = /** @type {ConnectionsListScope} */ (/** @type {unknown} */ (this));
+    const collection = scope.env[params.results_collection_key];
     const score_errors = [];
     const { results: raw_results } = Object.values(collection.items)
       .reduce((acc, target) => {

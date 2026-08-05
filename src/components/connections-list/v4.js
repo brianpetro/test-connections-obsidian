@@ -15,12 +15,12 @@ export async function build_html(connections_list, opts = {}) {
  * @this {import('smart-types').ConnectionsComponentContext}
  * @param {import('smart-types').ConnectionsListScope} connections_list
  * @param {import('smart-types').ConnectionsComponentOptions} [opts={}] - Optional parameters, including `opts.results`.
- * @returns {Promise<Element>} A promise that resolves to the .sc-list fragment with appended children.
+ * @returns {Promise<HTMLElement>} A promise that resolves to the .sc-list fragment with appended children.
  */
 export async function render(connections_list, opts = {}) {
   const html = /** @type {string} */ (await build_html.call(this, connections_list, opts));
   const frag = this.create_doc_fragment(html);
-  const container = frag.firstElementChild;
+  const container = /** @type {HTMLElement} */ (frag.firstElementChild);
   post_process.call(this, connections_list, container, opts);
   return container;
 }
@@ -34,12 +34,12 @@ export async function render(connections_list, opts = {}) {
  */
 export async function post_process(connections_list, container, opts = {}) {
   const env = connections_list.env;
-  const graph_container = container.querySelector('.connections-graph-container');
-  const list_container = container.querySelector('.connections-list.sc-list');
+  const graph_container = /** @type {HTMLElement} */ (container.querySelector('.connections-graph-container'));
+  const list_container = /** @type {HTMLElement} */ (container.querySelector('.connections-list.sc-list'));
   container.dataset.key = connections_list.item.key;
   const results = await connections_list.get_results(opts);
   try {
-    const graph = await env.smart_components.render_component('connections_graph_v1', connections_list, { ...opts, results });
+    const graph = /** @type {HTMLElement} */ (await env.smart_components.render_component('connections_graph_v1', connections_list, { ...opts, results }));
     this.empty(graph_container);
     graph_container.appendChild(graph);
     register_graph_events(graph, list_container);
@@ -73,13 +73,14 @@ const GRAPH_FOCUS_TIMEOUT_MS = 2400;
 function register_graph_events(graph, list_container) {
   if (!graph || !list_container) return;
   graph.addEventListener('connections:result', (event) => {
-    focus_result_from_graph(list_container, event?.detail || {});
+    const detail = /** @type {CustomEvent<import('smart-types').ConnectionsGraphResultEventDetail>} */ (event).detail;
+    focus_result_from_graph(list_container, detail || {});
   });
 }
 
 /**
  * @param {HTMLElement} list_container
- * @param {import('smart-types').ConnectionsGraphResultEventDetail} [detail]
+ * @param {Partial<import('smart-types').ConnectionsGraphResultEventDetail>} [detail]
  */
 function focus_result_from_graph(list_container, detail = {}) {
   const target = find_result_element(list_container, detail);
@@ -92,14 +93,17 @@ function focus_result_from_graph(list_container, detail = {}) {
 
 /**
  * @param {HTMLElement} list_container
- * @param {import('smart-types').ConnectionsGraphResultEventDetail} [detail]
+ * @param {Partial<import('smart-types').ConnectionsGraphResultEventDetail>} [detail]
  * @returns {HTMLElement|null}
  */
 function find_result_element(list_container, detail = {}) {
   if (!list_container) return null;
   const { collection_key, item_key } = detail;
   if (!collection_key || !item_key) return null;
-  return Array.from(list_container.querySelectorAll('.sc-result')).find((node) => {
+  const result_elements = /** @type {HTMLElement[]} */ (
+    Array.from(list_container.querySelectorAll('.sc-result'))
+  );
+  return result_elements.find((node) => {
     return node.dataset.collection === collection_key && node.dataset.key === item_key;
   }) || null;
 }

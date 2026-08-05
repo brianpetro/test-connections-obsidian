@@ -6,11 +6,13 @@ import {
 } from '../../utils/connections_list_item_state.js';
 
 /**
- * @param {import('smart-types').ConnectionsMenuContext & {scope: import('smart-types').ConnectionsListScope}} menu_ctx
+ * @param {import('smart-types').ConnectionsMenuContext} menu_ctx
  * @returns {boolean}
  */
 function get_menu_pinned_state(menu_ctx) {
-  const source_item = menu_ctx.scope?.item;
+  const source_item = /** @type {import('smart-types').ConnectionsListScope} */ (
+    /** @type {unknown} */ (menu_ctx.scope)
+  ).item;
   const target_item = menu_ctx.params.target_item;
   const prefixed_key = menu_ctx.params.prefixed_key
     || build_prefixed_connection_key(target_item?.collection_key, target_item?.key)

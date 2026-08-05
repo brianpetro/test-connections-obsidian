@@ -2,7 +2,7 @@
  * Toggle Connections auto-refresh for this item view.
  * When resuming, refresh the view target to the current active note.
  *
- * @this {import('../../views/connections_item_view.js').ConnectionsItemView}
+ * @this {import('smart-types').ConnectionsItemViewScope}
  * @param {object} [params={}]
  * @param {string} [params.event_source]
  * @returns {Promise<boolean>}

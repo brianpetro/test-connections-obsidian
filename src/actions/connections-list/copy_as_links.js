@@ -56,7 +56,10 @@ export const menus = {
     icon: 'copy',
     order: 20,
     disabled() {
-      return !get_links_payload(this.scope, this.params);
+      return !get_links_payload(
+        /** @type {import('smart-types').ConnectionsListScope} */ (/** @type {unknown} */ (this.scope)),
+        this.params,
+      );
     },
   },
 };

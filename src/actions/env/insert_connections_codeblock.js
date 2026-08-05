@@ -4,8 +4,7 @@ import { build_connections_codeblock } from '../../utils/build_connections_codeb
  * Insert a Smart Connections codeblock at the current editor selection.
  *
  * @this {import('obsidian-smart-env').SmartEnv|object}
- * @param {object} [params={}]
- * @param {CodeMirror.Editor} params.editor
+ * @param {{editor?: import('obsidian').Editor}} [params={}]
  * @returns {boolean}
  */
 export function env_insert_connections_codeblock(params = {}) {
@@ -25,6 +24,7 @@ export const commands = {
       return plugin.manifest.id === 'smart-connections';
     },
 
+    /** @param {{editor?: import('obsidian').Editor}} context */
     params({ editor }) {
       return { editor };
     },

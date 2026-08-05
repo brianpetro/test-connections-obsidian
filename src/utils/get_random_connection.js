@@ -1,8 +1,10 @@
 const DEFAULT_RESULTS_LIMIT = 20;
 
+/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('smart-types').ConnectionsEnvExtensions>} SmartEnv */
+
 /**
  * Returns a random connection for a given file path.
- * @param {import('smart-types').ConnectionsEnv} env - Smart environment instance.
+ * @param {SmartEnv} env - Smart environment instance.
  * @param {string} file_path - Path of the current file.
  * @param {Object} [opts]
  * @param {() => number} [opts.rng=Math.random]

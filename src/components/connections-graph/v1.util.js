@@ -65,7 +65,9 @@ export function score_to_radius(t, min_r, max_r) {
  * @returns {boolean}
  */
 export function is_vec(v) {
-  return (Array.isArray(v) || ArrayBuffer.isView(v)) && v.length > 0;
+  return (Array.isArray(v) || ArrayBuffer.isView(v))
+    && /** @type {ArrayLike<number>} */ (v).length > 0
+  ;
 }
 /**
  * @param {NumericVector} [a]

@@ -139,13 +139,14 @@ export async function post_process(result_scope, container, params = {}) {
 
   const observer = new MutationObserver((mutations) => {
     const has_expansion_change = mutations.some((mutation) => {
-      const target = mutation.target;
+      const target = /** @type {HTMLElement} */ (mutation.target);
       return mutation.attributeName === 'class' &&
         mutation.oldValue?.includes('sc-collapsed') !== target.classList.contains('sc-collapsed');
     });
 
-    if (has_expansion_change && !mutations[0].target.classList.contains('sc-collapsed')) {
-      render_result(mutations[0].target);
+    const target = /** @type {HTMLElement} */ (mutations[0].target);
+    if (has_expansion_change && !target.classList.contains('sc-collapsed')) {
+      render_result(target);
     }
   });
   observer.observe(container, {
@@ -163,9 +164,12 @@ export async function post_process(result_scope, container, params = {}) {
     const connections_list = /** @type {import('smart-types').ConnectionsListScope} */ (result_scope.connections_list);
     const raw_results = Array.isArray(connections_list?.results) ? connections_list.results : [];
     const visible_results = filter_hidden_results(raw_results, source_item.data.connections);
-    const list_container = container.closest('.connections-list') || container;
-    const target_name = /** @type {string} */ (get_item_display_name(item, component_settings)) || item.key;
-    const menu = /** @type {import('smart-types').ConnectionsMenu} */ (new Menu(app));
+    const list_container = /** @type {HTMLElement} */ (container.closest('.connections-list') || container);
+    const target_name = /** @type {string} */ (get_item_display_name(
+      /** @type {import('smart-collections').CollectionItem} */ (/** @type {unknown} */ (item)),
+      component_settings,
+    )) || item.key;
+    const menu = /** @type {import('smart-types').ConnectionsMenu} */ (new Menu());
 
     env.build_menu?.('connections:list_item_menu', menu, connections_list, {
       container,
@@ -183,7 +187,7 @@ export async function post_process(result_scope, container, params = {}) {
       render_connections: params.render_connections,
     });
 
-    menu.showAtMouseEvent(event);
+    menu.showAtMouseEvent(/** @type {MouseEvent} */ (event));
   });
 
   if(!container.classList.contains('sc-collapsed')) {
@@ -200,7 +204,10 @@ export async function post_process(result_scope, container, params = {}) {
  * @returns {string}
  */
 function get_result_header_html(score, item, component_settings = {}) {
-  const raw_parts = /** @type {string} */ (get_item_display_name(item, component_settings)).split(DISPLAY_SEPARATOR).filter(Boolean);
+  const raw_parts = /** @type {string} */ (get_item_display_name(
+    /** @type {import('smart-collections').CollectionItem} */ (/** @type {unknown} */ (item)),
+    component_settings,
+  )).split(DISPLAY_SEPARATOR).filter(Boolean);
   const parts = format_item_parts(raw_parts, item?.lines);
   const name = parts.pop();
   const formatted_score = typeof score === 'number' ? score.toFixed(2) : score;

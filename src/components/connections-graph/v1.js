@@ -31,7 +31,7 @@ import {
 /** @typedef {import('smart-types').ConnectionsCollection} ConnectionsCollection */
 /** @typedef {import('smart-types').ConnectionsComponentContext} ConnectionsComponentContext */
 /** @typedef {import('smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
-/** @typedef {import('smart-types').ConnectionsEnv} ConnectionsEnv */
+/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('smart-types').ConnectionsEnvExtensions>} SmartEnv */
 /** @typedef {import('smart-types').ConnectionsListScope} ConnectionsListScope */
 /** @typedef {import('smart-types').ConnectionsState} ConnectionsState */
 
@@ -236,7 +236,7 @@ async function load_d3() {
 
   if (!d3_import_promise) {
     d3_import_promise = (/** @type {Promise<ConnectionsD3>} */ (
-      import('https://cdn.jsdelivr.net/npm/d3@7/+esm')
+      /** @type {unknown} */ (import('https://cdn.jsdelivr.net/npm/d3@7/+esm'))
     ))
       .then((d3) => {
         validate_d3_instance(d3);
@@ -349,7 +349,10 @@ async function post_process(connections_list, container, params = {}) {
 
     /** @param {ConnectionItem} item */
     const build_label_text = (item) => {
-      const display = /** @type {string} */ (get_item_display_name(item, {show_full_path: false})) || item?.key || '';
+      const display = /** @type {string} */ (get_item_display_name(
+        /** @type {import('smart-collections').CollectionItem} */ (/** @type {unknown} */ (item)),
+        {show_full_path: false},
+      )) || item?.key || '';
       return truncate_middle(display, 70);
     };
 
@@ -360,8 +363,8 @@ async function post_process(connections_list, container, params = {}) {
       const height = width; // square aspect
       view_width = width;
       svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
-      svg.setAttribute('width', width);
-      svg.setAttribute('height', height);
+      svg.setAttribute('width', String(width));
+      svg.setAttribute('height', String(height));
 
       const center_x = Math.round(width * 0.5);
       const center_y = Math.round(height * 0.5);
@@ -377,6 +380,7 @@ async function post_process(connections_list, container, params = {}) {
       const { norm: sims_center_norm } = normalize_scores(sims_to_center_raw);
 
       // --- build nodes: center (fixed) + others ---
+      /** @type {ConnectionsGraphNode} */
       const center_node = {
         id: '__center__',
         item: to_item,
@@ -403,7 +407,7 @@ async function post_process(connections_list, container, params = {}) {
       while (cluster_anchor_radii.length < 4) cluster_anchor_radii.push(cluster_anchor_radii[cluster_anchor_radii.length - 1] || Math.round((min_r + outer_r) / 2));
       const anchors = quadrant_anchors(center_x, center_y, cluster_anchor_radii);
 
-      const nodes_non_center = result_entries.map((res, i) => {
+      const nodes_non_center = /** @type {ConnectionsGraphNode[]} */ (result_entries.map((res, i) => {
         const r_item = res?.item;
         if (!r_item) return null;
 
@@ -447,8 +451,9 @@ async function post_process(connections_list, container, params = {}) {
           isPinned,
           isHidden,
         };
-      }).filter(Boolean);
+      }).filter(Boolean));
 
+      /** @type {ConnectionsGraphNode[]} */
       const nodes = [center_node, ...nodes_non_center];
 
       // draw nodes
@@ -689,7 +694,7 @@ async function post_process(connections_list, container, params = {}) {
 }
 
 /**
- * @param {{node: ConnectionsGraphNode, container: HTMLElement, env: ConnectionsEnv, center_item: ConnectionItem}} options
+ * @param {{node: ConnectionsGraphNode, container: HTMLElement, env: SmartEnv, center_item: ConnectionItem}} options
  */
 function handle_node_click({ node, container, env, center_item }) {
   if (!node?.item) return;

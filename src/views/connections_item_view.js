@@ -17,6 +17,8 @@ export class ConnectionsItemView extends SmartItemView {
   static get display_text() { return 'Connections'; }
   static get icon_name() { return 'smart-connections'; }
   static get register_open_command() { return false; }
+  /** @type {'left'|'right'|'root'|'tab'} */
+  static default_open_location = 'right';
 
   /**
    * @param {ConnectionsWorkspaceLeaf} leaf
