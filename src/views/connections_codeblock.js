@@ -1,14 +1,24 @@
+/** @typedef {import('smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
+/** @typedef {import('smart-types').ConnectionsDomElement} ConnectionsDomElement */
+/** @typedef {import('smart-types').ConnectionsMarkdownCodeBlockContext} ConnectionsMarkdownCodeBlockContext */
+/** @typedef {import('smart-types').ConnectionsPlugin} ConnectionsPlugin */
+
 /**
  * Register markdown processor for smart-connections codeblocks.
- * @param {object} plugin
+ * @param {ConnectionsPlugin} plugin
  */
 export async function register_smart_connections_codeblock(plugin) {
   plugin.registerMarkdownCodeBlockProcessor(
     'smart-connections',
+    /**
+     * @param {string} cb_content
+     * @param {ConnectionsDomElement} container
+     * @param {ConnectionsMarkdownCodeBlockContext} mpp_ctx
+     */
     async (cb_content, container, mpp_ctx) => {
       container.empty();
       container.createEl('span', { text: 'Loading…' });
-      const cb_config = JSON.parse(cb_content.trim() || '{}');
+      const cb_config = /** @type {ConnectionsComponentOptions} */ (JSON.parse(cb_content.trim() || '{}'));
       const env = plugin.env;
       const entity =
         env.smart_sources.get(mpp_ctx.sourcePath) ??
@@ -45,6 +55,7 @@ export async function register_smart_connections_codeblock(plugin) {
       };
       if(!container._has_listeners) {
         container._has_listeners = true;
+        /** @type {Array<() => void>} */
         const disposers = [];
         disposers.push(env.events.on('settings:changed', (event) => {
           // console.log('connections codeblock view detected settings change', event);

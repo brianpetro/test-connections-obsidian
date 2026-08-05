@@ -1,10 +1,27 @@
 import { SmartItemView } from 'obsidian-smart-env/views/smart_item_view.js';
+
+/** @typedef {import('smart-types').ConnectionItem} ConnectionItem */
+/** @typedef {import('smart-types').ConnectionsActionParams} ConnectionsActionParams */
+/** @typedef {import('smart-types').ConnectionsCollection} ConnectionsCollection */
+/** @typedef {import('smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
+/** @typedef {import('smart-types').ConnectionsDomElement} ConnectionsDomElement */
+/** @typedef {import('smart-types').ConnectionsEventDisposer} ConnectionsEventDisposer */
+/** @typedef {import('smart-types').ConnectionsEventPayload} ConnectionsEventPayload */
+/** @typedef {import('smart-types').ConnectionsItemViewScope} ConnectionsItemViewScope */
+/** @typedef {import('smart-types').ConnectionsPauseControls} ConnectionsPauseControls */
+/** @typedef {import('smart-types').ConnectionsPlugin} ConnectionsPlugin */
+/** @typedef {import('smart-types').ConnectionsWorkspaceLeaf} ConnectionsWorkspaceLeaf */
+
 export class ConnectionsItemView extends SmartItemView {
   static get view_type() { return 'smart-connections-view'; }
   static get display_text() { return 'Connections'; }
   static get icon_name() { return 'smart-connections'; }
   static get register_open_command() { return false; }
 
+  /**
+   * @param {ConnectionsWorkspaceLeaf} leaf
+   * @param {ConnectionsPlugin} plugin
+   */
   constructor(leaf, plugin) {
     super(leaf, plugin);
     this.paused = false;
@@ -14,6 +31,7 @@ export class ConnectionsItemView extends SmartItemView {
 
   /**
    * Set whether this view follows the active source.
+   * @this {ConnectionsItemViewScope}
    * @param {boolean} paused
    * @returns {boolean}
    */
@@ -25,8 +43,8 @@ export class ConnectionsItemView extends SmartItemView {
 
   /**
    * Toggle active-source following and refresh the active target when resumed.
-   * @param {object} [params={}]
-   * @param {string} [params.event_source]
+   * @this {ConnectionsItemViewScope}
+   * @param {ConnectionsActionParams} [params={}] 
    * @returns {Promise<boolean>} The new paused state.
    */
   async toggle_paused(params = {}) {
@@ -49,8 +67,9 @@ export class ConnectionsItemView extends SmartItemView {
 
   /**
    * Pause active-source following and render an explicit target.
-   * @param {object} target_item
-   * @param {object} [params={}]
+   * @this {ConnectionsItemViewScope}
+   * @param {ConnectionItem} target_item
+   * @param {ConnectionsActionParams} [params={}] 
    * @returns {Promise<boolean>}
    */
   async select_target(target_item, params = {}) {
@@ -65,8 +84,9 @@ export class ConnectionsItemView extends SmartItemView {
 
   /**
    * Render one Connections target through the view lifecycle.
-   * @param {object} [target_item=this.current]
-   * @param {object} [params={}]
+   * @this {ConnectionsItemViewScope}
+   * @param {ConnectionItem|null|undefined} [target_item=this.current]
+   * @param {ConnectionsActionParams} [params={}] 
    * @returns {Promise<boolean>}
    */
   async render_target(target_item = this.current, params = {}) {
@@ -79,9 +99,14 @@ export class ConnectionsItemView extends SmartItemView {
     return true;
   }
 
-  async render_view(params = {}, container = this.container) {
+  /**
+   * @this {ConnectionsItemViewScope}
+   * @param {ConnectionsComponentOptions} [params]
+   * @param {ConnectionsDomElement} [container]
+   */
+  async render_view(params = {}, container = /** @type {ConnectionsDomElement} */ (this.container)) {
     if(!params.connections_item) {
-      const active_path = this.plugin.app.workspace.getActiveFile()?.path;
+      const active_path = /** @type {string} */ (this.plugin.app.workspace.getActiveFile()?.path);
       params.connections_item = this.env.smart_sources.get(active_path);
     }
     this.current = params.connections_item;
@@ -95,18 +120,22 @@ export class ConnectionsItemView extends SmartItemView {
     this.env.events.emit('connections:opened')
   }
 
+  /** @this {ConnectionsItemViewScope} */
   async open_settings(){
     await this.app.setting.open();
     await this.app.setting.openTabById(this.plugin.manifest.id);
   }
 
+  /** @this {ConnectionsItemViewScope} */
   register_env_listeners() {
     // Added debounce
     let handle_current_source_debounce;
     register_env_event_listener(this, 'sources:opened', (event = {}) => {
       if (this.paused) return;
       if (!is_visible(this.container)) return;
-      const connections_item = this.env[event.collection_key || 'smart_sources']?.get(event.item_key || event.key);
+      const connections_item = /** @type {ConnectionItem} */ (
+        this.env[event.collection_key || 'smart_sources']?.get(event.item_key || event.key)
+      );
       if (connections_item.is_media && connections_item.should_embed === false) return;
       if (connections_item.key === this.current?.key) return;
       if (handle_current_source_debounce) window.clearTimeout(handle_current_source_debounce);
@@ -123,7 +152,7 @@ export class ConnectionsItemView extends SmartItemView {
     register_env_event_listener(this, 'connections:show', (event) => {
       // console.log('connections:show event received', {event});
       if(event.collection_key && event.item_key){
-        const collection = this.env[event.collection_key];
+        const collection = /** @type {ConnectionsCollection} */ (this.env[event.collection_key]);
         const item = collection.get(event.item_key);
         // console.log({collection, item});
         if(item){
@@ -146,7 +175,8 @@ export class ConnectionsItemView extends SmartItemView {
 
   /**
    * Register UI controls for reflecting pause state.
-   * @param {{ update: (paused: boolean) => void }} controls
+   * @this {ConnectionsItemViewScope}
+   * @param {ConnectionsPauseControls} controls
    */
   register_pause_controls(controls) {
     this.pause_controls = controls;
@@ -154,6 +184,10 @@ export class ConnectionsItemView extends SmartItemView {
   }
 }
 
+/**
+ * @param {HTMLElement|null|undefined} container
+ * @returns {boolean}
+ */
 function is_visible(container) {
   if(!container) {
     return false;
@@ -169,15 +203,26 @@ function is_visible(container) {
   return true;
 }
 
+/** @type {WeakMap<ConnectionsItemViewScope, Map<string, ConnectionsEventDisposer>>} */
 const view_event_registry = new WeakMap();
 
+/**
+ * @param {ConnectionsItemViewScope} view
+ * @returns {Map<string, ConnectionsEventDisposer>}
+ */
 const get_registry = (view) => {
   if (!view_event_registry.has(view)) {
     view_event_registry.set(view, new Map());
   }
-  return view_event_registry.get(view);
+  return /** @type {Map<string, ConnectionsEventDisposer>} */ (view_event_registry.get(view));
 };
 
+/**
+ * @param {ConnectionsItemViewScope} view
+ * @param {string} event_key
+ * @param {(event: ConnectionsEventPayload) => void} callback
+ * @returns {ConnectionsEventDisposer}
+ */
 export const register_env_event_listener = (view, event_key, callback) => {
   if (!view || typeof view.env?.events?.on !== 'function') {
     console.warn('View or event system not available for registering event listener');

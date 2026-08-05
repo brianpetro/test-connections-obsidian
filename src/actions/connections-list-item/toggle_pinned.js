@@ -5,6 +5,10 @@ import {
   remove_pinned_state,
 } from '../../utils/connections_list_item_state.js';
 
+/**
+ * @param {import('smart-types').ConnectionsMenuContext & {scope: import('smart-types').ConnectionsListScope}} menu_ctx
+ * @returns {boolean}
+ */
 function get_menu_pinned_state(menu_ctx) {
   const source_item = menu_ctx.scope?.item;
   const target_item = menu_ctx.params.target_item;
@@ -17,11 +21,8 @@ function get_menu_pinned_state(menu_ctx) {
 /**
  * Toggle a Connections result pinned state for the current source item.
  *
- * @this {import('../../items/connections_list.js').ConnectionsList}
- * @param {object} [params={}]
- * @param {object} [params.target_item]
- * @param {string} [params.prefixed_key]
- * @param {HTMLElement} [params.container]
+ * @this {import('smart-types').ConnectionsListScope}
+ * @param {import('smart-types').ConnectionsActionParams} [params={}]
  * @returns {boolean}
  */
 export function connections_list_item_toggle_pinned(params = {}) {
@@ -57,7 +58,7 @@ export function connections_list_item_toggle_pinned(params = {}) {
     env?.events?.emit?.('connections:pin_toggle_failed', {
       level: 'error',
       message: `${title_prefix} failed - check console`,
-      details: err?.message || '',
+      details: (/** @type {Error|undefined} */ (err))?.message || '',
       event_source: 'connections_list_item.contextmenu',
     });
     console.error(err);
@@ -65,6 +66,7 @@ export function connections_list_item_toggle_pinned(params = {}) {
   }
 }
 
+/** @type {import('smart-types').ConnectionsMenusConfig} */
 export const menus = {
   'connections:list_item_menu': {
     title() {

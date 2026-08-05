@@ -2,8 +2,8 @@ import { copy_to_clipboard } from 'obsidian-smart-env/src/utils/copy_to_clipboar
 import { format_connections_as_links } from '../../utils/format_connections_as_links.js';
 
 /**
- * @param {import('../../items/connections_list.js').ConnectionsList} connections_list
- * @param {object} [params={}]
+ * @param {import('smart-types').ConnectionsListScope} connections_list
+ * @param {import('smart-types').ConnectionsActionParams} [params={}]
  * @returns {string}
  */
 function get_links_payload(connections_list, params = {}) {
@@ -17,10 +17,8 @@ function get_links_payload(connections_list, params = {}) {
 /**
  * Copy visible Connections results as a list of links.
  *
- * @this {import('../../items/connections_list.js').ConnectionsList}
- * @param {object} [params={}]
- * @param {Array<object>} [params.visible_results]
- * @param {string} [params.event_source]
+ * @this {import('smart-types').ConnectionsListScope}
+ * @param {import('smart-types').ConnectionsActionParams} [params={}]
  * @returns {Promise<boolean>}
  */
 export async function connections_list_copy_as_links(params = {}) {
@@ -35,13 +33,13 @@ export async function connections_list_copy_as_links(params = {}) {
     return false;
   }
 
-  const copied = await copy_to_clipboard(links_payload, {
+  const copied = /** @type {boolean} */ (await copy_to_clipboard(links_payload, {
     env: this.env,
     event_source,
     success_event_key: 'connections:list_copied',
     error_event_key: 'connections:list_copy_failed',
     unavailable_event_key: 'connections:list_copy_unavailable',
-  });
+  }));
   if (!copied) return false;
 
   this.emit_event('connections:copied_list', {
@@ -51,6 +49,7 @@ export async function connections_list_copy_as_links(params = {}) {
   return true;
 }
 
+/** @type {import('smart-types').ConnectionsMenusConfig} */
 export const menus = {
   'connections:list_menu': {
     title: 'Copy as list of links',

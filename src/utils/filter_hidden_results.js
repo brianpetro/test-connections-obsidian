@@ -4,9 +4,9 @@ import { build_prefixed_connection_key } from './connections_list_item_state.js'
  * Filter out "hidden-only" connections (hidden && !pinned) so copy/context actions
  * reflect what is visible.
  *
- * @param {Array} results
- * @param {Record<string, Record<string, number>>} connections_state
- * @returns {Array}
+ * @param {import('smart-types').ConnectionResult[]} results
+ * @param {import('smart-types').ConnectionsState} connections_state
+ * @returns {import('smart-types').ConnectionResult[]}
  */
 export function filter_hidden_results(results = [], connections_state = {}) {
   if (!Array.isArray(results) || !results.length) return [];

@@ -1,7 +1,7 @@
 import Obsidian from "obsidian";
 const {
   requestUrl,
-} = Obsidian;
+} = /** @type {{requestUrl: (params: object) => Promise<import('smart-types').ConnectionsRequestResponse<unknown>>}} */ (Obsidian);
 
 import { SmartEnv } from 'obsidian-smart-env';
 import { smart_env_config } from "../smart_env.config.js";
@@ -23,6 +23,15 @@ import { ConnectionsItemView } from "./views/connections_item_view.js";
 import { connections_footer_plugin } from './views/connections_footer_deco.js';
 import { ConnectionsFooterView } from './views/connections_footer_view.js';
 import { register_smart_connections_codeblock } from "./views/connections_codeblock.js";
+
+/** @typedef {import('smart-types').ConnectionsEditorView} ConnectionsEditorView */
+/** @typedef {import('smart-types').ConnectionsEventDisposer} ConnectionsEventDisposer */
+/** @typedef {import('smart-types').ConnectionsFile} ConnectionsFile */
+/** @typedef {import('smart-types').ConnectionsMarkdownView} ConnectionsMarkdownView */
+/** @typedef {import('smart-types').ConnectionsReleaseResponse} ConnectionsReleaseResponse */
+/** @typedef {import('smart-types').ConnectionsRequestResponse<ConnectionsReleaseResponse>} ConnectionsReleaseRequestResponse */
+/** @typedef {import('smart-types').ConnectionsWorkspace} ConnectionsWorkspace */
+/** @typedef {import('smart-types').ConnectionsWorkspaceLeaf} ConnectionsWorkspaceLeaf */
 
 export default class SmartConnectionsPlugin extends SmartPlugin {
   SmartEnv = SmartEnv;
@@ -104,7 +113,9 @@ export default class SmartConnectionsPlugin extends SmartPlugin {
    * @returns {void}
    */
   apply_connections_view_location() {
-    const connections_view_location = this.env?.connections_lists?.settings?.connections_view_location ?? 'right';
+    const connections_view_location = /** @type {'left'|'right'|'root'|'tab'} */ (
+      this.env?.connections_lists?.settings?.connections_view_location ?? 'right'
+    );
     ConnectionsItemView.default_open_location = connections_view_location === 'left' ? 'left' : 'right';
     this.ensure_connections_view_leaf_location();
   }
@@ -113,7 +124,9 @@ export default class SmartConnectionsPlugin extends SmartPlugin {
     if (this._open_connections_view_base || typeof this.open_connections_view !== 'function') {
       return;
     }
-    this._open_connections_view_base = this.open_connections_view.bind(this); // added on register by SmartItemView
+    this._open_connections_view_base = /** @type {(...args: unknown[]) => unknown} */ (
+      this.open_connections_view.bind(this)
+    ); // added on register by SmartItemView
     this.open_connections_view = (...args) => {
       this.ensure_connections_view_leaf_location();
       return this._open_connections_view_base(...args);
@@ -121,12 +134,12 @@ export default class SmartConnectionsPlugin extends SmartPlugin {
   }
 
   ensure_connections_view_leaf_location() {
-    const workspace = this.app?.workspace;
+    const workspace = /** @type {ConnectionsWorkspace|undefined} */ (this.app?.workspace);
     if (!workspace) {
       return;
     }
-    const desired_location = ConnectionsItemView.default_open_location;
-    const connections_leaf = ConnectionsItemView.get_leaf(workspace);
+    const desired_location = /** @type {'left'|'right'|'root'|'tab'} */ (ConnectionsItemView.default_open_location);
+    const connections_leaf = /** @type {ConnectionsWorkspaceLeaf|null} */ (ConnectionsItemView.get_leaf(workspace));
     if (!should_relocate_leaf({ workspace, leaf: connections_leaf, desired_location })) {
       return;
     }
@@ -135,10 +148,10 @@ export default class SmartConnectionsPlugin extends SmartPlugin {
 
   register_connections_view_location_listener() {
     if (this.connections_view_location_listener || !this.env?.events) return;
-    this.connections_view_location_listener = this.env.events.on('settings:changed', (event) => {
+    this.connections_view_location_listener = /** @type {ConnectionsEventDisposer} */ (this.env.events.on('settings:changed', (event) => {
       if (!event?.path?.includes?.('connections_view_location')) return;
       this.apply_connections_view_location();
-    });
+    }));
   }
 
   async check_for_updates() {
@@ -156,14 +169,14 @@ export default class SmartConnectionsPlugin extends SmartPlugin {
 
   async check_for_update() {
     try {
-      const { json: response } = await requestUrl({
+      const { json: response } = /** @type {ConnectionsReleaseRequestResponse} */ (await requestUrl({
         url: "https://api.github.com/repos/brianpetro/obsidian-smart-connections/releases/latest",
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
         contentType: "application/json",
-      });
+      }));
       const latest_release = response.tag_name;
       if (latest_release !== this.manifest.version) {
         if (!this.update_available || this.latest_release_version !== latest_release) {
@@ -184,15 +197,15 @@ export default class SmartConnectionsPlugin extends SmartPlugin {
 
   /**
    * Attempts to retrieve the CodeMirror 6 EditorView for the active markdown file.
-   * @returns {EditorView|null}
+   * @returns {ConnectionsEditorView|null}
    */
   get_editor_view() {
-    const file = this.app.workspace.getActiveFile();
+    const file = /** @type {ConnectionsFile|null} */ (this.app.workspace.getActiveFile());
     if (!file) {
       // console.log("Smart Connections: No active file found");
       return null;
     }
-    const markdown_view = this.app.workspace.getActiveFileView();
+    const markdown_view = /** @type {ConnectionsMarkdownView|null} */ (this.app.workspace.getActiveFileView());
     if (!markdown_view) {
       // console.log("Smart Connections: No active file view found");
       return null;
@@ -216,7 +229,7 @@ export default class SmartConnectionsPlugin extends SmartPlugin {
    */
   async add_to_gitignore(ignore, message = null) {
     if (!(await this.app.vault.adapter.exists(".gitignore"))) return;
-    let gitignore_file = await this.app.vault.adapter.read(".gitignore");
+    let gitignore_file = /** @type {string} */ (await this.app.vault.adapter.read(".gitignore"));
     if (gitignore_file.indexOf(ignore) < 0) {
       await this.app.vault.adapter.append(".gitignore", `\n\n${message ? "# " + message + "\n" : ""}${ignore}`);
       // console.log("Added to .gitignore: " + ignore);

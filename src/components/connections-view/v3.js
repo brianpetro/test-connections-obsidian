@@ -6,10 +6,20 @@ import { resolve_dropped_connections_targets } from '../../utils/resolve_dropped
 
 const CONNECTIONS_TARGET_HISTORY_LIMIT = 10;
 
+/** @typedef {import('smart-types').ConnectionItem} ConnectionItem */
+/** @typedef {import('smart-types').ConnectionsComponentContext} ConnectionsComponentContext */
+/** @typedef {import('smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
+/** @typedef {import('smart-types').ConnectionsItemViewScope} ConnectionsItemViewScope */
+/** @typedef {import('smart-types').ConnectionsListScope} ConnectionsListScope */
+/** @typedef {import('smart-types').ConnectionsListSettings} ConnectionsListSettings */
+/** @typedef {import('smart-types').ConnectionsMenu} ConnectionsMenu */
+/** @typedef {import('smart-types').ConnectionsViewElement} ConnectionsViewElement */
+
 /**
  * Build the main HTML structure for 'Smart Connections Pro' view.
- * @param {object} view
- * @param {object} opts
+ * @this {ConnectionsComponentContext}
+ * @param {ConnectionsItemViewScope} view
+ * @param {ConnectionsComponentOptions} opts
  * @returns {Promise<string>}
  */
 export async function build_html(view, opts = {}) {
@@ -60,39 +70,43 @@ export async function build_html(view, opts = {}) {
 
 /**
  * Render the 'Smart Connections Pro' fragment, including optional ranking.
- * @param {object} view
- * @param {object} opts
+ * @this {ConnectionsComponentContext}
+ * @param {ConnectionsItemViewScope} view
+ * @param {ConnectionsComponentOptions} opts
  * @returns {Promise<DocumentFragment>}
  */
 export async function render(view, opts = {}) {
-  const html = await build_html.call(this, view, opts);
+  const html = /** @type {string} */ (await build_html.call(this, view, opts));
   const frag = this.create_doc_fragment(html);
   this.apply_style_sheet(styles);
-  const container = frag.querySelector('.sc-connections-view');
+  const container = /** @type {ConnectionsViewElement} */ (frag.querySelector('.sc-connections-view'));
   post_process.call(this, view, container, opts);
   return frag;
 }
 
 /**
  * Post-process DOM fragment for advanced overlays or shared behavior.
- * @param {object} view
- * @param {DocumentFragment|HTMLElement} container
- * @param {object} opts
- * @returns {Promise<DocumentFragment|HTMLElement>}
+ * @this {ConnectionsComponentContext}
+ * @param {ConnectionsItemViewScope} view
+ * @param {ConnectionsViewElement} container
+ * @param {ConnectionsComponentOptions} opts
+ * @returns {Promise<ConnectionsViewElement>}
  */
 export async function post_process(view, container, opts = {}) {
-  const list_container = container.querySelector('.connections-list-container');
-  const sc_top_bar_context = container.querySelector('.sc-top-bar .sc-context');
+  const list_container = /** @type {HTMLElement} */ (container.querySelector('.connections-list-container'));
+  const sc_top_bar_context = /** @type {HTMLElement} */ (container.querySelector('.sc-top-bar .sc-context'));
   const env = view.env;
   let connections_item = opts.connections_item;
   if (!connections_item) {
     list_container.textContent = 'No source item detected for current active view.';
     return container;
   }
-  let connections_list = connections_item.connections || env.connections_lists.new_item(connections_item);
-  const connections_settings = opts.connections_settings
-    ?? connections_list?.settings
-  ;
+  let connections_list = /** @type {ConnectionsListScope} */ (
+    connections_item.connections || env.connections_lists.new_item(connections_item)
+  );
+  const connections_settings = /** @type {ConnectionsListSettings} */ (
+    opts.connections_settings ?? connections_list?.settings
+  );
 
   record_connections_target_history(view, connections_item);
   container._connections_menu_state = {
@@ -120,7 +134,7 @@ export async function post_process(view, container, opts = {}) {
 
     const menu_button = container.querySelector('[data-action="open-menu"]');
     menu_button?.addEventListener('click', (event) => {
-      const menu = new Menu(view.plugin.app);
+      const menu = /** @type {ConnectionsMenu} */ (new Menu(view.plugin.app));
       const state = container._connections_menu_state;
 
       env.build_menu?.(
@@ -148,18 +162,21 @@ export async function post_process(view, container, opts = {}) {
           container: state.container,
           connections_settings: state.connections_settings,
           visible_results,
-          render_connections: state.view.render_view.bind(state.view),
+          render_connections: /** @type {import('smart-types').ConnectionsActionParams['render_connections']} */ (
+            state.view.render_view.bind(state.view)
+          ),
         },
       );
       menu.showAtMouseEvent(event);
     });
 
+    /** @param {Event} event */
     const open_target_menu = (event) => {
       event.preventDefault();
       event.stopPropagation();
 
       const state = container._connections_menu_state;
-      const menu = new Menu(view.plugin.app);
+      const menu = /** @type {ConnectionsMenu} */ (new Menu(view.plugin.app));
       env.build_menu?.('connections:target_menu', menu, state.view);
       if (!(menu.items?.length > 0)) return;
 
@@ -172,22 +189,27 @@ export async function post_process(view, container, opts = {}) {
       open_target_menu(event);
     });
 
+    /** @param {boolean} active */
     const set_target_drag_over = (active) => {
       container.classList.toggle('is-drag-over', Boolean(active));
     };
+    /** @param {DragEvent} event */
     const on_target_dragenter = (event) => {
       event.preventDefault();
       set_target_drag_over(true);
     };
+    /** @param {DragEvent} event */
     const on_target_dragover = (event) => {
       event.preventDefault();
       set_target_drag_over(true);
       if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
     };
+    /** @param {DragEvent} event */
     const on_target_dragleave = (event) => {
       if (event.relatedTarget && container.contains(event.relatedTarget)) return;
       set_target_drag_over(false);
     };
+    /** @param {DragEvent} event */
     const on_target_drop = async (event) => {
       event.preventDefault();
       event.stopPropagation();
@@ -226,12 +248,14 @@ export async function post_process(view, container, opts = {}) {
   const list = await env.smart_components.render_component(connections_list_component_key, connections_list, {
     ...opts,
     container,
-    render_connections: view.render_view.bind(view),
+    render_connections: /** @type {import('smart-types').ConnectionsActionParams['render_connections']} */ (
+      view.render_view.bind(view)
+    ),
   });
   this.empty(list_container);
   list_container.appendChild(list);
 
-  const entity = connections_list?.item || connections_item;
+  const entity = /** @type {ConnectionItem} */ (connections_list?.item || connections_item);
   const [top_line, bottom_line] = get_context_lines(entity);
   this.empty(sc_top_bar_context);
   const doc = sc_top_bar_context.ownerDocument;
@@ -251,6 +275,7 @@ export async function post_process(view, container, opts = {}) {
   // Keep pause button in sync with view.paused
   const pause_btn = container.querySelector('[data-action="toggle-pause"]');
   if (pause_btn) {
+    /** @param {boolean} paused */
     const update_pause_button = (paused) => {
       const next_title = paused ? 'Resume auto-refresh' : 'Pause auto-refresh';
       pause_btn.title = next_title;
@@ -268,6 +293,10 @@ export async function post_process(view, container, opts = {}) {
   return container;
 }
 
+/**
+ * @param {ConnectionsItemViewScope} view
+ * @param {ConnectionItem} target_item
+ */
 function record_connections_target_history(view, target_item) {
   const source_key = String(target_item?.key || '').split('#')[0];
   if (!view || !source_key) return;
@@ -282,6 +311,11 @@ function record_connections_target_history(view, target_item) {
   ].slice(0, CONNECTIONS_TARGET_HISTORY_LIMIT);
 }
 
+/**
+ * @param {ConnectionsMenu} menu
+ * @param {Event} event
+ * @param {HTMLElement} anchor_el
+ */
 function show_menu(menu, event, anchor_el) {
   if (typeof MouseEvent !== 'undefined' && event instanceof MouseEvent) {
     menu.showAtMouseEvent(event);

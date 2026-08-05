@@ -5,9 +5,8 @@ export const SMART_CONTEXT_URL = 'https://smartconnections.app/smart-context/';
  *
  * Smart Context replaces this placeholder with the working integration action.
  *
- * @this {import('../../items/connections_list.js').ConnectionsList}
- * @param {object} [params={}]
- * @param {string} [params.event_source]
+ * @this {import('smart-types').ConnectionsListScope}
+ * @param {import('smart-types').ConnectionsActionParams} [params={}]
  * @returns {boolean}
  */
 export function connections_list_send_to_context(params = {}) {
@@ -30,16 +29,17 @@ export function connections_list_send_to_context(params = {}) {
     return true;
   }
 
-  const open_url = activeWindow?.open
+  const open_url = /** @type {typeof window.open|undefined} */ (activeWindow?.open
     || window?.open
     || open
-  ;
+  );
   if (typeof open_url !== 'function') return false;
 
   open_url(SMART_CONTEXT_URL, '_external');
   return true;
 }
 
+/** @type {import('smart-types').ConnectionsMenusConfig} */
 export const menus = {
   'connections:list_menu': {
     title: 'Send to Smart Context',

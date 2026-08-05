@@ -8,11 +8,8 @@ const SC_RESULT_HIDDEN_CLASS = 'sc-result-hidden-by-feedback';
 /**
  * Hide a Connections result from the current source item's results.
  *
- * @this {import('../../items/connections_list.js').ConnectionsList}
- * @param {object} [params={}]
- * @param {object} [params.target_item]
- * @param {string} [params.prefixed_key]
- * @param {HTMLElement} [params.container]
+ * @this {import('smart-types').ConnectionsListScope}
+ * @param {import('smart-types').ConnectionsActionParams} [params={}]
  * @returns {boolean}
  */
 export function connections_list_item_hide(params = {}) {
@@ -46,7 +43,7 @@ export function connections_list_item_hide(params = {}) {
     env?.events?.emit?.('connections:hide_failed', {
       level: 'error',
       message: 'Hide failed - check console',
-      details: err?.message || '',
+      details: (/** @type {Error|undefined} */ (err))?.message || '',
       event_source: 'connections_list_item.contextmenu',
     });
     console.error(err);
@@ -54,6 +51,7 @@ export function connections_list_item_hide(params = {}) {
   }
 }
 
+/** @type {import('smart-types').ConnectionsMenusConfig} */
 export const menus = {
   'connections:list_item_menu': {
     title() {

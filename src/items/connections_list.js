@@ -4,16 +4,27 @@ import { sort_by_score_descending } from 'smart-utils/sort_by_score.js';
 import { merge_pinned_results } from '../utils/merge_pinned_results.js';
 import { migrate_hidden_connections } from '../../migrations/migrate_hidden_connections.js';
 
+/** @typedef {import('smart-types').ConnectionItem} ConnectionItem */
+/** @typedef {import('smart-types').ConnectionResult} ConnectionResult */
+/** @typedef {import('smart-types').ConnectionsListScope} ConnectionsListScope */
+/** @typedef {import('smart-types').ConnectionsQueryParams} ConnectionsQueryParams */
+
 export class ConnectionsList extends CollectionItem {
   static key = 'connections_list';
   static get defaults() {
     return { data: {} };
   }
 
+  /** @this {ConnectionsListScope} */
   get_key() {
     return `${this.data.collection_key}:${this.data.item_key}`;
   }
 
+  /**
+   * @this {ConnectionsListScope}
+   * @param {ConnectionsQueryParams} params
+   * @returns {Promise<void>}
+   */
   async pre_process (params) {
     migrate_hidden_connections(this.item); // TEMP: migrate hidden connections if needed
     // default pre_process (via src/actions/connections-list/pre_process.js)
@@ -29,9 +40,10 @@ export class ConnectionsList extends CollectionItem {
 
   /**
    * Produce ranked connections for the current source item.
-   * @param {object} params
+   * @this {ConnectionsListScope}
+   * @param {ConnectionsQueryParams} params
    * @note cannot call with different params until promise resolves
-   * @returns {Promise<Array>}
+   * @returns {Promise<ConnectionResult[]>}
    */
   async get_results (params = {}) {
     // clear if promise is resolved (allows for re-fetching with different params)
@@ -46,6 +58,11 @@ export class ConnectionsList extends CollectionItem {
     return this._results_promise;
   }
 
+  /**
+   * @this {ConnectionsListScope}
+   * @param {ConnectionsQueryParams} [params]
+   * @returns {Promise<ConnectionResult[]>}
+   */
   async _get_results (params = {}) {
     // Pre-process params
     await this.pre_process(params);
@@ -67,6 +84,11 @@ export class ConnectionsList extends CollectionItem {
     return results;
   }
 
+  /**
+   * @this {ConnectionsListScope}
+   * @param {ConnectionsQueryParams} [params]
+   * @returns {ConnectionResult[]}
+   */
   filter_and_score (params = {}) {
     const collection = this.env[params.results_collection_key];
     const score_errors = [];
@@ -95,6 +117,12 @@ export class ConnectionsList extends CollectionItem {
     return results;
   }
 
+  /**
+   * @this {ConnectionsListScope}
+   * @param {ConnectionResult[]} results
+   * @param {ConnectionsQueryParams} [params]
+   * @returns {Promise<ConnectionResult[]>}
+   */
   async post_process (results, params = {}) {
     if(!results?.length) {
       console.warn('No results to post-process, received:', results);
@@ -116,9 +144,17 @@ export class ConnectionsList extends CollectionItem {
     }
     return processed_results;
   }
+  /**
+   * @this {ConnectionsListScope}
+   * @returns {ConnectionItem}
+   */
   get item () {
     return this.env[this.data.collection_key]?.items[this.data.item_key];
   }
+  /**
+   * @this {ConnectionsListScope}
+   * @returns {string}
+   */
   get connections_list_component_key () {
     const stored_key = this.data.connections_list_component_key
       || this.settings?.connections_list_component_key

@@ -1,4 +1,7 @@
 /**
+ * @this {import('smart-types').ConnectionsComponentContext}
+ * @param {import('smart-types').ConnectionsListScope} connections_list
+ * @param {import('smart-types').ConnectionsComponentOptions} [opts]
  * @returns {Promise<string>} A promise that resolves to the .sc-list HTML string.
  */
 export async function build_html(connections_list, opts = {}) {
@@ -9,18 +12,26 @@ export async function build_html(connections_list, opts = {}) {
 }
 
 /**
- * @param {Array} connections_list - The results array.
- * @param {Object} [opts={}] - Optional parameters, including `opts.results`.
- * @returns {Promise<DocumentFragment>} A promise that resolves to the .sc-list fragment with appended children.
+ * @this {import('smart-types').ConnectionsComponentContext}
+ * @param {import('smart-types').ConnectionsListScope} connections_list
+ * @param {import('smart-types').ConnectionsComponentOptions} [opts={}] - Optional parameters, including `opts.results`.
+ * @returns {Promise<Element>} A promise that resolves to the .sc-list fragment with appended children.
  */
 export async function render(connections_list, opts = {}) {
-  const html = await build_html.call(this, connections_list, opts);
+  const html = /** @type {string} */ (await build_html.call(this, connections_list, opts));
   const frag = this.create_doc_fragment(html);
   const container = frag.firstElementChild;
   post_process.call(this, connections_list, container, opts);
   return container;
 }
 
+/**
+ * @this {import('smart-types').ConnectionsComponentContext}
+ * @param {import('smart-types').ConnectionsListScope} connections_list
+ * @param {HTMLElement} container
+ * @param {import('smart-types').ConnectionsComponentOptions} [opts]
+ * @returns {Promise<HTMLElement>}
+ */
 export async function post_process(connections_list, container, opts = {}) {
   const env = connections_list.env;
   const graph_container = container.querySelector('.connections-graph-container');
@@ -55,6 +66,10 @@ export async function post_process(connections_list, container, opts = {}) {
 const GRAPH_FOCUS_CLASS = 'sc-result-graph-focus';
 const GRAPH_FOCUS_TIMEOUT_MS = 2400;
 
+/**
+ * @param {Element} graph
+ * @param {HTMLElement} list_container
+ */
 function register_graph_events(graph, list_container) {
   if (!graph || !list_container) return;
   graph.addEventListener('connections:result', (event) => {
@@ -62,6 +77,10 @@ function register_graph_events(graph, list_container) {
   });
 }
 
+/**
+ * @param {HTMLElement} list_container
+ * @param {import('smart-types').ConnectionsGraphResultEventDetail} [detail]
+ */
 function focus_result_from_graph(list_container, detail = {}) {
   const target = find_result_element(list_container, detail);
   if (!target) return;
@@ -71,6 +90,11 @@ function focus_result_from_graph(list_container, detail = {}) {
   window.setTimeout?.(() => target.classList.remove(GRAPH_FOCUS_CLASS), GRAPH_FOCUS_TIMEOUT_MS);
 }
 
+/**
+ * @param {HTMLElement} list_container
+ * @param {import('smart-types').ConnectionsGraphResultEventDetail} [detail]
+ * @returns {HTMLElement|null}
+ */
 function find_result_element(list_container, detail = {}) {
   if (!list_container) return null;
   const { collection_key, item_key } = detail;

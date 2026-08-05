@@ -17,8 +17,9 @@ const SC_RESULT_HIDDEN_CLASS = 'sc-result-hidden-by-feedback';
 /**
  * Builds the HTML string for the result component.
  * .temp-container is used so listeners can be added to .sc-result (otherwise does not persist) 
- * @param {Object} result - The results a <Result> object 
- * @param {Object} [params={}] - Optional parameters.
+ * @this {import('smart-types').ConnectionsComponentContext}
+ * @param {import('smart-types').ConnectionResult} result - The results a <Result> object 
+ * @param {import('smart-types').ConnectionsComponentOptions} [params={}] - Optional parameters.
  * @returns {Promise<string>} A promise that resolves to the HTML string.
  */
 export async function build_html(result, params = {}) {
@@ -58,31 +59,32 @@ export async function build_html(result, params = {}) {
 
 /**
  * Renders the result component by building the HTML and post-processing it.
- * @param {Object} result_scope - The result object containing component data.
- * @param {Object} [params={}] - Optional parameters.
- * @returns {Promise<DocumentFragment>} A promise that resolves to the processed document fragment.
+ * @this {import('smart-types').ConnectionsComponentContext}
+ * @param {import('smart-types').ConnectionResult} result_scope - The result object containing component data.
+ * @param {import('smart-types').ConnectionsComponentOptions} [params={}] - Optional parameters.
+ * @returns {Promise<HTMLElement>} A promise that resolves to the processed document fragment.
  */
 export async function render(result_scope, params = {}) {
   this.apply_style_sheet(styles_css);
-  let html = await build_html.call(this, result_scope, params);
+  let html = /** @type {string} */ (await build_html.call(this, result_scope, params));
   const frag = this.create_doc_fragment(html);
-  const container = frag.querySelector('.sc-result');
+  const container = /** @type {HTMLElement} */ (frag.querySelector('.sc-result'));
   post_process.call(this, result_scope, container, params);
   return container;
 }
 
 /**
  * Post-processes the rendered document fragment by adding event listeners and rendering entity details.
- * @param {Object} result_scope - The result object containing component data.
- * @param {Source|Block} result_scope.item - The item data within the result object.
- * @param {DocumentFragment} container - The document fragment to be post-processed.
- * @param {Object} [params={}] - Optional parameters.
- * @returns {Promise<DocumentFragment>} A promise that resolves to the post-processed document fragment.
+ * @this {import('smart-types').ConnectionsComponentContext}
+ * @param {import('smart-types').ConnectionResult} result_scope - The result object containing component data.
+ * @param {HTMLElement} container - The document fragment to be post-processed.
+ * @param {import('smart-types').ConnectionsComponentOptions} [params={}] - Optional parameters.
+ * @returns {Promise<HTMLElement>} A promise that resolves to the post-processed document fragment.
  */
 export async function post_process(result_scope, container, params = {}) {
   const { item } = result_scope;
   const env = item.env;
-  const plugin = env.smart_connections_plugin;
+  const plugin = /** @type {import('smart-types').ConnectionsPlugin} */ (env.smart_connections_plugin);
   const app = plugin.app;
   const connections_settings = params.connections_settings
     ?? env.connections_lists.settings
@@ -104,13 +106,18 @@ export async function post_process(result_scope, container, params = {}) {
     container.dataset.pinned = 'true';
   }
 
+  /** @param {HTMLElement} _result_elm */
   const render_result = async (_result_elm) => {
     if (!_result_elm.querySelector('li').innerHTML) {
-      const collection_key = _result_elm.dataset.collection;
-      const entity = env[collection_key].get(_result_elm.dataset.path);
+      const collection_key = /** @type {import('smart-types').ConnectionsCollectionKey} */ (_result_elm.dataset.collection);
+      const entity = /** @type {import('smart-types').ConnectionItem} */ (
+        env[collection_key].get(/** @type {string} */ (_result_elm.dataset.path))
+      );
+      /** @type {string} */
       let markdown;
       if (should_render_embed(entity)) markdown = `${entity.embed_link}\n\n${await entity.read()}`;
       else markdown = process_for_rendering(await entity.read());
+      /** @type {DocumentFragment} */
       let entity_frag;
       if (should_render_markdown) entity_frag = await this.render_markdown(markdown, entity);
       else entity_frag = this.create_doc_fragment(markdown);
@@ -153,12 +160,12 @@ export async function post_process(result_scope, container, params = {}) {
     if(!source_item) return;
     source_item.data.connections ||= {};
 
-    const connections_list = result_scope.connections_list;
+    const connections_list = /** @type {import('smart-types').ConnectionsListScope} */ (result_scope.connections_list);
     const raw_results = Array.isArray(connections_list?.results) ? connections_list.results : [];
     const visible_results = filter_hidden_results(raw_results, source_item.data.connections);
     const list_container = container.closest('.connections-list') || container;
-    const target_name = get_item_display_name(item, component_settings) || item.key;
-    const menu = new Menu(app);
+    const target_name = /** @type {string} */ (get_item_display_name(item, component_settings)) || item.key;
+    const menu = /** @type {import('smart-types').ConnectionsMenu} */ (new Menu(app));
 
     env.build_menu?.('connections:list_item_menu', menu, connections_list, {
       container,
@@ -186,8 +193,14 @@ export async function post_process(result_scope, container, params = {}) {
   return container;
 }
 
+/**
+ * @param {number|string|null} score
+ * @param {import('smart-types').ConnectionItem} item
+ * @param {import('smart-types').ConnectionsComponentSettings} [component_settings]
+ * @returns {string}
+ */
 function get_result_header_html(score, item, component_settings = {}) {
-  const raw_parts = get_item_display_name(item, component_settings).split(DISPLAY_SEPARATOR).filter(Boolean);
+  const raw_parts = /** @type {string} */ (get_item_display_name(item, component_settings)).split(DISPLAY_SEPARATOR).filter(Boolean);
   const parts = format_item_parts(raw_parts, item?.lines);
   const name = parts.pop();
   const formatted_score = typeof score === 'number' ? score.toFixed(2) : score;
@@ -203,6 +216,11 @@ function get_result_header_html(score, item, component_settings = {}) {
   ].join('');
 }
 
+/**
+ * @param {string[]} parts
+ * @param {number[]} [lines]
+ * @returns {string[]}
+ */
 function format_item_parts(parts, lines = []) {
   if (!Array.isArray(parts) || !parts.length) return [];
   const has_line_marker = Array.isArray(lines) && lines.length;
@@ -214,12 +232,20 @@ function format_item_parts(parts, lines = []) {
   });
 }
 
+/**
+ * @param {import('smart-types').ConnectionItem|null|undefined} entity
+ * @returns {boolean}
+ */
 export function should_render_embed(entity) {
   if (!entity) return false;
   if (entity.is_media) return true;
   return false;
 }
 
+/**
+ * @param {string} content
+ * @returns {string}
+ */
 export function process_for_rendering(content) {
   // prevent dataview rendering
   if (content.includes('```dataview')) content = content.replace(/```dataview/g, '```\\dataview');
@@ -230,10 +256,11 @@ export function process_for_rendering(content) {
   return content;
 }
 
+/** @param {MouseEvent} event */
 function toggle_result(event) {
   event.preventDefault();
   event.stopPropagation();
-  const _result_elm = event.target.closest('.sc-result');
+  const _result_elm = /** @type {Element} */ (/** @type {Element} */ (event.target).closest('.sc-result'));
   _result_elm.classList.toggle('sc-collapsed');
 };
 

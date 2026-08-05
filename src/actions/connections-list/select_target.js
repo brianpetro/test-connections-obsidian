@@ -1,10 +1,8 @@
 /**
  * Select and render a Connections target in this item view.
  *
- * @this {import('../../views/connections_item_view.js').ConnectionsItemView}
- * @param {object} [params={}]
- * @param {object} [params.target_item]
- * @param {string} [params.event_source]
+ * @this {import('smart-types').ConnectionsItemViewScope}
+ * @param {import('smart-types').ConnectionsActionParams} [params={}]
  * @returns {Promise<boolean>}
  */
 export async function connections_list_select_target(params = {}) {
@@ -18,6 +16,7 @@ export async function connections_list_select_target(params = {}) {
 
 export const display_name = 'Select Connections target';
 
+/** @type {import('smart-types').ConnectionsMenusConfig} */
 export const menus = {
   'connections:item_view_list_menu': {
     title: 'Change target',

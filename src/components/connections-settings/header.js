@@ -1,4 +1,14 @@
 import { StoryModal } from 'obsidian-smart-env/src/modals/story.js';
+
+/** @typedef {import('smart-types').ConnectionsComponentContext} ConnectionsComponentContext */
+/** @typedef {import('smart-types').ConnectionsDomElement} ConnectionsDomElement */
+/** @typedef {import('smart-types').ConnectionsPlugin} ConnectionsPlugin */
+
+/**
+ * @this {ConnectionsComponentContext}
+ * @param {ConnectionsPlugin} scope_plugin
+ * @returns {Promise<string>}
+ */
 async function build_html(scope_plugin) {
   return `
     <div>
@@ -14,14 +24,25 @@ async function build_html(scope_plugin) {
   `;
 }
 
+/**
+ * @this {ConnectionsComponentContext}
+ * @param {ConnectionsPlugin} scope_plugin
+ * @returns {Promise<HTMLElement>}
+ */
 export async function render(scope_plugin) {
-  const html = await build_html.call(this, scope_plugin);
+  const html = /** @type {string} */ (await build_html.call(this, scope_plugin));
   const frag = this.create_doc_fragment(html);
-  const container = frag.firstElementChild;
+  const container = /** @type {HTMLElement} */ (frag.firstElementChild);
   post_process.call(this, scope_plugin, container);
   return container;
 }
 
+/**
+ * @this {ConnectionsComponentContext}
+ * @param {ConnectionsPlugin} scope_plugin
+ * @param {HTMLElement} frag
+ * @returns {Promise<HTMLElement>}
+ */
 export async function post_process(scope_plugin, frag) {
   /* user agreement & env settings */
   const user_agreement_container = frag.querySelector('[data-user-agreement]');
@@ -34,7 +55,7 @@ export async function post_process(scope_plugin, frag) {
   }
 
   /* header external links */
-  const header_link = frag.querySelector('#header-callout a');
+  const header_link = /** @type {HTMLAnchorElement|null} */ (frag.querySelector('#header-callout a'));
   if (header_link) {
     header_link.addEventListener('click', (e) => {
       e.preventDefault();
@@ -93,8 +114,8 @@ import { Modal } from 'obsidian';
 export class ScProSupportModal extends Modal {
   open() {
     super.open();
-    this.titleEl.setText('Need help and support?');
-    const content = this.contentEl.createDiv({ cls: 'sc-pro-support-modal' });
+    (/** @type {ConnectionsDomElement} */ (this.titleEl)).setText('Need help and support?');
+    const content = (/** @type {ConnectionsDomElement} */ (this.contentEl)).createDiv({ cls: 'sc-pro-support-modal' });
     content.createEl('p', {
       text: 'Reply to your Pro plugins welcome email for priority support.',
     });

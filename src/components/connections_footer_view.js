@@ -4,14 +4,24 @@ import styles from './connections_footer_view.css';
 const FOOTER_FOLDED_STORAGE_KEY = 'sc_footer_connections_folded';
 const FOOTER_LIST_COLLAPSED_CLASS = 'sc-footer-list-collapsed';
 
+/** @param {import('smart-types').ConnectionsApp} app */
 function get_footer_connections_folded(app) {
   return app.loadLocalStorage(FOOTER_FOLDED_STORAGE_KEY) === 'true';
 }
 
+/**
+ * @param {import('smart-types').ConnectionsApp} app
+ * @param {boolean} folded
+ */
 function set_footer_connections_folded(app, folded) {
   app.saveLocalStorage(FOOTER_FOLDED_STORAGE_KEY, String(folded));
 }
 
+/**
+ * @param {Element|null} header_container
+ * @param {Element|null} list_container
+ * @param {boolean} folded
+ */
 function apply_footer_fold_state(header_container, list_container, folded) {
   if (!header_container || !list_container) return;
   list_container.classList.toggle(FOOTER_LIST_COLLAPSED_CLASS, Boolean(folded));
@@ -26,8 +36,9 @@ function apply_footer_fold_state(header_container, list_container, folded) {
 
 /**
  * Build the main HTML structure for the footer connections view.
- * @param {object} view
- * @param {object} opts
+ * @this {import('smart-types').ConnectionsComponentContext}
+ * @param {import('smart-types').ConnectionsFooterViewScope} view
+ * @param {import('smart-types').ConnectionsComponentOptions} opts
  * @returns {Promise<string>}
  */
 export async function build_html(view, opts = {}) {
@@ -57,24 +68,26 @@ export async function build_html(view, opts = {}) {
 
 /**
  * Render the footer connections fragment.
- * @param {object} view
- * @param {object} opts
+ * @this {import('smart-types').ConnectionsComponentContext}
+ * @param {import('smart-types').ConnectionsFooterViewScope} view
+ * @param {import('smart-types').ConnectionsComponentOptions} opts
  * @returns {Promise<HTMLElement>}
  */
 export async function render(view, opts = {}) {
-  const html = await build_html.call(this, view, opts);
+  const html = /** @type {string} */ (await build_html.call(this, view, opts));
   const frag = this.create_doc_fragment(html);
   this.apply_style_sheet(styles);
-  const container = frag.firstElementChild;
+  const container = /** @type {HTMLElement} */ (frag.firstElementChild);
   await post_process.call(this, view, container, opts);
   return container;
 }
 
 /**
  * Post-process DOM fragment for footer connections behavior.
- * @param {object} view
+ * @this {import('smart-types').ConnectionsComponentContext}
+ * @param {import('smart-types').ConnectionsFooterViewScope} view
  * @param {HTMLElement} container
- * @param {object} opts
+ * @param {import('smart-types').ConnectionsComponentOptions} opts
  * @returns {Promise<HTMLElement>}
  */
 export async function post_process(view, container, opts = {}) {
@@ -109,7 +122,7 @@ export async function post_process(view, container, opts = {}) {
     connections_list,
     {
       ...opts,
-      render_connections: view.render_view.bind(view),
+      render_connections: /** @type {(params?: import('smart-types').ConnectionsComponentOptions) => Promise<void>|void} */ (view.render_view.bind(view)),
     },
   );
 

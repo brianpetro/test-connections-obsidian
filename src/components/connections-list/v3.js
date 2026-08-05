@@ -1,5 +1,8 @@
 // List-only component used by configurable Connections surfaces.
 /**
+ * @this {import('smart-types').ConnectionsComponentContext}
+ * @param {import('smart-types').ConnectionsListScope} connections_list
+ * @param {import('smart-types').ConnectionsComponentOptions} [opts]
  * @returns {Promise<string>} A promise that resolves to the .sc-list HTML string.
  */
 export async function build_html(connections_list, opts = {}) {
@@ -7,18 +10,26 @@ export async function build_html(connections_list, opts = {}) {
 }
 
 /**
- * @param {Array} connections_list - The results array.
- * @param {Object} [opts={}] - Optional parameters, including `opts.results`.
- * @returns {Promise<DocumentFragment>} A promise that resolves to the .sc-list fragment with appended children.
+ * @this {import('smart-types').ConnectionsComponentContext}
+ * @param {import('smart-types').ConnectionsListScope} connections_list
+ * @param {import('smart-types').ConnectionsComponentOptions} [opts={}] - Optional parameters, including `opts.results`.
+ * @returns {Promise<Element>} A promise that resolves to the .sc-list fragment with appended children.
  */
 export async function render(connections_list, opts = {}) {
-  const html = await build_html.call(this, connections_list, opts);
+  const html = /** @type {string} */ (await build_html.call(this, connections_list, opts));
   const frag = this.create_doc_fragment(html);
   const container = frag.querySelector('.connections-list');
   post_process.call(this, connections_list, container, opts);
   return container;
 }
 
+/**
+ * @this {import('smart-types').ConnectionsComponentContext}
+ * @param {import('smart-types').ConnectionsListScope} connections_list
+ * @param {HTMLElement} container
+ * @param {import('smart-types').ConnectionsComponentOptions} [opts]
+ * @returns {Promise<HTMLElement>}
+ */
 export async function post_process(connections_list, container, opts = {}) {
   container.dataset.key = connections_list.item.key;
   const results = await connections_list.get_results(opts);

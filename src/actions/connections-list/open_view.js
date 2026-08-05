@@ -1,8 +1,8 @@
 /**
  * Open the Smart Connections view.
  *
- * @this {object}
- * @param {object} [params={}]
+ * @this {import('smart-types').ConnectionsListScope|import('smart-types').ConnectionsListsCollection}
+ * @param {import('smart-types').ConnectionsActionParams} [params={}]
  * @returns {Promise<boolean>}
  */
 export async function connections_list_open_view(params = {}) {
@@ -13,6 +13,7 @@ export async function connections_list_open_view(params = {}) {
   return true;
 }
 
+/** @type {import('smart-types').ConnectionsRibbonConfigMap} */
 export const ribbon_icons = {
   connections: {
     icon_name: 'smart-connections',
@@ -32,6 +33,7 @@ export const ribbon_icons = {
   },
 };
 
+/** @type {import('smart-types').ConnectionsCommandsConfig} */
 export const commands = {
   'smart-connections-view': {
     name: 'Open: Connections view',

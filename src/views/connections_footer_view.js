@@ -6,11 +6,21 @@ import { Platform } from 'obsidian';
 import { render as render_connections_footer_view_component } from '../components/connections_footer_view.js';
 import { set_connections_footer_dom_effect } from './connections_footer_deco.js';
 
+/** @typedef {import('smart-types').ConnectionItem} ConnectionItem */
+/** @typedef {import('smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
+/** @typedef {import('smart-types').ConnectionsDomElement} ConnectionsDomElement */
+/** @typedef {import('smart-types').ConnectionsEditorView} ConnectionsEditorView */
+/** @typedef {import('smart-types').ConnectionsEnv} ConnectionsEnv */
+/** @typedef {import('smart-types').ConnectionsEventDisposer} ConnectionsEventDisposer */
+/** @typedef {import('smart-types').ConnectionsEventPayload} ConnectionsEventPayload */
+/** @typedef {import('smart-types').ConnectionsPlugin} ConnectionsPlugin */
+/** @typedef {import('smart-types').ConnectionsWorkspace} ConnectionsWorkspace */
+
 /**
  * Resolve the Smart Sources entity for the active file.
- * @param {object} env
- * @param {object} workspace
- * @returns {object|null}
+ * @param {ConnectionsEnv} env
+ * @param {ConnectionsWorkspace} workspace
+ * @returns {ConnectionItem|null}
  */
 const get_active_entity = (env, workspace) => {
   const active_file = workspace.getActiveFile();
@@ -21,7 +31,7 @@ const get_active_entity = (env, workspace) => {
 /**
  * Determine whether the editor's last line is currently visible in the viewport.
  * Uses CodeMirror 6 visibleRanges to avoid any DOM measurement thrash.
- * @param {import('@codemirror/view').EditorView} editor_view
+ * @param {ConnectionsEditorView} editor_view
  * @returns {boolean}
  */
 const is_last_line_visible = (editor_view) => {
@@ -39,6 +49,7 @@ const is_last_line_visible = (editor_view) => {
   }
 };
 
+/** @param {() => void} callback */
 const schedule_next_frame = (callback) => {
   if (typeof window.requestAnimationFrame === 'function') {
     window.requestAnimationFrame(callback);
@@ -48,14 +59,18 @@ const schedule_next_frame = (callback) => {
 };
 
 export class ConnectionsFooterView {
+  /** @param {ConnectionsPlugin} plugin */
   constructor(plugin) {
     this.plugin = plugin;
     this.app = plugin.app;
     this.register_env_listeners();
+    /** @type {Object.<string, ConnectionsDomElement>} */
     this.container_map = {};
+    /** @type {(() => void)|null} */
     this._detach_visibility_guard = null;
   }
 
+  /** @returns {ConnectionsEnv} */
   get env() {
     return this.plugin.env;
   }
@@ -63,7 +78,7 @@ export class ConnectionsFooterView {
   /**
    * Attach a lightweight scroll/resize guard that waits until the last line becomes visible.
    * When the condition is met, it detaches itself and triggers render_view() again.
-   * @param {import('@codemirror/view').EditorView} editor_view
+   * @param {ConnectionsEditorView} editor_view
    */
   attach_visibility_guard(editor_view) {
     this.detach_visibility_guard();
@@ -104,6 +119,7 @@ export class ConnectionsFooterView {
     }
   }
 
+  /** @param {ConnectionsComponentOptions} [params] */
   async render_view(params = {}) {
     if (!this.env.connections_lists?.settings?.footer_connections) return this.remove();
     const editor_view = this.plugin.get_editor_view();
@@ -138,13 +154,13 @@ export class ConnectionsFooterView {
       return;
     }
 
-    const footer_container = await render_connections_footer_view_component.call(
+    const footer_container = /** @type {ConnectionsDomElement} */ (await render_connections_footer_view_component.call(
       this.env.smart_view,
       this,
       {
         connections_item: entity,
       }
-    );
+    ));
 
     if (this.container_map[entity.key] && this.container_map[entity.key] instanceof HTMLElement) {
       this.container_map[entity.key].remove();
@@ -154,9 +170,9 @@ export class ConnectionsFooterView {
 
     if (Platform.isMobile) {
       const container = this.container_map[entity.key];
-      const status_bar_container = container.querySelector('.status-bar-mobile')
-        ?? container.createDiv({ cls: 'status-bar-mobile' })
-      ;
+      const status_bar_container = /** @type {ConnectionsDomElement|null} */ (
+        container.querySelector('.status-bar-mobile')
+      ) ?? container.createDiv({ cls: 'status-bar-mobile' });
       status_bar_container.empty();
       const status_bar_item = status_bar_container.createDiv({ cls: 'status-bar-item' });
       this.env.smart_components.render_component('status_bar', this.env)
@@ -192,8 +208,12 @@ export class ConnectionsFooterView {
     });
   }
 
+  /**
+   * @param {string} event_key
+   * @param {(event: ConnectionsEventPayload) => void} callback
+   */
   register_env_listener(event_key, callback) {
-    if(!this.env_listeners) this.env_listeners = [];
+    if(!this.env_listeners) this.env_listeners = /** @type {ConnectionsEventDisposer[]} */ ([]);
     this.env_listeners.push(this.env.events.on(event_key, callback));
   }
 

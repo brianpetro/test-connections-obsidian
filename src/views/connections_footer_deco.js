@@ -1,17 +1,25 @@
 import { ViewPlugin } from '@codemirror/view';
 import { StateEffect } from '@codemirror/state';
 
-export const set_connections_footer_dom_effect = StateEffect.define();
+/** @typedef {import('smart-types').ConnectionsDomElement} ConnectionsDomElement */
+/** @typedef {import('smart-types').ConnectionsEditorUpdate} ConnectionsEditorUpdate */
+/** @typedef {import('smart-types').ConnectionsEditorView} ConnectionsEditorView */
+/** @typedef {import('smart-types').ConnectionsStateEffectType<ConnectionsDomElement|null>} ConnectionsFooterStateEffect */
+
+export const set_connections_footer_dom_effect = /** @type {ConnectionsFooterStateEffect} */ (StateEffect.define());
 
 const FOOTER_HIDDEN_CLASS = 'sc-connections-footer-hidden';
 
 /* ------------------------------------------------------------------ plugin */
-export const connections_footer_plugin = ViewPlugin.fromClass(
+export const connections_footer_plugin = /** @type {unknown} */ (ViewPlugin.fromClass(
   class {
     /* ------------------------------------------------------ lifecycle ---- */
+    /** @param {ConnectionsEditorView} view */
     constructor(view) {
       this.view = view;
+      /** @type {ConnectionsDomElement|null} */
       this.connections_footer_frag = null;
+      /** @type {ConnectionsDomElement|null} */
       this.container_el = null;
     }
 
@@ -22,6 +30,7 @@ export const connections_footer_plugin = ViewPlugin.fromClass(
     }
 
     /* ----------------------------------------------------- view updates -- */
+    /** @param {ConnectionsEditorUpdate} update */
     update(update) {
       for (const tr of update.transactions) {
         for (const ef of tr.effects) {
@@ -36,6 +45,7 @@ export const connections_footer_plugin = ViewPlugin.fromClass(
       }
     }
 
+    /** @param {ConnectionsDomElement|null} [container] */
     render_footer(container = null) {
       if (container) {
         if (this.container_el && this.container_el !== container && this.container_el.isConnected) {
@@ -49,6 +59,7 @@ export const connections_footer_plugin = ViewPlugin.fromClass(
       this.#set_footer_visibility(Boolean(this.connections_footer_frag));
     }
 
+    /** @param {boolean} visible */
     #set_footer_visibility(visible) {
       if (!this.container_el) return;
       this.container_el.classList.toggle(FOOTER_HIDDEN_CLASS, !visible);
@@ -63,7 +74,6 @@ export const connections_footer_plugin = ViewPlugin.fromClass(
       );
     }
   }
-);
+));
 
 export default connections_footer_plugin;
-

@@ -1,3 +1,7 @@
+/**
+ * @this {import('smart-types').ConnectionsListsCollection}
+ * @param {{to?: unknown}} [params={}]
+ */
 export async function connections_list_get_results(params = {}) {
   const target_key = to_trimmed_string(params.to);
   if (!target_key) throw new Error('Missing required argument: to');
@@ -16,7 +20,9 @@ export async function connections_list_get_results(params = {}) {
     throw new Error('Unable to create Smart Connections list.');
   }
 
-  const results = await connections_list.get_results?.({});
+  const results = /** @type {import('smart-types').ConnectionResult[]} */ (
+    await connections_list.get_results?.({})
+  );
   const normalized_results = Array.isArray(results)
     ? results.map(to_result).filter(Boolean)
     : []
@@ -83,6 +89,9 @@ export const tool = {
   },
 };
 
+/**
+ * @param {import('smart-types').ConnectionResult} result
+ */
 function to_result(result) {
   const item = result?.item;
   const key = to_trimmed_string(item?.key)
@@ -98,6 +107,10 @@ function to_result(result) {
   };
 }
 
+/**
+ * @param {unknown} value
+ * @returns {string}
+ */
 function to_trimmed_string(value) {
   return typeof value === 'string' ? value.trim() : '';
 }

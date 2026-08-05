@@ -13,6 +13,17 @@ const SMART_CONNECTIONS_COLLECTION_KEYS = new Set([
   'smart_blocks',
 ]);
 
+/** @typedef {{collection_key: string, item_key: string}} SmartDragItem */
+/** @typedef {{items: SmartDragItem[]}} SmartDragData */
+/** @typedef {{normalized_path: string}} DroppedObsidianEntry */
+/** @typedef {{status: string, kind: string|null, path: string|null}} ClassifiedDroppedEntry */
+
+/**
+ * @param {import('smart-types').ConnectionsEnv} env
+ * @param {import('smart-types').ConnectionsCollectionKey} collection_key
+ * @param {string} item_key
+ * @returns {import('smart-types').ConnectionItem|null}
+ */
 function get_collection_item(env, collection_key, item_key) {
   return env?.[collection_key]?.get?.(item_key)
     || env?.[collection_key]?.items?.[item_key]
@@ -20,12 +31,23 @@ function get_collection_item(env, collection_key, item_key) {
   ;
 }
 
+/**
+ * @param {import('smart-types').ConnectionItem|null|undefined} item
+ * @returns {item is import('smart-types').ConnectionItem}
+ */
 function is_connections_target(item) {
   return Boolean(item?.key && item?.vec);
 }
 
+/**
+ * @param {import('smart-types').ConnectionsEnv} env
+ * @param {DataTransfer|object} data_transfer
+ * @returns {import('smart-types').ConnectionItem[]}
+ */
 function get_smart_targets(env, data_transfer) {
-  const smart_drag_data = read_smart_drag_data(data_transfer);
+  const smart_drag_data = /** @type {SmartDragData|null} */ (
+    read_smart_drag_data(data_transfer)
+  );
   if (!smart_drag_data) return [];
 
   const targets = [];
@@ -42,8 +64,15 @@ function get_smart_targets(env, data_transfer) {
   return targets;
 }
 
+/**
+ * @param {import('smart-types').ConnectionsEnv} env
+ * @param {DataTransfer|object} data_transfer
+ * @returns {import('smart-types').ConnectionItem[]}
+ */
 function get_native_targets(env, data_transfer) {
-  const entries = parse_dropped_obsidian_entries(data_transfer);
+  const entries = /** @type {DroppedObsidianEntry[]} */ (
+    parse_dropped_obsidian_entries(data_transfer)
+  );
   if (!entries.length) return [];
 
   const smart_sources = env?.smart_sources;
@@ -70,12 +99,14 @@ function get_native_targets(env, data_transfer) {
       continue;
     }
 
-    const classified_entry = classify_dropped_obsidian_entry(entry, {
+    const classified_entry = /** @type {ClassifiedDroppedEntry} */ (
+      classify_dropped_obsidian_entry(entry, {
       file_paths,
       folder_paths,
       available_file_paths,
       vault_path,
-    });
+      })
+    );
     if (
       classified_entry.kind !== 'file'
       || (
@@ -105,9 +136,9 @@ function get_native_targets(env, data_transfer) {
  * The caller intentionally decides whether zero, one, or several resolved
  * targets are acceptable for its surface.
  *
- * @param {object} env
+ * @param {import('smart-types').ConnectionsEnv} env
  * @param {DataTransfer|object} data_transfer
- * @returns {object[]}
+ * @returns {import('smart-types').ConnectionItem[]}
  */
 export function resolve_dropped_connections_targets(env, data_transfer) {
   const targets = has_smart_drag_data(data_transfer)

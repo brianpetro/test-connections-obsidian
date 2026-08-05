@@ -1,5 +1,18 @@
 import { setIcon, requestUrl } from "obsidian";
 import { enable_plugin } from "obsidian-smart-env/src/utils/smart_plugins.js";
+
+/** @typedef {import('smart-types').ConnectionsComponentContext} ConnectionsComponentContext */
+/** @typedef {import('smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
+/** @typedef {import('smart-types').ConnectionsPlugin} ConnectionsPlugin */
+/** @typedef {import('smart-types').ConnectionsReleaseResponse} ConnectionsReleaseResponse */
+/** @typedef {import('smart-types').ConnectionsRequestResponse<unknown>} ConnectionsRequestResponse */
+
+/**
+ * @this {ConnectionsComponentContext}
+ * @param {ConnectionsPlugin} plugin
+ * @param {ConnectionsComponentOptions} [opts]
+ * @returns {string}
+ */
 export function build_html(plugin, opts={}) {
   return `<div class="wrapper">
     <div id="footer-callout" data-callout-metadata="" data-callout-fold="" data-callout="info" class="callout" style="mix-blend-mode: unset;">
@@ -16,21 +29,32 @@ export function build_html(plugin, opts={}) {
   </div>`;
 }
 
+/**
+ * @this {ConnectionsComponentContext}
+ * @param {ConnectionsPlugin} plugin
+ * @param {ConnectionsComponentOptions} [params]
+ * @returns {HTMLElement}
+ */
 export function render(plugin, params={}) {
-  const html = build_html.call(this, plugin, params);
+  const html = /** @type {string} */ (build_html.call(this, plugin, params));
   const frag = this.create_doc_fragment(html);
-  const container = frag.firstElementChild;
+  const container = /** @type {HTMLElement} */ (frag.firstElementChild);
   post_process.call(this, plugin, container, params);
   return container;
 }
 
+/**
+ * @this {ConnectionsComponentContext}
+ * @param {ConnectionsPlugin} plugin
+ * @param {HTMLElement} container
+ */
 function post_process(plugin, container) {
-  const icon_container = container.querySelector('.callout-icon');
+  const icon_container = /** @type {HTMLElement} */ (container.querySelector('.callout-icon'));
   setIcon(icon_container, 'smart-lookup');
   const has_lookup = plugin.app.plugins.enabledPlugins.has('smart-lookup');
-  const content_container = container.querySelector('.callout-content');
-  const callout_text = content_container.querySelector('p');
-  const callout_btn = content_container.querySelector('button');
+  const content_container = /** @type {HTMLElement} */ (container.querySelector('.callout-content'));
+  const callout_text = /** @type {HTMLParagraphElement} */ (content_container.querySelector('p'));
+  const callout_btn = /** @type {HTMLButtonElement} */ (content_container.querySelector('button'));
   if (has_lookup) {
     callout_text.textContent = 'Lookup now has its own settings tab.';
     callout_btn.textContent = 'Open lookup settings';
@@ -45,17 +69,25 @@ function post_process(plugin, container) {
 }
 
 
+/**
+ * @param {ConnectionsPlugin} plugin
+ */
 async function install_smart_lookup(plugin) {
   const app = plugin.app;
   const env = plugin.env;
   const adapter = app.vault.adapter;
 
+  /**
+   * @param {string} url
+   * @param {string} _path
+   * @returns {Promise<boolean>}
+   */
   async function download_and_write(url, _path) {
     try {
-      const resp = await requestUrl({
+      const resp = /** @type {ConnectionsRequestResponse} */ (await requestUrl({
         url,
         method: "GET",
-      });
+      }));
       await adapter.write(_path, resp.text);
       return true;
     } catch (error) {
@@ -69,14 +101,14 @@ async function install_smart_lookup(plugin) {
     }
   }
 
-  const { json: response } = await requestUrl({
+  const { json: response } = /** @type {import('smart-types').ConnectionsRequestResponse<ConnectionsReleaseResponse>} */ (await requestUrl({
     url: "https://api.github.com/repos/brianpetro/smart-lookup-obsidian/releases/latest",
     method: "GET",
     headers: {
       "Content-Type": "application/json",
     },
     contentType: "application/json",
-  });
+  }));
   // get browser_download_url for main.js, manifest.json, and styles.css
   const assets = response.assets;
   const main_asset = assets.find((asset) => asset.name === 'main.js');

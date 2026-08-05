@@ -7,10 +7,8 @@ const COMMAND_HELP_URL = 'https://smartconnections.app/story/smart-connections-g
 /**
  * Open the Smart Connections getting started guide.
  *
- * @this {import('../../items/connections_list.js').ConnectionsList}
- * @param {object} [params={}]
- * @param {object} [params.plugin]
- * @param {string} [params.url]
+ * @this {import('smart-types').ConnectionsListScope}
+ * @param {import('smart-types').ConnectionsActionParams} [params={}]
  * @returns {boolean}
  */
 export function connections_list_open_help(params = {}) {
@@ -28,6 +26,7 @@ export function connections_list_open_help(params = {}) {
   return true;
 }
 
+/** @type {import('smart-types').ConnectionsCommandsConfig} */
 export const commands = {
   'smart-connections-getting-started': {
     name: 'Show: Getting started slideshow',
@@ -49,6 +48,7 @@ export const commands = {
   },
 };
 
+/** @type {import('smart-types').ConnectionsMenusConfig} */
 export const menus = {
   'connections:list_menu': {
     title: 'Help & getting started',

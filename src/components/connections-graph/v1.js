@@ -26,9 +26,100 @@ import {
   resolve_drag_item,
 } from './v1.util.js';
 
+/** @typedef {import('smart-types').ConnectionItem} ConnectionItem */
+/** @typedef {import('smart-types').ConnectionResult} ConnectionResult */
+/** @typedef {import('smart-types').ConnectionsCollection} ConnectionsCollection */
+/** @typedef {import('smart-types').ConnectionsComponentContext} ConnectionsComponentContext */
+/** @typedef {import('smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
+/** @typedef {import('smart-types').ConnectionsEnv} ConnectionsEnv */
+/** @typedef {import('smart-types').ConnectionsListScope} ConnectionsListScope */
+/** @typedef {import('smart-types').ConnectionsState} ConnectionsState */
+
+/** @typedef {ConnectionResult} ConnectionsGraphResult */
+
+/**
+ * @typedef {Object} ConnectionsGraphNode
+ * @property {string} id
+ * @property {ConnectionItem} item
+ * @property {number|null} score
+ * @property {number} radius
+ * @property {boolean} isCenter
+ * @property {number} x
+ * @property {number} y
+ * @property {number} [fx]
+ * @property {number} [fy]
+ * @property {number} [vx]
+ * @property {number} [vy]
+ * @property {number} [ring_r]
+ * @property {number} [angle]
+ * @property {number} [cluster]
+ * @property {number} [node_to_cluster_sim]
+ * @property {string} [label_text]
+ * @property {string} [prefixed_key]
+ * @property {boolean} [isPinned]
+ * @property {boolean} [isHidden]
+ */
+
+/**
+ * @typedef {Element & {
+ *   dataset: DOMStringMap,
+ *   getComputedTextLength?: () => number
+ * }} ConnectionsGraphElement
+ */
+
+/**
+ * @typedef {Object} ConnectionsD3Selection
+ * @property {(selector: string) => ConnectionsD3Selection} select
+ * @property {(selector: string) => ConnectionsD3Selection} selectAll
+ * @property {(tag_name: string) => ConnectionsD3Selection} append
+ * @property {(nodes: ConnectionsGraphNode[], key?: (node: ConnectionsGraphNode) => string) => ConnectionsD3Selection} data
+ * @property {(enter: (selection: ConnectionsD3Selection) => ConnectionsD3Selection) => ConnectionsD3Selection} join
+ * @property {(name: string, value: string|number|null|((node: ConnectionsGraphNode) => string|number|null)) => ConnectionsD3Selection} attr
+ * @property {(value: string|((node: ConnectionsGraphNode) => string)) => ConnectionsD3Selection} text
+ * @property {(predicate: (node: ConnectionsGraphNode) => boolean) => ConnectionsD3Selection} filter
+ * @property {(name: string, value: boolean) => ConnectionsD3Selection} classed
+ * @property {(event_name: string, listener: (this: ConnectionsGraphElement, event: Event, node: ConnectionsGraphNode) => void) => ConnectionsD3Selection} on
+ * @property {(callback: (this: ConnectionsGraphElement, node: ConnectionsGraphNode) => void) => ConnectionsD3Selection} each
+ */
+
+/**
+ * @typedef {Object} ConnectionsD3Force
+ * @property {(strength: number|((node: ConnectionsGraphNode) => number)) => ConnectionsD3Force} strength
+ * @property {(iterations: number) => ConnectionsD3Force} iterations
+ * @property {(distance: number) => ConnectionsD3Force} distanceMax
+ */
+
+/**
+ * @typedef {((alpha: number) => void) & {
+ *   initialize: (nodes: ConnectionsGraphNode[]) => void
+ * }} ConnectionsGraphForce
+ */
+
+/**
+ * @typedef {Object} ConnectionsD3Simulation
+ * @property {(alpha: number) => ConnectionsD3Simulation} alpha
+ * @property {(decay: number) => ConnectionsD3Simulation} alphaDecay
+ * @property {(name: string, force: ConnectionsD3Force|ConnectionsGraphForce) => ConnectionsD3Simulation} force
+ * @property {(event_name: string, callback: () => void) => ConnectionsD3Simulation} on
+ * @property {(nodes: ConnectionsGraphNode[]) => ConnectionsD3Simulation} nodes
+ * @property {() => ConnectionsD3Simulation} restart
+ */
+
+/**
+ * @typedef {Object} ConnectionsD3
+ * @property {string} [version]
+ * @property {(element: Element) => ConnectionsD3Selection} select
+ * @property {(radius: (node: ConnectionsGraphNode) => number, x: number, y: number) => ConnectionsD3Force} forceRadial
+ * @property {(radius: (node: ConnectionsGraphNode) => number) => ConnectionsD3Force} forceCollide
+ * @property {() => ConnectionsD3Force} forceManyBody
+ * @property {(nodes: ConnectionsGraphNode[]) => ConnectionsD3Simulation} forceSimulation
+ */
+
+/** @typedef {{d3?: ConnectionsD3}} ConnectionsD3Global */
+
 /**
  * Builds a Set of prefixed keys for the provided results.
- * @param {Array<{item?: {collection_key?: string, key?: string}}>} results
+ * @param {ConnectionsGraphResult[]} results
  * @returns {Set<string>}
  */
 export function build_prefixed_key_set(results = []) {
@@ -53,10 +144,10 @@ export function prefixed_key_for_item(item) {
 /**
  * Collects hidden connection entries so they can be rendered as nodes.
  * @param {object} options
- * @param {Record<string, {hidden?: number, pinned?: number}>} [options.connections_state]
+ * @param {ConnectionsState} [options.connections_state]
  * @param {Set<string>} [options.existing_keys]
- * @param {(collection_key: string, item_key: string) => any} options.resolve_item
- * @returns {Array<{item: any, score: null, is_hidden: true, prefixed_key: string}>}
+ * @param {(collection_key: string, item_key: string) => ConnectionItem|undefined} [options.resolve_item]
+ * @returns {ConnectionsGraphResult[]}
  */
 export function collect_hidden_entries({
   connections_state = {},
@@ -64,6 +155,7 @@ export function collect_hidden_entries({
   resolve_item,
 } = {}) {
   if (typeof resolve_item !== 'function') return [];
+  /** @type {ConnectionsGraphResult[]} */
   const hidden_entries = [];
   for (const [prefixed_key, state] of Object.entries(connections_state)) {
     if (!state?.hidden || state?.pinned) continue;
@@ -109,11 +201,12 @@ function parse_prefixed_key(prefixed_key) {
  * The fixed CDN import is kept external by esbuild and preserved as a runtime ESM import.
  */
 const D3_EXPECTED_MAJOR = '7.';
+/** @type {Promise<ConnectionsD3>|null} */
 let d3_import_promise = null;
 
 /**
  * Validate a candidate d3 instance and log if it looks unexpected.
- * @param {any} d3
+ * @param {ConnectionsD3} d3
  */
 function validate_d3_instance(d3) {
   if (!d3) return;
@@ -128,13 +221,13 @@ function validate_d3_instance(d3) {
 /**
  * Lazy-loads D3 from the CDN ESM bundle once without creating a script element.
  * If a global d3 already exists it is reused.
- * @returns {Promise<typeof import('d3')>}
+ * @returns {Promise<ConnectionsD3>}
  */
 async function load_d3() {
-  const g = typeof activeWindow !== 'undefined'
+  const g = /** @type {ConnectionsD3Global} */ (typeof activeWindow !== 'undefined'
     ? activeWindow
     : (typeof window !== 'undefined' ? window : {})
-  ;
+  );
 
   if (g.d3) {
     validate_d3_instance(g.d3);
@@ -142,7 +235,9 @@ async function load_d3() {
   }
 
   if (!d3_import_promise) {
-    d3_import_promise = import('https://cdn.jsdelivr.net/npm/d3@7/+esm')
+    d3_import_promise = (/** @type {Promise<ConnectionsD3>} */ (
+      import('https://cdn.jsdelivr.net/npm/d3@7/+esm')
+    ))
       .then((d3) => {
         validate_d3_instance(d3);
         if (!g.d3) g.d3 = d3;
@@ -159,6 +254,10 @@ async function load_d3() {
 
 /**
  * Build HTML container for the graph. Thin function returning an unattached element via render().
+ * @this {ConnectionsComponentContext}
+ * @param {ConnectionsListScope} connections_list
+ * @param {ConnectionsComponentOptions} [params]
+ * @returns {Promise<string>}
  */
 async function build_html(connections_list, params = {}) {
   const to_item = params?.to_item || connections_list?.item;
@@ -183,12 +282,16 @@ async function build_html(connections_list, params = {}) {
 
 /**
  * Render method (thin): returns unattached DOM element.
+ * @this {ConnectionsComponentContext}
+ * @param {ConnectionsListScope} connections_list
+ * @param {ConnectionsComponentOptions} [params]
+ * @returns {Promise<HTMLElement>}
  */
 export async function render(connections_list, params = {}) {
   this.apply_style_sheet(styles_css);
-  const html = await build_html.call(this, connections_list, params);
+  const html = /** @type {string} */ (await build_html.call(this, connections_list, params));
   const frag = this.create_doc_fragment(html);
-  const container = frag.querySelector('.connections-graph');
+  const container = /** @type {HTMLElement} */ (frag.querySelector('.connections-graph'));
   post_process.call(this, connections_list, container, params); // not awaited
   return container;
 }
@@ -197,6 +300,13 @@ export async function render(connections_list, params = {}) {
 /*                                Post-process                                */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * @this {ConnectionsComponentContext}
+ * @param {ConnectionsListScope} connections_list
+ * @param {HTMLElement} container
+ * @param {ConnectionsComponentOptions} [params]
+ * @returns {Promise<HTMLElement>}
+ */
 async function post_process(connections_list, container, params = {}) {
   const {
     results = await connections_list.get_results(params),
@@ -216,13 +326,15 @@ async function post_process(connections_list, container, params = {}) {
     const hidden_entries = collect_hidden_entries({
       connections_state: connection_state,
       existing_keys: base_prefixed_keys,
-      resolve_item: (collection_key, item_key) => connections_list?.env?.[collection_key]?.get(item_key),
+      resolve_item: (collection_key, item_key) => (
+        /** @type {ConnectionsCollection|undefined} */ (connections_list?.env?.[collection_key])
+      )?.get(item_key),
     });
     const result_entries = [...results, ...hidden_entries];
 
-    const svg = container.querySelector('svg.sc-graph-svg');
-    const viewport = svg.querySelector('g.sc-graph-viewport');
-    const g_nodes = viewport.querySelector('g.nodes');
+    const svg = /** @type {SVGSVGElement} */ (container.querySelector('svg.sc-graph-svg'));
+    const viewport = /** @type {SVGGElement} */ (svg.querySelector('g.sc-graph-viewport'));
+    const g_nodes = /** @type {SVGGElement} */ (viewport.querySelector('g.nodes'));
 
     // Visual constants
     const CENTER_R = 8;
@@ -230,11 +342,14 @@ async function post_process(connections_list, container, params = {}) {
     const PADDING = 24;
     const LABEL_MARGIN = 10;
 
+    /** @type {ConnectionsD3Simulation|null} */
     let sim = null;
+    /** @type {ConnectionsD3Selection|null} */
     let node_sel = null;
 
+    /** @param {ConnectionItem} item */
     const build_label_text = (item) => {
-      const display = get_item_display_name(item, {show_full_path: false}) || item?.key || '';
+      const display = /** @type {string} */ (get_item_display_name(item, {show_full_path: false})) || item?.key || '';
       return truncate_middle(display, 70);
     };
 
@@ -483,8 +598,17 @@ async function post_process(connections_list, container, params = {}) {
       };
 
       // Custom cluster attraction projected onto each node's target ring.
+      /**
+       * @param {Array<{x: number, y: number}>} [anchors_in]
+       * @param {(node: ConnectionsGraphNode) => number} [strength_fn]
+       * @param {number} [cx]
+       * @param {number} [cy]
+       * @returns {ConnectionsGraphForce}
+       */
       function force_cluster(anchors_in = [], strength_fn = () => 0.2, cx = 0, cy = 0) {
+        /** @type {ConnectionsGraphNode[]} */
         let nodes_f = [];
+        /** @param {number} alpha */
         function force(alpha) {
           for (let i = 0; i < nodes_f.length; i++) {
             const d = nodes_f[i];
@@ -498,8 +622,8 @@ async function post_process(connections_list, container, params = {}) {
             d.vy += (pr.y - d.y) * s * alpha;
           }
         }
-        force.initialize = function (_nodes) { nodes_f = _nodes; };
-        return force;
+        force.initialize = function (/** @type {ConnectionsGraphNode[]} */ _nodes) { nodes_f = _nodes; };
+        return /** @type {ConnectionsGraphForce} */ (force);
       }
       const cluster_force = force_cluster(anchors, cluster_strength_fn, center_x, center_y);
 
@@ -555,7 +679,7 @@ async function post_process(connections_list, container, params = {}) {
 
   } catch (err) {
     console.error('[connections_graph] post_process error:', err);
-    const fallback = activeDocument.createElement('p');
+    const fallback = /** @type {HTMLParagraphElement} */ (activeDocument.createElement('p'));
     fallback.className = 'sc-no-results';
     fallback.textContent = 'Unable to render graph. See console for details.';
     container.appendChild(fallback);
@@ -564,6 +688,9 @@ async function post_process(connections_list, container, params = {}) {
   return container;
 }
 
+/**
+ * @param {{node: ConnectionsGraphNode, container: HTMLElement, env: ConnectionsEnv, center_item: ConnectionItem}} options
+ */
 function handle_node_click({ node, container, env, center_item }) {
   if (!node?.item) return;
   const detail = build_result_detail(node, center_item);
@@ -579,6 +706,10 @@ function handle_node_click({ node, container, env, center_item }) {
   node.item.emit_event?.('connections:open_result', detail);
 }
 
+/**
+ * @param {ConnectionsGraphNode} node
+ * @param {ConnectionItem} center_item
+ */
 function build_result_detail(node, center_item) {
   const collection_key = node?.item?.collection_key;
   const item_key = node?.item?.key;

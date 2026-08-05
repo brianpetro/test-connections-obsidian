@@ -1,7 +1,7 @@
 /**
  * Open Smart Connections settings.
  *
- * @this {import('../../items/connections_list.js').ConnectionsList}
+ * @this {import('smart-types').ConnectionsListScope}
  * @returns {Promise<boolean>}
  */
 export async function connections_list_open_settings() {
@@ -14,6 +14,7 @@ export async function connections_list_open_settings() {
   return true;
 }
 
+/** @type {import('smart-types').ConnectionsMenusConfig} */
 export const menus = {
   'connections:list_menu': {
     title: 'Connections settings',

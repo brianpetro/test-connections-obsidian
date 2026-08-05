@@ -6,8 +6,8 @@ const HISTORY_LIMIT = 10;
  * This synchronous query keeps one target-provider module independently
  * includable while child selection delegates to the shared semantic action.
  *
- * @this {import('../../views/connections_item_view.js').ConnectionsItemView}
- * @returns {Array<object>}
+ * @this {import('smart-types').ConnectionsItemViewScope}
+ * @returns {import('smart-types').ConnectionItem[]}
  */
 export function connections_target_history() {
   const history = Array.isArray(this.connections_target_history)
@@ -22,6 +22,7 @@ export function connections_target_history() {
   ;
 }
 
+/** @type {import('smart-types').ConnectionsMenusConfig} */
 export const menus = {
   'connections:target_menu': {
     title: 'History',
@@ -55,6 +56,10 @@ export const menus = {
   },
 };
 
+/**
+ * @param {import('smart-types').ConnectionsMenuContext} menu_ctx
+ * @returns {import('smart-types').ConnectionItem[]}
+ */
 function resolve_target_candidates(menu_ctx) {
   const action = menu_ctx.resolve_action?.();
   if (typeof action !== 'function') return [];
@@ -63,6 +68,11 @@ function resolve_target_candidates(menu_ctx) {
   return Array.isArray(candidates) ? candidates : [];
 }
 
+/**
+ * @param {import('smart-types').ConnectionsMenuContext} menu_ctx
+ * @param {import('smart-types').ConnectionItem} target_item
+ * @returns {Promise<boolean>}
+ */
 async function run_select_target(menu_ctx, target_item) {
   const action = menu_ctx.env.config?.actions?.connections_list_select_target?.action;
   if (typeof action !== 'function') return false;

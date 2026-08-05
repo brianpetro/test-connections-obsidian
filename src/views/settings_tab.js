@@ -1,23 +1,41 @@
 import { SmartPluginSettingsTab } from "obsidian-smart-env";
 import {render_settings_config} from "obsidian-smart-env/src/utils/render_settings_config.js";
 
+/** @typedef {import('smart-types').ConnectionsApp} ConnectionsApp */
+/** @typedef {import('smart-types').ConnectionsDomElement} ConnectionsDomElement */
+/** @typedef {import('smart-types').ConnectionsPlugin} ConnectionsPlugin */
+/** @typedef {import('smart-types').ConnectionsSettingsTabScope} ConnectionsSettingsTabScope */
+
 export class ScEarlySettingsTab extends SmartPluginSettingsTab {
+  /**
+   * @param {ConnectionsApp} app
+   * @param {ConnectionsPlugin} plugin
+   */
   constructor(app, plugin) {
     super(app, plugin);
     this.plugin = plugin;
   }
 
+  /** @this {ConnectionsSettingsTabScope} */
   hide(){
     super.hide?.();
     this.plugin_container?.empty?.();
     this.turn_off_listener?.();
   }
 
+  /**
+   * @this {ConnectionsSettingsTabScope}
+   * @param {ConnectionsDomElement} container
+   */
   async render_header(container) {
     const header = await this.env.smart_components.render_component('connections_settings_header', this.plugin);
     container.appendChild(header);
   }
 
+  /**
+   * @this {ConnectionsSettingsTabScope}
+   * @param {ConnectionsDomElement} container
+   */
   async render_plugin_settings(container) {
     if (!container) return;
     container.empty?.();
@@ -31,7 +49,9 @@ export class ScEarlySettingsTab extends SmartPluginSettingsTab {
     });
     cl_container.createEl('h1', { text: 'Connections' });
     
-    const connections_lists_settings_config = this.env.config.collections.connections_lists.settings_config;
+    const connections_lists_settings_config = /** @type {import('smart-types').SettingsConfig} */ (
+      this.env.config.collections.connections_lists.settings_config
+    );
     render_settings_config(
       connections_lists_settings_config,
       this.env.connections_lists,
@@ -124,6 +144,7 @@ export class ScEarlySettingsTab extends SmartPluginSettingsTab {
     this.register_env_events();
   }
 
+  /** @this {ConnectionsSettingsTabScope} */
   register_env_events() {
     if (this.turn_off_listener || !this.env?.events) return;
     this.turn_off_listener = this.env.events.on('settings:changed', (event) => {

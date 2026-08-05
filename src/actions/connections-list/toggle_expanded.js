@@ -1,11 +1,8 @@
 /**
  * Toggle all rendered Connections results between expanded and collapsed.
  *
- * @this {import('../../items/connections_list.js').ConnectionsList}
- * @param {object} [params={}]
- * @param {object} [params.connections_settings]
- * @param {HTMLElement} [params.container]
- * @param {boolean} [params.expanded]
+ * @this {import('smart-types').ConnectionsListScope}
+ * @param {import('smart-types').ConnectionsActionParams} [params={}]
  * @returns {boolean}
  */
 export function connections_list_toggle_expanded(params = {}) {
@@ -28,7 +25,8 @@ export function connections_list_toggle_expanded(params = {}) {
   return true;
 }
 
-export const menus = {
+/** @type {import('smart-types').ConnectionsMenusConfig} */
+export const menus = /** @type {import('smart-types').ConnectionsMenusConfig & {'connections:list_menu': {title: (this: import('smart-types').ConnectionsMenuContext & {scope: import('smart-types').ConnectionsListScope}) => string, icon: (this: import('smart-types').ConnectionsMenuContext & {scope: import('smart-types').ConnectionsListScope}) => string}}} */ ({
   'connections:list_menu': {
     title() {
       const connections_settings = this.params.connections_settings ?? this.scope?.settings;
@@ -40,4 +38,4 @@ export const menus = {
     },
     order: 10,
   },
-};
+});

@@ -3,8 +3,8 @@ import { ConnectionsItemView } from '../../views/connections_item_view.js';
 /**
  * Open the Connections view focused on this source or block item.
  *
- * @this {object}
- * @param {object} [params={}]
+ * @this {import('smart-types').ConnectionItem}
+ * @param {import('smart-types').ConnectionsActionParams} [params={}]
  * @returns {Promise<boolean>}
  */
 export async function source_view_connections(params = {}) {
@@ -14,7 +14,7 @@ export async function source_view_connections(params = {}) {
     || env?.obsidian_app?.workspace
     || env?.plugin?.app?.workspace
     || env?.smart_connections_plugin?.app?.workspace
-    || activeWindow.app?.workspace
+    || /** @type {import('smart-types').ConnectionsWorkspace|undefined} */ (activeWindow.app?.workspace)
   ;
 
   if (!source_item?.key || !workspace) return false;
@@ -34,27 +34,48 @@ export async function source_view_connections(params = {}) {
   return true;
 }
 
+/**
+ * @param {import('smart-types').ConnectionsWorkspace} workspace
+ * @returns {Promise<import('smart-types').ConnectionsItemViewScope|null|undefined>}
+ */
 async function get_or_open_connections_view(workspace) {
-  const existing_view = ConnectionsItemView.get_view?.(workspace);
+  const existing_view = /** @type {import('smart-types').ConnectionsItemViewScope|null|undefined} */ (
+    ConnectionsItemView.get_view?.(workspace)
+  );
   if (existing_view) {
     await reveal_connections_leaf(workspace, existing_view.leaf);
     return existing_view;
   }
 
-  const existing_leaf = ConnectionsItemView.get_leaf?.(workspace);
+  const existing_leaf = /** @type {import('smart-types').ConnectionsWorkspaceLeaf|null|undefined} */ (
+    ConnectionsItemView.get_leaf?.(workspace)
+  );
   if (existing_leaf) {
     await reveal_connections_leaf(workspace, existing_leaf);
-    return ConnectionsItemView.get_view?.(workspace) || existing_leaf.view || null;
+    return /** @type {import('smart-types').ConnectionsItemViewScope|null} */ (
+      ConnectionsItemView.get_view?.(workspace) || existing_leaf.view || null
+    );
   }
 
-  const opened = await ConnectionsItemView.open?.(workspace, { active: true });
+  const opened = /** @type {import('smart-types').ConnectionsItemViewScope|null|undefined} */ (
+    await ConnectionsItemView.open?.(workspace, { active: true })
+  );
 
-  const opened_view = ConnectionsItemView.get_view?.(workspace) || opened || null;
-  const opened_leaf = ConnectionsItemView.get_leaf?.(workspace) || opened_view?.leaf;
+  const opened_view = /** @type {import('smart-types').ConnectionsItemViewScope|null} */ (
+    ConnectionsItemView.get_view?.(workspace) || opened || null
+  );
+  const opened_leaf = /** @type {import('smart-types').ConnectionsWorkspaceLeaf|null|undefined} */ (
+    ConnectionsItemView.get_leaf?.(workspace) || opened_view?.leaf
+  );
   await reveal_connections_leaf(workspace, opened_leaf);
   return opened_view || opened_leaf?.view || null;
 }
 
+/**
+ * @param {import('smart-types').ConnectionsWorkspace} workspace
+ * @param {import('smart-types').ConnectionsWorkspaceLeaf|null|undefined} leaf
+ * @returns {Promise<boolean>}
+ */
 async function reveal_connections_leaf(workspace, leaf) {
   if (!workspace || !leaf) return false;
 
@@ -73,6 +94,10 @@ async function reveal_connections_leaf(workspace, leaf) {
   return false;
 }
 
+/**
+ * @param {import('smart-types').ConnectionsWorkspaceLeaf} leaf
+ * @returns {void}
+ */
 function expand_leaf_ancestors(leaf) {
   let parent = leaf?.parent;
   while (parent) {
@@ -82,12 +107,19 @@ function expand_leaf_ancestors(leaf) {
   }
 }
 
+/**
+ * @param {import('smart-types').ConnectionsItemViewScope} view
+ * @param {import('smart-types').ConnectionItem} source_item
+ * @param {import('smart-types').ConnectionsActionParams} [params]
+ * @returns {Promise<void>}
+ */
 async function render_connections_view(view, source_item, params = {}) {
   await view.select_target(source_item, {
     event_source: params.event_source || 'source_view_connections',
   });
 }
 
+/** @type {import('smart-types').ConnectionsMenusConfig} */
 export const menus = {
   'source:menu': {
     title: 'View connections',

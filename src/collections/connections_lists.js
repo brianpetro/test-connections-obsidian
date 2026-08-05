@@ -4,6 +4,10 @@ import { ConnectionsList } from '../items/connections_list.js';
 import { migrate_connections_lists_settings } from '../../migrations/migrate_connections_lists_settings.js';
 import { insert_settings_after } from '../utils/insert_settings_after.js';
 
+/** @typedef {import('smart-types').ConnectionItem} ConnectionItem */
+/** @typedef {import('smart-types').ConnectionsEnv} ConnectionsEnv */
+/** @typedef {import('smart-types').ConnectionsListsCollection} ConnectionsListsCollection */
+
 /**
  * Configuration for filtering connections results.
  * Copied from SmartEntities to avoid additional dependency.
@@ -27,6 +31,10 @@ export class ConnectionsLists extends Collection {
   static version = 1;
   process_load_queue() {} // no persisting data (for now)
 
+  /**
+   * @param {ConnectionsEnv} env
+   * @param {object} [opts]
+   */
   constructor(env, opts = {}) {
     migrate_connections_lists_settings(env); // probably should be removed soon
     super(env, opts);
@@ -59,6 +67,11 @@ export class ConnectionsLists extends Collection {
     return settings_config(this);
   }
 
+  /**
+   * @this {ConnectionsListsCollection}
+   * @param {ConnectionItem} item
+   * @returns {import('smart-types').ConnectionsListScope}
+   */
   new_item(item) {
     const connections_list = new this.item_type(this.env, {
       collection_key: item.collection_key,
@@ -72,6 +85,7 @@ export class ConnectionsLists extends Collection {
     return connections_list;
   }
 
+  /** @this {ConnectionsListsCollection} */
   get_connections_list_component_options() {
     return Object.entries(this.env.config.components || {})
       .filter(([key]) => key.startsWith('connections_list_') && !key.startsWith('connections_list_item_'))
@@ -79,6 +93,7 @@ export class ConnectionsLists extends Collection {
     ;
   }
 
+  /** @this {ConnectionsListsCollection} */
   get_connections_list_item_options() {
     return Object.entries(this.env.config.components || {})
       .filter(([key, fn]) => key.startsWith('connections_list_item_'))
@@ -86,25 +101,30 @@ export class ConnectionsLists extends Collection {
     ;
   }
 
+  /** @this {ConnectionsListsCollection} */
   get score_algo_key() {
     const stored_key = this.settings?.score_algo_key;
     if(this.env.config?.actions?.[stored_key]) return stored_key;
     return 'similarity'; // TEMP default
   }
+  /** @this {ConnectionsListsCollection} */
   get results_collection_key() {
     const stored_key = this.settings?.results_collection_key;
     if(this.env[stored_key]) return stored_key;
     return 'smart_sources';
   }
 
+  /** @this {ConnectionsListsCollection} */
   get frontmatter_inclusions() {
     return parse_frontmatter_filter_lines(this.settings.frontmatter_filter_include);
   }
 
+  /** @this {ConnectionsListsCollection} */
   get frontmatter_exclusions() {
     return parse_frontmatter_filter_lines(this.settings.frontmatter_filter_exclude);
   }
 
+  /** @this {ConnectionsListsCollection} */
   get connections_list_component_settings_config() {
     // TEMP 2026-02-23 (migrating towards dynamic component settings)
     if(!this.settings?.connections_list_component_key || (!this.env.is_pro && ['none', 'connections_list_v4_2', 'connections_list_v3'].includes(this.settings.connections_list_component_key))) {
@@ -119,8 +139,10 @@ export class ConnectionsLists extends Collection {
     if(!component_key || component_key === 'none') return null;
     const component_module = this.env.config.components?.[component_key];
     const config = typeof component_module?.settings_config === 'function'
-      ? component_module.settings_config(this)
-      : component_module?.settings_config
+      ? /** @type {(scope: ConnectionsListsCollection) => import('smart-types').SettingsConfig} */ (
+        component_module.settings_config
+      )(this)
+      : /** @type {import('smart-types').SettingsConfig|undefined} */ (component_module?.settings_config)
     ;
     if (!config) return null;
     // prepend `components.${key}.` to each config key
@@ -133,6 +155,10 @@ export class ConnectionsLists extends Collection {
   }
 }
 
+/**
+ * @param {ConnectionsListsCollection} scope
+ * @returns {import('smart-types').SettingsConfig}
+ */
 export function settings_config(scope) {
   let config = {
     "results_collection_key": {

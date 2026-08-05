@@ -6,8 +6,8 @@ import { get_block_display_name } from 'obsidian-smart-env/src/utils/get_block_d
  * This synchronous query keeps one target-provider module independently
  * includable while child selection delegates to the shared semantic action.
  *
- * @this {import('../../views/connections_item_view.js').ConnectionsItemView}
- * @returns {Array<object>}
+ * @this {import('smart-types').ConnectionsItemViewScope}
+ * @returns {import('smart-types').ConnectionItem[]}
  */
 export function connections_target_blocks() {
   const current_key = this.current?.key || '';
@@ -25,6 +25,7 @@ export function connections_target_blocks() {
   });
 }
 
+/** @type {import('smart-types').ConnectionsMenusConfig} */
 export const menus = {
   'connections:target_menu': {
     title: 'Blocks',
@@ -58,6 +59,10 @@ export const menus = {
   },
 };
 
+/**
+ * @param {import('smart-types').ConnectionsMenuContext} menu_ctx
+ * @returns {import('smart-types').ConnectionItem[]}
+ */
 function resolve_target_candidates(menu_ctx) {
   const action = menu_ctx.resolve_action?.();
   if (typeof action !== 'function') return [];
@@ -66,6 +71,10 @@ function resolve_target_candidates(menu_ctx) {
   return Array.isArray(candidates) ? candidates : [];
 }
 
+/**
+ * @param {import('smart-types').ConnectionItem} block
+ * @returns {number}
+ */
 function get_block_first_line(block) {
   return Array.isArray(block?.lines) && Number.isFinite(block.lines[0])
     ? block.lines[0]
@@ -73,6 +82,10 @@ function get_block_first_line(block) {
   ;
 }
 
+/**
+ * @param {import('smart-types').ConnectionItem} block
+ * @returns {string}
+ */
 function get_block_title(block) {
   return get_block_display_name(block, { show_full_path: false })
     || block?.key
@@ -80,6 +93,11 @@ function get_block_title(block) {
   ;
 }
 
+/**
+ * @param {import('smart-types').ConnectionsMenuContext} menu_ctx
+ * @param {import('smart-types').ConnectionItem} target_item
+ * @returns {Promise<boolean>}
+ */
 async function run_select_target(menu_ctx, target_item) {
   const action = menu_ctx.env.config?.actions?.connections_list_select_target?.action;
   if (typeof action !== 'function') return false;

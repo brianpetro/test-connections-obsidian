@@ -2,6 +2,10 @@ const BLOCK_SEPARATOR = '#';
 const DISPLAY_SEPARATOR = ' › ';
 const PATH_SEPARATOR = '/';
 
+/**
+ * @param {import('smart-types').ConnectionItem} item
+ * @returns {[string, string]}
+ */
 export function get_context_lines(item) {
   const key = item.key;
   let top_line = '';

@@ -3,8 +3,9 @@ import { filter_hidden_results } from '../utils/filter_hidden_results.js';
 
 /**
  * Build a Smart Connections codeblock view toolbar + list container.
- * @param {object} connections_list
- * @param {object} opts
+ * @this {import('smart-types').ConnectionsComponentContext}
+ * @param {import('smart-types').ConnectionsListScope} connections_list
+ * @param {import('smart-types').ConnectionsComponentOptions} opts
  * @returns {Promise<string>}
  */
 export async function build_html(connections_list, opts = {}) {
@@ -67,21 +68,28 @@ export async function build_html(connections_list, opts = {}) {
   return html;
 }
 
+/**
+ * @this {import('smart-types').ConnectionsComponentContext}
+ * @param {import('smart-types').ConnectionsListScope} connections_list
+ * @param {import('smart-types').ConnectionsComponentOptions} [opts]
+ * @returns {Promise<DocumentFragment>}
+ */
 export async function render(connections_list, opts = {}) {
-  const html = await build_html.call(this, connections_list, opts);
+  const html = /** @type {string} */ (await build_html.call(this, connections_list, opts));
   const frag = this.create_doc_fragment(html);
   this.apply_style_sheet(styles);
-  const container = frag.firstElementChild;
+  const container = /** @type {import('smart-types').ConnectionsViewElement} */ (frag.firstElementChild);
   post_process.call(this, connections_list, container, opts);
   return frag;
 }
 
 /**
  * Post-process DOM fragment for codeblock behavior.
- * @param {object} connections_list
- * @param {DocumentFragment|HTMLElement} container
- * @param {object} opts
- * @returns {Promise<DocumentFragment|HTMLElement>}
+ * @this {import('smart-types').ConnectionsComponentContext}
+ * @param {import('smart-types').ConnectionsListScope} connections_list
+ * @param {import('smart-types').ConnectionsViewElement} container
+ * @param {import('smart-types').ConnectionsComponentOptions} opts
+ * @returns {Promise<import('smart-types').ConnectionsViewElement>}
  */
 export async function post_process(connections_list, container, opts = {}) {
   const list_container = container.querySelector('.connections-list-container');
@@ -105,6 +113,10 @@ export async function post_process(connections_list, container, opts = {}) {
     list_container.appendChild(list);
   };
 
+  /**
+   * @param {string} action_key
+   * @param {import('smart-types').ConnectionsActionParams} [params]
+   */
   const run_action = (action_key, params = {}) => {
     const action = connections_list.actions?.[action_key];
     if (typeof action !== 'function') {
@@ -182,12 +194,22 @@ export async function post_process(connections_list, container, opts = {}) {
   return container;
 }
 
+/**
+ * @param {import('smart-types').ConnectionsListScope} connections_list
+ * @param {import('smart-types').ConnectionsComponentOptions} [opts]
+ * @returns {Promise<import('smart-types').ConnectionResult[]>}
+ */
 async function get_visible_results_fallback(connections_list, opts = {}) {
   const raw_results = await get_results_fallback(connections_list, opts);
   const connections_state = connections_list?.item?.data?.connections || {};
   return filter_hidden_results(raw_results, connections_state);
 }
 
+/**
+ * @param {import('smart-types').ConnectionsListScope} connections_list
+ * @param {import('smart-types').ConnectionsComponentOptions} [opts]
+ * @returns {Promise<import('smart-types').ConnectionResult[]>}
+ */
 async function get_results_fallback(connections_list, opts = {}) {
   const cached = Array.isArray(connections_list?.results) ? connections_list.results : [];
   if (cached.length) return cached;

@@ -1,3 +1,8 @@
+/**
+ * @param {import('smart-types').ConnectionsWorkspaceParent|import('smart-types').ConnectionsWorkspaceLeaf|null} node
+ * @param {import('smart-types').ConnectionsWorkspaceParent} ancestor
+ * @returns {boolean}
+ */
 export const is_descendant_of = (node, ancestor) => {
   let current = node;
   while (current) {
@@ -9,6 +14,10 @@ export const is_descendant_of = (node, ancestor) => {
   return false;
 };
 
+/**
+ * @param {{workspace: import('smart-types').ConnectionsWorkspace, leaf: import('smart-types').ConnectionsWorkspaceLeaf|null}} params
+ * @returns {'left'|'right'|'root'}
+ */
 export const get_leaf_location = ({ workspace, leaf }) => {
   if (!workspace || !leaf) {
     return 'root';
@@ -23,6 +32,10 @@ export const get_leaf_location = ({ workspace, leaf }) => {
   return 'root';
 };
 
+/**
+ * @param {{workspace: import('smart-types').ConnectionsWorkspace, leaf: import('smart-types').ConnectionsWorkspaceLeaf|null, desired_location: string}} params
+ * @returns {boolean}
+ */
 export const should_relocate_leaf = ({ workspace, leaf, desired_location }) => {
   if (!leaf || (desired_location !== 'left' && desired_location !== 'right')) {
     return false;
