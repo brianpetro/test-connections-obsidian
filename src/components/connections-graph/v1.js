@@ -105,20 +105,11 @@ function parse_prefixed_key(prefixed_key) {
 
 
 /**
- * CDN settings for D3 used by the graph component.
- * Uses D3's CDN-hosted ESM bundle so the loader does not create a script element.
+ * D3 settings used by the graph component.
+ * The fixed CDN import is kept external by esbuild and preserved as a runtime ESM import.
  */
-const D3_CDN_URL = 'https://cdn.jsdelivr.net/npm/d3@7/+esm';
 const D3_EXPECTED_MAJOR = '7.';
 let d3_import_promise = null;
-
-/**
- * Resolve the D3 CDN URL as runtime data so the bundler preserves the import expression.
- * @returns {string}
- */
-function get_d3_cdn_url() {
-  return D3_CDN_URL;
-}
 
 /**
  * Validate a candidate d3 instance and log if it looks unexpected.
@@ -152,8 +143,7 @@ async function load_d3() {
   }
 
   if (!d3_import_promise) {
-    const d3_cdn_url = get_d3_cdn_url();
-    d3_import_promise = import(d3_cdn_url)
+    d3_import_promise = import('https://cdn.jsdelivr.net/npm/d3@7/+esm')
       .then((d3) => {
         validate_d3_instance(d3);
         if (!g.d3) g.d3 = d3;
@@ -315,6 +305,12 @@ async function post_process(connections_list, container, params = {}) {
         const v = non_center_vecs[i];
         const cluster_vec = centers[cluster] || null;
         const node_to_cluster_sim = (v && cluster_vec) ? Math.max(0, Math.min(1, cos_sim(v, cluster_vec))) : 0;
+        const score = Number.isFinite(res?.score)
+          ? +res.score
+          : Number.isFinite(res?.og_score)
+            ? +res.og_score
+            : (center_vec && v ? cos_sim(center_vec, v) : null)
+        ;
 
         const prefixed_key = prefixed_key_for_item(r_item);
         const isPinned = prefixed_key ? is_connection_pinned(connection_state, prefixed_key) : false;
@@ -323,7 +319,7 @@ async function post_process(connections_list, container, params = {}) {
         return {
           id: r_item.key,
           item: r_item,
-          score: Number.isFinite(res?.score) ? +res.score : (center_vec && v ? cos_sim(center_vec, v) : null), // display only
+          score, // display only
           ring_r: rr,
           angle,
           radius: NODE_R,
@@ -600,3 +596,4 @@ function build_result_detail(node, center_item) {
     center_key: center_item?.key,
   };
 }
+

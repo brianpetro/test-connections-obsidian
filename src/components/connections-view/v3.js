@@ -1,12 +1,10 @@
 import styles from './v3.css';
-import { Menu } from 'obsidian';
-import { StoryModal } from 'obsidian-smart-env/src/modals/story.js';
-import { copy_to_clipboard } from 'obsidian-smart-env/src/utils/copy_to_clipboard.js';
-import { build_connections_context_items } from '../../utils/connections_context_items.js';
+import { Menu, Notice } from 'obsidian';
 import { get_context_lines } from '../../utils/context_lines.js';
-import { connections_view_refresh_handler } from '../../utils/connections_view_refresh_handler.js';
-import { format_connections_as_links } from '../../utils/format_connections_as_links.js';
 import { filter_hidden_results } from '../../utils/filter_hidden_results.js';
+import { resolve_dropped_connections_targets } from '../../utils/resolve_dropped_connections_targets.js';
+
+const CONNECTIONS_TARGET_HISTORY_LIMIT = 10;
 
 /**
  * Build the main HTML structure for 'Smart Connections Pro' view.
@@ -42,7 +40,14 @@ export async function build_html(view, opts = {}) {
       <div class="connections-actions">
         ${top_bar_buttons}
       </div>
-      <p class="sc-context" data-key="">
+      <p
+        class="sc-context"
+        data-key=""
+        data-action="open-target-menu"
+        role="button"
+        tabindex="0"
+        aria-label="Change connections target"
+      >
         Loading...
       </p>
     </div>
@@ -85,6 +90,17 @@ export async function post_process(view, container, opts = {}) {
     return container;
   }
   let connections_list = connections_item.connections || env.connections_lists.new_item(connections_item);
+  const connections_settings = opts.connections_settings
+    ?? connections_list?.settings
+  ;
+
+  record_connections_target_history(view, connections_item);
+  container._connections_menu_state = {
+    view,
+    container,
+    connections_list,
+    connections_settings,
+  };
 
   // register container-level listeners in render since post_process is called frequently
   // (to refresh) while these listeners remain attached
@@ -92,137 +108,126 @@ export async function post_process(view, container, opts = {}) {
     container._has_listeners = true;
 
     const pause_button = container.querySelector('[data-action="toggle-pause"]');
-    pause_button?.addEventListener('click', () => {
-      view.toggle_connections_paused();
+    pause_button?.addEventListener('click', async () => {
+      const state = container._connections_menu_state;
+      const action = env.config?.actions?.connections_list_toggle_paused?.action;
+      if (typeof action === 'function') {
+        await action.call(state.view, {
+          event_source: 'connections_view.toggle_pause',
+        });
+      }
     });
-
-    const open_help = () => {
-      StoryModal.open(view.plugin, {
-        title: 'Getting Started With Smart Connections',
-        url: 'https://smartconnections.app/story/smart-connections-getting-started/?utm_source=connections-view-help#page=understanding-connections-1'
-      });
-    };
 
     const menu_button = container.querySelector('[data-action="open-menu"]');
     menu_button?.addEventListener('click', (event) => {
       const menu = new Menu(view.plugin.app);
+      const state = container._connections_menu_state;
 
-      const raw_results = Array.isArray(connections_list?.results) ? connections_list.results : [];
-      const connections_state = connections_list?.item?.data?.connections || {};
-      const visible_results = filter_hidden_results(raw_results, connections_state);
+      env.build_menu?.(
+        'connections:item_view_list_menu',
+        menu,
+        state.view,
+      );
+      if (menu.items?.length) menu.addSeparator();
+      const raw_results = Array.isArray(state.connections_list?.results)
+        ? state.connections_list.results
+        : []
+      ;
+      const connections_state =
+        state.connections_list?.item?.data?.connections || {};
+      const visible_results = filter_hidden_results(
+        raw_results,
+        connections_state,
+      );
 
-      menu.addItem((menu_item) => {
-        menu_item
-          .setTitle('Refresh connections')
-          .setIcon('refresh-cw')
-          .onClick(() => {
-            connections_view_refresh_handler.call(view, { target: container });
-          })
-        ;
-      });
-
-      menu.addItem((menu_item) => {
-        const context_items = build_connections_context_items({
-          source_item: connections_item,
-          results: visible_results
-        });
-        menu_item
-          .setTitle('Send results to context')
-          .setIcon('briefcase')
-          .setDisabled(!context_items.length)
-          .onClick(async () => {
-            if (!context_items.length) {
-              env.events.emit('connections:send_to_context_empty', {
-                level: 'warning',
-                message: 'No connection results to send to context.',
-                event_source: 'connections_view_menu',
-              });
-              return;
-            }
-            const smart_context = env.smart_contexts.new_context();
-            smart_context.add_items(context_items);
-            smart_context.emit_event('context_selector:open');
-            connections_list.emit_event('connections:sent_to_context');
-          })
-        ;
-      });
-
-      menu.addItem((menu_item) => {
-        const links_payload = format_connections_as_links(visible_results);
-        menu_item
-          .setTitle('Copy as list of links')
-          .setIcon('copy')
-          .setDisabled(!links_payload)
-          .onClick(async () => {
-            if (!links_payload) {
-              env.events.emit('connections:copy_list_empty', {
-                level: 'warning',
-                message: 'No connection results to copy.',
-                event_source: 'connections_view_menu',
-              });
-              return;
-            }
-            await copy_to_clipboard(links_payload);
-            connections_list.emit_event('connections:copied_list');
-          })
-        ;
-      });
-
-      menu.addItem((menu_item) => {
-        const connections_settings = opts.connections_settings
-          ?? connections_list?.settings
-        ;
-        const expanded = connections_settings?.expanded_view;
-        const title = expanded ? 'Collapse all results' : 'Expand all results';
-        const icon_name = expanded ? 'fold-vertical' : 'unfold-vertical';
-        menu_item
-          .setTitle(title)
-          .setIcon(icon_name)
-          .onClick(() => {
-            const curr_settings = opts.connections_settings
-              ?? connections_list?.settings
-            ;
-            const curr_expanded = curr_settings?.expanded_view;
-            if (curr_settings) curr_settings.expanded_view = !curr_expanded;
-
-            container.querySelectorAll('.sc-result').forEach((element) => {
-              curr_expanded ? element.classList.add('sc-collapsed') : element.classList.remove('sc-collapsed');
-            });
-          })
-        ;
-      });
-
-      env.build_menu?.('connections_list', menu, connections_list);
-
-      menu.addSeparator();
-
-      menu.addItem((menu_item) => {
-        menu_item
-          .setTitle('Connections settings')
-          .setIcon('settings')
-          .onClick(() => {
-            view.open_settings();
-          })
-        ;
-      });
-
-      menu.addItem((menu_item) => {
-        menu_item
-          .setTitle('Help & getting started')
-          .setIcon('help-circle')
-          .onClick(open_help)
-        ;
-      });
-
+      env.build_menu?.(
+        'connections:list_menu',
+        menu,
+        state.connections_list,
+        {
+          container: state.container,
+          connections_settings: state.connections_settings,
+          visible_results,
+          render_connections: state.view.render_view.bind(state.view),
+        },
+      );
       menu.showAtMouseEvent(event);
     });
+
+    const open_target_menu = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      const state = container._connections_menu_state;
+      const menu = new Menu(view.plugin.app);
+      env.build_menu?.('connections:target_menu', menu, state.view);
+      if (!(menu.items?.length > 0)) return;
+
+      show_menu(menu, event, sc_top_bar_context);
+    };
+
+    sc_top_bar_context?.addEventListener('click', open_target_menu);
+    sc_top_bar_context?.addEventListener('keydown', (event) => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      open_target_menu(event);
+    });
+
+    const set_target_drag_over = (active) => {
+      container.classList.toggle('is-drag-over', Boolean(active));
+    };
+    const on_target_dragenter = (event) => {
+      event.preventDefault();
+      set_target_drag_over(true);
+    };
+    const on_target_dragover = (event) => {
+      event.preventDefault();
+      set_target_drag_over(true);
+      if (event.dataTransfer) event.dataTransfer.dropEffect = 'copy';
+    };
+    const on_target_dragleave = (event) => {
+      if (event.relatedTarget && container.contains(event.relatedTarget)) return;
+      set_target_drag_over(false);
+    };
+    const on_target_drop = async (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      set_target_drag_over(false);
+
+      const targets = resolve_dropped_connections_targets(env, event.dataTransfer);
+      if (!targets.length) {
+        new Notice('Drop one indexed note or block into Connections.');
+        return;
+      }
+      if (targets.length > 1) {
+        new Notice('Drop one Connections target at a time.');
+        return;
+      }
+
+      const state = container._connections_menu_state;
+      const action = env.config?.actions?.connections_list_select_target?.action;
+      if (typeof action !== 'function') return;
+
+      await action.call(state.view, {
+        target_item: targets[0],
+        event_source: 'connections_view.drop_target',
+      });
+    };
+
+    container.addEventListener('dragenter', on_target_dragenter);
+    container.addEventListener('dragover', on_target_dragover);
+    container.addEventListener('dragleave', on_target_dragleave);
+    container.addEventListener('drop', on_target_drop);
   }
 
   const connections_list_component_key = opts.connections_list_component_key
     || connections_list.connections_list_component_key
     || 'connections_list_v4'
   ;
-  const list = await env.smart_components.render_component(connections_list_component_key, connections_list, opts);
+  const list = await env.smart_components.render_component(connections_list_component_key, connections_list, {
+    ...opts,
+    container,
+    render_connections: view.render_view.bind(view),
+  });
   this.empty(list_container);
   list_container.appendChild(list);
 
@@ -240,7 +245,8 @@ export async function post_process(view, container, opts = {}) {
     span.textContent = line.text || '\u00a0';
     sc_top_bar_context.appendChild(span);
   });
-  sc_top_bar_context.dataset.key = connections_item.key;
+  sc_top_bar_context.dataset.key = entity?.key || connections_item.key;
+  sc_top_bar_context.title = 'Change connections target';
 
   // Keep pause button in sync with view.paused
   const pause_btn = container.querySelector('[data-action="toggle-pause"]');
@@ -261,3 +267,38 @@ export async function post_process(view, container, opts = {}) {
 
   return container;
 }
+
+function record_connections_target_history(view, target_item) {
+  const source_key = String(target_item?.key || '').split('#')[0];
+  if (!view || !source_key) return;
+
+  const history = Array.isArray(view.connections_target_history)
+    ? view.connections_target_history
+    : []
+  ;
+  view.connections_target_history = [
+    source_key,
+    ...history.filter((key) => key !== source_key),
+  ].slice(0, CONNECTIONS_TARGET_HISTORY_LIMIT);
+}
+
+function show_menu(menu, event, anchor_el) {
+  if (typeof MouseEvent !== 'undefined' && event instanceof MouseEvent) {
+    menu.showAtMouseEvent(event);
+    return;
+  }
+
+  const rect = anchor_el.getBoundingClientRect();
+  if (typeof menu.showAtPosition === 'function') {
+    menu.showAtPosition({ x: rect.left, y: rect.bottom });
+    return;
+  }
+
+  menu.showAtMouseEvent(new MouseEvent('contextmenu', {
+    bubbles: true,
+    cancelable: true,
+    clientX: rect.left,
+    clientY: rect.bottom,
+  }));
+}
+

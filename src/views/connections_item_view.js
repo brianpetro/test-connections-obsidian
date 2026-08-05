@@ -1,15 +1,82 @@
 import { SmartItemView } from 'obsidian-smart-env/views/smart_item_view.js';
-import { apply_pause_state, toggle_pause_state } from '../utils/pause_controls.js';
 export class ConnectionsItemView extends SmartItemView {
   static get view_type() { return 'smart-connections-view'; }
   static get display_text() { return 'Connections'; }
   static get icon_name() { return 'smart-connections'; }
+  static get register_open_command() { return false; }
 
   constructor(leaf, plugin) {
     super(leaf, plugin);
     this.paused = false;
     this.pause_controls = null;
     this.current = null;
+  }
+
+  /**
+   * Set whether this view follows the active source.
+   * @param {boolean} paused
+   * @returns {boolean}
+   */
+  set_paused(paused) {
+    this.paused = Boolean(paused);
+    this.pause_controls?.update?.(this.paused);
+    return this.paused;
+  }
+
+  /**
+   * Toggle active-source following and refresh the active target when resumed.
+   * @param {object} [params={}]
+   * @param {string} [params.event_source]
+   * @returns {Promise<boolean>} The new paused state.
+   */
+  async toggle_paused(params = {}) {
+    const paused = this.set_paused(!this.paused);
+    if (paused) return paused;
+
+    const active_path = this.plugin.app.workspace.getActiveFile()?.path;
+    if (!active_path) return paused;
+
+    const active_item = this.env.smart_sources.get(active_path);
+    if (active_item) {
+      await this.render_target(active_item, {
+        force: true,
+        event_source: params.event_source,
+      });
+    }
+
+    return paused;
+  }
+
+  /**
+   * Pause active-source following and render an explicit target.
+   * @param {object} target_item
+   * @param {object} [params={}]
+   * @returns {Promise<boolean>}
+   */
+  async select_target(target_item, params = {}) {
+    if (!target_item) return false;
+
+    this.set_paused(true);
+    return await this.render_target(target_item, {
+      ...params,
+      force: true,
+    });
+  }
+
+  /**
+   * Render one Connections target through the view lifecycle.
+   * @param {object} [target_item=this.current]
+   * @param {object} [params={}]
+   * @returns {Promise<boolean>}
+   */
+  async render_target(target_item = this.current, params = {}) {
+    if (!target_item) return false;
+
+    await this.render_view({
+      ...params,
+      connections_item: target_item,
+    });
+    return true;
   }
 
   async render_view(params = {}, container = this.container) {
@@ -40,16 +107,17 @@ export class ConnectionsItemView extends SmartItemView {
       if (this.paused) return;
       if (!is_visible(this.container)) return;
       const connections_item = this.env[event.collection_key || 'smart_sources']?.get(event.item_key || event.key);
+      if (connections_item.is_media && connections_item.should_embed === false) return;
       if (connections_item.key === this.current?.key) return;
       if (handle_current_source_debounce) window.clearTimeout(handle_current_source_debounce);
       handle_current_source_debounce = window.setTimeout(() => {
-        this.render_view({connections_item});
+        this.render_target(connections_item);
       }, 250); // debounce interval (ms)
     });
     register_env_event_listener(this, 'settings:changed', (event) => {
       if(event.path?.includes('expanded_view')) return;
       if(event.path?.includes('connections_lists') && is_visible(this.container)){
-        this.render_view({connections_item: this.current});
+        this.render_target();
       }
     });
     register_env_event_listener(this, 'connections:show', (event) => {
@@ -59,8 +127,9 @@ export class ConnectionsItemView extends SmartItemView {
         const item = collection.get(event.item_key);
         // console.log({collection, item});
         if(item){
-          this.set_connections_paused(true);
-          this.render_view({connections_item: item});
+          this.select_target(item, {
+            event_source: event.event_source || 'connections:show',
+          });
         }
       }
     });
@@ -70,7 +139,7 @@ export class ConnectionsItemView extends SmartItemView {
         && event.keys?.includes(this.current?.key)
         && is_visible(this.container)
       ){
-        this.render_view({connections_item: this.current});
+        this.render_target();
       }
     });
   }
@@ -82,23 +151,6 @@ export class ConnectionsItemView extends SmartItemView {
   register_pause_controls(controls) {
     this.pause_controls = controls;
     this.pause_controls?.update(this.paused);
-  }
-
-  /**
-   * Set the paused state and sync UI controls.
-   * @param {boolean} paused
-   * @returns {boolean}
-   */
-  set_connections_paused(paused) {
-    return apply_pause_state(this, paused);
-  }
-
-  /**
-   * Toggle the paused state and sync UI controls.
-   * @returns {boolean}
-   */
-  toggle_connections_paused() {
-    return toggle_pause_state(this);
   }
 }
 

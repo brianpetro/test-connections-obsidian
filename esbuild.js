@@ -19,12 +19,13 @@ build_plugin({
   external: [
     '@codemirror/state',
     '@codemirror/view',
+    'https://cdn.jsdelivr.net/npm/d3@7/+esm',
     '@xenova/transformers',
     '@huggingface/transformers',
     'http',
     'url',
   ],
-  plugin_id: 'test-connections',
+  plugin_id: 'smart-connections',
   styles_path: path.join(process.cwd(), 'src', 'styles.css'),
 }).catch((err) => {
   console.error('Error in build process:', err);
