@@ -36,7 +36,7 @@ function apply_footer_fold_state(header_container, list_container, folded) {
 
 /**
  * Build the main HTML structure for the footer connections view.
- * @this {import('jsbrains/smart-types').ConnectionsComponentContext}
+ * @this {import('jsbrains/smart-types').SmartViewInstance<unknown>}
  * @param {import('jsbrains/smart-types').ConnectionsFooterViewScope} view
  * @param {import('jsbrains/smart-types').ConnectionsComponentOptions} opts
  * @returns {Promise<string>}
@@ -68,7 +68,7 @@ export async function build_html(view, opts = {}) {
 
 /**
  * Render the footer connections fragment.
- * @this {import('jsbrains/smart-types').ConnectionsComponentContext}
+ * @this {import('jsbrains/smart-types').SmartViewInstance<unknown>}
  * @param {import('jsbrains/smart-types').ConnectionsFooterViewScope} view
  * @param {import('jsbrains/smart-types').ConnectionsComponentOptions} opts
  * @returns {Promise<HTMLElement>}
@@ -84,7 +84,7 @@ export async function render(view, opts = {}) {
 
 /**
  * Post-process DOM fragment for footer connections behavior.
- * @this {import('jsbrains/smart-types').ConnectionsComponentContext}
+ * @this {import('jsbrains/smart-types').SmartViewInstance<unknown>}
  * @param {import('jsbrains/smart-types').ConnectionsFooterViewScope} view
  * @param {HTMLElement} container
  * @param {import('jsbrains/smart-types').ConnectionsComponentOptions} opts
@@ -130,4 +130,3 @@ export async function post_process(view, container, opts = {}) {
   list_container.appendChild(list);
   return container;
 }
-

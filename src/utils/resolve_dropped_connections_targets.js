@@ -17,18 +17,15 @@ const SMART_CONNECTIONS_COLLECTION_KEYS = new Set([
 /** @typedef {{items: SmartDragItem[]}} SmartDragData */
 /** @typedef {{normalized_path: string}} DroppedObsidianEntry */
 /** @typedef {{status: string, kind: string|null, path: string|null}} ClassifiedDroppedEntry */
-/** @typedef {{get?: (key: string) => unknown, items?: Object.<string, unknown>, fs?: import('jsbrains/smart-types').ConnectionsFs}} ConnectionsTargetCollection */
-/** @typedef {Record<string, unknown> & {smart_sources?: ConnectionsTargetCollection, smart_blocks?: ConnectionsTargetCollection, fs?: import('jsbrains/smart-types').ConnectionsFs}} DroppedConnectionsEnv */
-
 
 /**
- * @param {DroppedConnectionsEnv} env
+ * @param {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} env
  * @param {import('jsbrains/smart-types').ConnectionsCollectionKey} collection_key
  * @param {string} item_key
- * @returns {unknown}
+ * @returns {import('jsbrains/smart-types').ConnectionItem|null}
  */
 function get_collection_item(env, collection_key, item_key) {
-  const collection = /** @type {ConnectionsTargetCollection|undefined} */ (env?.[collection_key]);
+  const collection = env[collection_key];
   return collection?.get?.(item_key)
     || collection?.items?.[item_key]
     || null
@@ -45,7 +42,7 @@ function is_connections_target(item) {
 }
 
 /**
- * @param {DroppedConnectionsEnv} env
+ * @param {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} env
  * @param {DataTransfer|object} data_transfer
  * @returns {import('jsbrains/smart-types').ConnectionItem[]}
  */
@@ -74,7 +71,7 @@ function get_smart_targets(env, data_transfer) {
 }
 
 /**
- * @param {DroppedConnectionsEnv} env
+ * @param {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} env
  * @param {DataTransfer|object} data_transfer
  * @returns {import('jsbrains/smart-types').ConnectionItem[]}
  */
@@ -86,9 +83,7 @@ function get_native_targets(env, data_transfer) {
 
   const smart_sources = env?.smart_sources;
   const smart_fs = smart_sources?.fs || env?.fs;
-  const source_items = /** @type {Array<Partial<import('jsbrains/smart-types').ConnectionItem>>} */ (
-    Object.values(smart_sources?.items || {})
-  );
+  const source_items = Object.values(smart_sources?.items || {});
   const file_paths = Array.from(new Set([
     ...(smart_fs?.file_paths || []),
     ...source_items.map((source) => source?.key).filter(Boolean),
@@ -112,10 +107,10 @@ function get_native_targets(env, data_transfer) {
 
     const classified_entry = /** @type {ClassifiedDroppedEntry} */ (
       classify_dropped_obsidian_entry(entry, {
-      file_paths,
-      folder_paths,
-      available_file_paths,
-      vault_path,
+        file_paths,
+        folder_paths,
+        available_file_paths,
+        vault_path,
       })
     );
     if (
@@ -147,7 +142,7 @@ function get_native_targets(env, data_transfer) {
  * The caller intentionally decides whether zero, one, or several resolved
  * targets are acceptable for its surface.
  *
- * @param {DroppedConnectionsEnv} env
+ * @param {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} env
  * @param {DataTransfer|object} data_transfer
  * @returns {import('jsbrains/smart-types').ConnectionItem[]}
  */

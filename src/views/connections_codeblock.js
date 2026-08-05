@@ -1,6 +1,6 @@
 /** @typedef {import('jsbrains/smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
 /** @typedef {import('jsbrains/smart-types').ConnectionsDomElement} ConnectionsDomElement */
-/** @typedef {import('jsbrains/smart-types').ConnectionsMarkdownCodeBlockContext} ConnectionsMarkdownCodeBlockContext */
+/** @typedef {import('obsidian').MarkdownPostProcessorContext} MarkdownPostProcessorContext */
 /** @typedef {import('jsbrains/smart-types').ConnectionsPlugin} ConnectionsPlugin */
 
 /**
@@ -13,7 +13,7 @@ export async function register_smart_connections_codeblock(plugin) {
     /**
      * @param {string} cb_content
      * @param {ConnectionsDomElement} container
-     * @param {ConnectionsMarkdownCodeBlockContext} mpp_ctx
+     * @param {MarkdownPostProcessorContext} mpp_ctx
      */
     async (cb_content, container, mpp_ctx) => {
       container.empty();

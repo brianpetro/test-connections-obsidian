@@ -7,7 +7,6 @@ export const SMART_GRAPH_URL = 'https://smartconnections.app/smart-graph/';
  * its own `connections:list_menu` menu action.
  *
  * @this {import('jsbrains/smart-types').ConnectionsListScope}
- * @returns {void}
  */
 export function connections_list_send_to_smart_graph() {
   if (this?.env?.event_logs?.settings?.native_notice_attention) {
@@ -22,7 +21,7 @@ export function connections_list_send_to_smart_graph() {
   }
 
   // open directly if attention notifications are disabled
-  /** @type {Window} */ (activeWindow).open(SMART_GRAPH_URL, '_external');
+  activeWindow.open(SMART_GRAPH_URL, '_external');
   return;
 }
 

@@ -57,7 +57,7 @@ export const menus = {
     order: 20,
     disabled() {
       return !get_links_payload(
-        /** @type {import('jsbrains/smart-types').ConnectionsListScope} */ (/** @type {unknown} */ (this.scope)),
+        /** @type {import('jsbrains/smart-types').ConnectionsListScope} */ (this.scope),
         this.params,
       );
     },

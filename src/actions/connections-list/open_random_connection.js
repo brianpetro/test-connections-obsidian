@@ -20,9 +20,7 @@ const NATIVE_RANDOM_NOTE_COMMAND_IDS = [
 export async function connections_list_open_random_connection(params = {}) {
   const env = this?.env || params.plugin?.env || params.env;
   const app = get_app(env, params);
-  const scope_item = /** @type {{item?: import('jsbrains/smart-types').ConnectionItem}} */ (
-    /** @type {unknown} */ (this)
-  ).item;
+  const scope_item = /** @type {{item?: import('jsbrains/smart-types').ConnectionItem}} */ (this).item;
   const file_path = resolve_file_path(scope_item, params, app);
 
   if (!file_path) {
@@ -67,7 +65,7 @@ function get_app(env, params = {}) {
     || params.plugin?.app
     || env?.obsidian_app
     || env?.plugin?.app
-    || /** @type {Window & {app?: import('jsbrains/smart-types').ConnectionsApp}} */ (activeWindow).app
+    || /** @type {import('jsbrains/smart-types').ConnectionsApp|undefined} */ (activeWindow.app)
     || null
   ;
 }
@@ -193,4 +191,3 @@ export const menus = {
     },
   },
 };
-

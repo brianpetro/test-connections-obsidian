@@ -36,7 +36,7 @@ export class ConnectionsLists extends Collection {
    * @param {import('jsbrains/smart-types').CollectionOptions} [opts]
    */
   constructor(env, opts = {}) {
-    (/** @type {(env: SmartEnv) => void} */ (migrate_connections_lists_settings))(env); // probably should be removed soon
+    migrate_connections_lists_settings(env); // probably should be removed soon
     super(env, opts);
   }
 

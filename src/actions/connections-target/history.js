@@ -61,9 +61,7 @@ export const menus = {
  * @returns {import('jsbrains/smart-types').ConnectionItem[]}
  */
 function resolve_target_candidates(menu_ctx) {
-  const action = /** @type {((params: import('jsbrains/smart-types').ConnectionsActionParams) => import('jsbrains/smart-types').ConnectionItem[])|undefined} */ (
-    menu_ctx.resolve_action?.()
-  );
+  const action = menu_ctx.resolve_action?.();
   if (typeof action !== 'function') return [];
 
   const candidates = action(menu_ctx.params);
@@ -76,15 +74,16 @@ function resolve_target_candidates(menu_ctx) {
  * @returns {Promise<boolean>}
  */
 async function run_select_target(menu_ctx, target_item) {
-  const action = /** @type {((params: import('jsbrains/smart-types').ConnectionsActionParams) => boolean|Promise<boolean>)|undefined} */ (
-    menu_ctx.env.config?.actions?.connections_list_select_target?.action
+  const action = /** @type {((params: import('jsbrains/smart-types').ConnectionsActionParams) => Promise<boolean>|boolean)|undefined} */ (
+    /** @type {unknown} */ (menu_ctx.env.config?.actions?.connections_list_select_target?.action)
   );
   if (typeof action !== 'function') return false;
 
-  return /** @type {boolean} */ (
-    /** @type {unknown} */ (await action.call(menu_ctx.scope, {
+  const result = /** @type {boolean|Promise<boolean>} */ (
+    /** @type {unknown} */ (action.call(menu_ctx.scope, {
       target_item,
       event_source: menu_ctx.event_source,
     }))
   );
+  return await result;
 }

@@ -5,7 +5,7 @@ import { SmartItemView } from 'obsidian-smart-env/views/smart_item_view.js';
 /** @typedef {import('jsbrains/smart-types').ConnectionsCollection} ConnectionsCollection */
 /** @typedef {import('jsbrains/smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
 /** @typedef {import('jsbrains/smart-types').ConnectionsDomElement} ConnectionsDomElement */
-/** @typedef {import('jsbrains/smart-types').ConnectionsEventDisposer} ConnectionsEventDisposer */
+/** @typedef {import('jsbrains/smart-types').SmartEventDisposer} SmartEventDisposer */
 /** @typedef {import('jsbrains/smart-types').ConnectionsEventPayload} ConnectionsEventPayload */
 /** @typedef {import('jsbrains/smart-types').ConnectionsItemViewScope} ConnectionsItemViewScope */
 /** @typedef {import('jsbrains/smart-types').ConnectionsPauseControls} ConnectionsPauseControls */
@@ -206,25 +206,25 @@ function is_visible(container) {
   return true;
 }
 
-/** @type {WeakMap<ConnectionsItemViewScope, Map<string, ConnectionsEventDisposer>>} */
+/** @type {WeakMap<ConnectionsItemViewScope, Map<string, SmartEventDisposer>>} */
 const view_event_registry = new WeakMap();
 
 /**
  * @param {ConnectionsItemViewScope} view
- * @returns {Map<string, ConnectionsEventDisposer>}
+ * @returns {Map<string, SmartEventDisposer>}
  */
 const get_registry = (view) => {
   if (!view_event_registry.has(view)) {
     view_event_registry.set(view, new Map());
   }
-  return /** @type {Map<string, ConnectionsEventDisposer>} */ (view_event_registry.get(view));
+  return /** @type {Map<string, SmartEventDisposer>} */ (view_event_registry.get(view));
 };
 
 /**
  * @param {ConnectionsItemViewScope} view
  * @param {string} event_key
  * @param {(event: ConnectionsEventPayload) => void} callback
- * @returns {ConnectionsEventDisposer}
+ * @returns {SmartEventDisposer}
  */
 export const register_env_event_listener = (view, event_key, callback) => {
   if (!view || typeof view.env?.events?.on !== 'function') {

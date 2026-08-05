@@ -1,5 +1,5 @@
 /**
- * @this {import('jsbrains/smart-types').ConnectionsComponentContext}
+ * @this {import('jsbrains/smart-types').SmartViewInstance<unknown>}
  * @param {import('jsbrains/smart-types').ConnectionsListScope} connections_list
  * @param {import('jsbrains/smart-types').ConnectionsComponentOptions} [opts]
  * @returns {Promise<string>} A promise that resolves to the .sc-list HTML string.
@@ -12,7 +12,7 @@ export async function build_html(connections_list, opts = {}) {
 }
 
 /**
- * @this {import('jsbrains/smart-types').ConnectionsComponentContext}
+ * @this {import('jsbrains/smart-types').SmartViewInstance<unknown>}
  * @param {import('jsbrains/smart-types').ConnectionsListScope} connections_list
  * @param {import('jsbrains/smart-types').ConnectionsComponentOptions} [opts={}] - Optional parameters, including `opts.results`.
  * @returns {Promise<HTMLElement>} A promise that resolves to the .sc-list fragment with appended children.
@@ -26,7 +26,7 @@ export async function render(connections_list, opts = {}) {
 }
 
 /**
- * @this {import('jsbrains/smart-types').ConnectionsComponentContext}
+ * @this {import('jsbrains/smart-types').SmartViewInstance<unknown>}
  * @param {import('jsbrains/smart-types').ConnectionsListScope} connections_list
  * @param {HTMLElement} container
  * @param {import('jsbrains/smart-types').ConnectionsComponentOptions} [opts]
@@ -45,8 +45,9 @@ export async function post_process(connections_list, container, opts = {}) {
     register_graph_events(graph, list_container);
   } catch (_err) {
     this.empty(graph_container);
-    const error = /** @type {Error|undefined} */ (_err);
-    const error_message = this.create_doc_fragment(`<p class="sc-graph-error">Unable to load graph visualization: ${typeof error?.message === 'string' ? error.message : 'Unknown error'}</p>`);
+    const error = /** @type {{message?: unknown}|null|undefined} */ (_err);
+    const error_detail = typeof error?.message === 'string' ? error.message : 'Unknown error';
+    const error_message = this.create_doc_fragment(`<p class="sc-graph-error">Unable to load graph visualization: ${error_detail}</p>`);
     graph_container.appendChild(error_message);
   }
 

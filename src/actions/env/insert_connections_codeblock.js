@@ -3,7 +3,7 @@ import { build_connections_codeblock } from '../../utils/build_connections_codeb
 /**
  * Insert a Smart Connections codeblock at the current editor selection.
  *
- * @this {import('obsidian-smart-env').SmartEnv|object}
+ * @this {import('jsbrains/smart-types').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>}
  * @param {{editor?: import('obsidian').Editor}} [params={}]
  * @returns {boolean}
  */

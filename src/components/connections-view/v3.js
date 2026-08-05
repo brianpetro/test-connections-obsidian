@@ -7,7 +7,7 @@ import { resolve_dropped_connections_targets } from '../../utils/resolve_dropped
 const CONNECTIONS_TARGET_HISTORY_LIMIT = 10;
 
 /** @typedef {import('jsbrains/smart-types').ConnectionItem} ConnectionItem */
-/** @typedef {import('jsbrains/smart-types').ConnectionsComponentContext} ConnectionsComponentContext */
+/** @typedef {import('jsbrains/smart-types').SmartViewInstance<unknown>} SmartViewInstance */
 /** @typedef {import('jsbrains/smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
 /** @typedef {import('jsbrains/smart-types').ConnectionsItemViewScope} ConnectionsItemViewScope */
 /** @typedef {import('jsbrains/smart-types').ConnectionsListScope} ConnectionsListScope */
@@ -17,7 +17,7 @@ const CONNECTIONS_TARGET_HISTORY_LIMIT = 10;
 
 /**
  * Build the main HTML structure for 'Smart Connections Pro' view.
- * @this {ConnectionsComponentContext}
+ * @this {SmartViewInstance}
  * @param {ConnectionsItemViewScope} view
  * @param {ConnectionsComponentOptions} opts
  * @returns {Promise<string>}
@@ -70,7 +70,7 @@ export async function build_html(view, opts = {}) {
 
 /**
  * Render the 'Smart Connections Pro' fragment, including optional ranking.
- * @this {ConnectionsComponentContext}
+ * @this {SmartViewInstance}
  * @param {ConnectionsItemViewScope} view
  * @param {ConnectionsComponentOptions} opts
  * @returns {Promise<DocumentFragment>}
@@ -86,7 +86,7 @@ export async function render(view, opts = {}) {
 
 /**
  * Post-process DOM fragment for advanced overlays or shared behavior.
- * @this {ConnectionsComponentContext}
+ * @this {SmartViewInstance}
  * @param {ConnectionsItemViewScope} view
  * @param {ConnectionsViewElement} container
  * @param {ConnectionsComponentOptions} opts
@@ -335,4 +335,3 @@ function show_menu(menu, event, anchor_el) {
     clientY: rect.bottom,
   }));
 }
-

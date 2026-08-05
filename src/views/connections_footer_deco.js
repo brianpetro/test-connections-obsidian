@@ -2,9 +2,9 @@ import { ViewPlugin } from '@codemirror/view';
 import { StateEffect } from '@codemirror/state';
 
 /** @typedef {import('jsbrains/smart-types').ConnectionsDomElement} ConnectionsDomElement */
-/** @typedef {import('jsbrains/smart-types').ConnectionsEditorUpdate} ConnectionsEditorUpdate */
-/** @typedef {import('jsbrains/smart-types').ConnectionsEditorView} ConnectionsEditorView */
-/** @typedef {import('jsbrains/smart-types').ConnectionsStateEffectType<ConnectionsDomElement|null>} ConnectionsFooterStateEffect */
+/** @typedef {import('@codemirror/view').ViewUpdate} ViewUpdate */
+/** @typedef {import('@codemirror/view').EditorView} EditorView */
+/** @typedef {import('@codemirror/state').StateEffectType<ConnectionsDomElement|null>} ConnectionsFooterStateEffect */
 
 export const set_connections_footer_dom_effect = /** @type {ConnectionsFooterStateEffect} */ (StateEffect.define());
 
@@ -14,7 +14,7 @@ const FOOTER_HIDDEN_CLASS = 'sc-connections-footer-hidden';
 export const connections_footer_plugin = /** @type {unknown} */ (ViewPlugin.fromClass(
   class {
     /* ------------------------------------------------------ lifecycle ---- */
-    /** @param {ConnectionsEditorView} view */
+    /** @param {EditorView} view */
     constructor(view) {
       this.view = view;
       /** @type {ConnectionsDomElement|null} */
@@ -30,7 +30,7 @@ export const connections_footer_plugin = /** @type {unknown} */ (ViewPlugin.from
     }
 
     /* ----------------------------------------------------- view updates -- */
-    /** @param {ConnectionsEditorUpdate} update */
+    /** @param {ViewUpdate} update */
     update(update) {
       for (const tr of update.transactions) {
         for (const ef of tr.effects) {

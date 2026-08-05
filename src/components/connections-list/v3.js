@@ -1,6 +1,6 @@
 // List-only component used by configurable Connections surfaces.
 /**
- * @this {import('jsbrains/smart-types').ConnectionsComponentContext}
+ * @this {import('jsbrains/smart-types').SmartViewInstance<unknown>}
  * @param {import('jsbrains/smart-types').ConnectionsListScope} connections_list
  * @param {import('jsbrains/smart-types').ConnectionsComponentOptions} [opts]
  * @returns {Promise<string>} A promise that resolves to the .sc-list HTML string.
@@ -10,7 +10,7 @@ export async function build_html(connections_list, opts = {}) {
 }
 
 /**
- * @this {import('jsbrains/smart-types').ConnectionsComponentContext}
+ * @this {import('jsbrains/smart-types').SmartViewInstance<unknown>}
  * @param {import('jsbrains/smart-types').ConnectionsListScope} connections_list
  * @param {import('jsbrains/smart-types').ConnectionsComponentOptions} [opts={}] - Optional parameters, including `opts.results`.
  * @returns {Promise<Element>} A promise that resolves to the .sc-list fragment with appended children.
@@ -24,7 +24,7 @@ export async function render(connections_list, opts = {}) {
 }
 
 /**
- * @this {import('jsbrains/smart-types').ConnectionsComponentContext}
+ * @this {import('jsbrains/smart-types').SmartViewInstance<unknown>}
  * @param {import('jsbrains/smart-types').ConnectionsListScope} connections_list
  * @param {HTMLElement} container
  * @param {import('jsbrains/smart-types').ConnectionsComponentOptions} [opts]

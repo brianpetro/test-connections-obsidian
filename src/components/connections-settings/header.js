@@ -1,11 +1,11 @@
 import { StoryModal } from 'obsidian-smart-env/src/modals/story.js';
 
-/** @typedef {import('jsbrains/smart-types').ConnectionsComponentContext} ConnectionsComponentContext */
+/** @typedef {import('jsbrains/smart-types').SmartViewInstance<unknown>} SmartViewInstance */
 /** @typedef {import('jsbrains/smart-types').ConnectionsDomElement} ConnectionsDomElement */
 /** @typedef {import('jsbrains/smart-types').ConnectionsPlugin} ConnectionsPlugin */
 
 /**
- * @this {ConnectionsComponentContext}
+ * @this {SmartViewInstance}
  * @param {ConnectionsPlugin} scope_plugin
  * @returns {Promise<string>}
  */
@@ -25,7 +25,7 @@ async function build_html(scope_plugin) {
 }
 
 /**
- * @this {ConnectionsComponentContext}
+ * @this {SmartViewInstance}
  * @param {ConnectionsPlugin} scope_plugin
  * @returns {Promise<HTMLElement>}
  */
@@ -38,7 +38,7 @@ export async function render(scope_plugin) {
 }
 
 /**
- * @this {ConnectionsComponentContext}
+ * @this {SmartViewInstance}
  * @param {ConnectionsPlugin} scope_plugin
  * @param {HTMLElement} frag
  * @returns {Promise<HTMLElement>}

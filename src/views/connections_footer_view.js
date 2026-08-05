@@ -9,11 +9,12 @@ import { set_connections_footer_dom_effect } from './connections_footer_deco.js'
 /** @typedef {import('jsbrains/smart-types').ConnectionItem} ConnectionItem */
 /** @typedef {import('jsbrains/smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
 /** @typedef {import('jsbrains/smart-types').ConnectionsDomElement} ConnectionsDomElement */
-/** @typedef {import('jsbrains/smart-types').ConnectionsEditorView} ConnectionsEditorView */
-/** @typedef {import('jsbrains/smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
-/** @typedef {import('jsbrains/smart-types').ConnectionsEventDisposer} ConnectionsEventDisposer */
+/** @typedef {import('@codemirror/view').EditorView} EditorView */
+/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
+/** @typedef {import('jsbrains/smart-types').SmartEventDisposer} SmartEventDisposer */
 /** @typedef {import('jsbrains/smart-types').ConnectionsEventPayload} ConnectionsEventPayload */
 /** @typedef {import('jsbrains/smart-types').ConnectionsPlugin} ConnectionsPlugin */
+/** @typedef {import('jsbrains/smart-types').ConnectionsFooterViewScope} ConnectionsFooterViewScope */
 /** @typedef {import('jsbrains/smart-types').ConnectionsWorkspace} ConnectionsWorkspace */
 
 /**
@@ -31,7 +32,7 @@ const get_active_entity = (env, workspace) => {
 /**
  * Determine whether the editor's last line is currently visible in the viewport.
  * Uses CodeMirror 6 visibleRanges to avoid any DOM measurement thrash.
- * @param {ConnectionsEditorView} editor_view
+ * @param {EditorView} editor_view
  * @returns {boolean}
  */
 const is_last_line_visible = (editor_view) => {
@@ -41,9 +42,10 @@ const is_last_line_visible = (editor_view) => {
     const last_line = doc.line(doc.lines);
     const start = last_line.from;
     const end = last_line.to;
-    const visible_ranges = /** @type {readonly {from: number, to: number}[]} */ (
-      Array.isArray(editor_view.visibleRanges) ? editor_view.visibleRanges : []
-    );
+    const visible_ranges = Array.isArray(editor_view.visibleRanges)
+      ? /** @type {{from: number, to: number}[]} */ (editor_view.visibleRanges)
+      : []
+    ;
     return visible_ranges.some((range) => range.from <= end && range.to >= start);
   } catch (err) {
     console.warn('[Smart Connections] last-line visibility check failed', err);
@@ -65,6 +67,8 @@ export class ConnectionsFooterView {
   constructor(plugin) {
     this.plugin = plugin;
     this.app = plugin.app;
+    /** @type {SmartEventDisposer[]} */
+    this.env_listeners = [];
     this.register_env_listeners();
     /** @type {Object.<string, ConnectionsDomElement>} */
     this.container_map = {};
@@ -80,7 +84,7 @@ export class ConnectionsFooterView {
   /**
    * Attach a lightweight scroll/resize guard that waits until the last line becomes visible.
    * When the condition is met, it detaches itself and triggers render_view() again.
-   * @param {ConnectionsEditorView} editor_view
+   * @param {EditorView} editor_view
    */
   attach_visibility_guard(editor_view) {
     this.detach_visibility_guard();
@@ -216,7 +220,7 @@ export class ConnectionsFooterView {
    * @param {(event: ConnectionsEventPayload) => void} callback
    */
   register_env_listener(event_key, callback) {
-    if(!this.env_listeners) this.env_listeners = /** @type {ConnectionsEventDisposer[]} */ ([]);
+    if(!this.env_listeners) this.env_listeners = /** @type {SmartEventDisposer[]} */ ([]);
     this.env_listeners.push(this.env.events.on(event_key, callback));
   }
 
@@ -225,10 +229,11 @@ export class ConnectionsFooterView {
     await this.app.setting.openTabById(this.plugin.manifest.id);
   }
 
+  /** @this {ConnectionsFooterViewScope} */
   unload() {
     this.detach_visibility_guard();
     if (this.env_listeners) {
-      this.env_listeners.forEach((/** @type {ConnectionsEventDisposer} */ off) => off());
+      this.env_listeners.forEach((off) => off());
       this.env_listeners = [];
     }
   }

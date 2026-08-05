@@ -17,7 +17,7 @@ export class ConnectionsList extends CollectionItem {
 
   /** @returns {string} */
   get_key() {
-    const scope = /** @type {ConnectionsListScope} */ (/** @type {unknown} */ (this));
+    const scope = /** @type {ConnectionsListScope} */ (this);
     return `${scope.data.collection_key}:${scope.data.item_key}`;
   }
 
@@ -27,7 +27,7 @@ export class ConnectionsList extends CollectionItem {
    * @returns {Promise<void>}
    */
   async pre_process (params) {
-    (/** @type {(item: ConnectionItem) => void} */ (migrate_hidden_connections))(this.item); // TEMP: migrate hidden connections if needed
+    migrate_hidden_connections(this.item); // TEMP: migrate hidden connections if needed
     // default pre_process (via src/actions/connections-list/pre_process.js)
     if(typeof this.actions.connections_list_pre_process === 'function') {
       await this.actions.connections_list_pre_process(params);
@@ -90,27 +90,25 @@ export class ConnectionsList extends CollectionItem {
    * @returns {ConnectionResult[]}
    */
   filter_and_score (params = {}) {
-    const scope = /** @type {ConnectionsListScope} */ (/** @type {unknown} */ (this));
+    const scope = /** @type {ConnectionsListScope} */ (this);
     const collection = scope.env[params.results_collection_key];
     const score_errors = [];
-    const { results: raw_results } = Object.values(collection.items)
+    const { results: raw_results } = /** @type {{results: Set<ConnectionResult>}} */ (Object.values(collection.items)
       .reduce((acc, target) => {
         const scored = target.filter_and_score(params);
         if(!Number.isFinite(scored?.score)){
           if(scored?.error) score_errors.push(scored.error);
           return acc; // skip if errored/filtered out
         }
-        results_acc(acc, /** @type {ConnectionResult} */ (scored), params.limit); // update acc
+        results_acc(acc, scored, params.limit); // update acc
         return acc;
       }, {
         min: Number.POSITIVE_INFINITY,
         minResult: null,
-        results: /** @type {Set<ConnectionResult>} */ (new Set()),
+        results: new Set(),
       })
-    ;
-    const results = Array.from(raw_results).sort(
-      /** @type {(left: ConnectionResult, right: ConnectionResult) => number} */ (sort_by_score_descending)
     );
+    const results = Array.from(raw_results).sort(sort_by_score_descending);
     if(!results.length) return results;
     // TODO: 2026-04-13 remove this normailization (only applies to custom algos anyway) 
     if(!results.some(r => r.score > 0)) return results;

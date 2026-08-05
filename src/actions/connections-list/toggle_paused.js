@@ -3,7 +3,8 @@
  * When resuming, refresh the view target to the current active note.
  *
  * @this {import('jsbrains/smart-types').ConnectionsItemViewScope}
- * @param {import('jsbrains/smart-types').ConnectionsActionParams} [params={}]
+ * @param {object} [params={}]
+ * @param {string} [params.event_source]
  * @returns {Promise<boolean>}
  */
 export async function connections_list_toggle_paused(params = {}) {

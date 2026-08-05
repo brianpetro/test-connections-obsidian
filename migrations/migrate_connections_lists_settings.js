@@ -1,3 +1,4 @@
+/** @type {Array<'inline_connections'|'inline_connections_score_threshold'|'footer_connections'>} */
 const MIGRATED_SETTING_KEYS = [
   'inline_connections',
   'inline_connections_score_threshold',
@@ -5,16 +6,19 @@ const MIGRATED_SETTING_KEYS = [
 ];
 
 /**
+ * @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv
+ */
+
+/**
  * Safely migrate legacy Smart Connections settings into the connections_lists
  * collection settings bucket.
  *
- * @param {object} env - Smart Env instance provided to the plugin.
+ * @param {SmartEnv} env - Smart Env instance provided to the plugin.
  * @returns {boolean} true when any value was migrated.
  */
 export function migrate_connections_lists_settings(env) {
   const settings = env?.settings;
   if (!settings) return false;
-
   const legacy = settings.connections_pro;
   if (!legacy) return false;
 
@@ -24,12 +28,11 @@ export function migrate_connections_lists_settings(env) {
   for (const key of MIGRATED_SETTING_KEYS) {
     if (!(key in legacy)) continue;
     if (!(key in target)) {
-      target[key] = legacy[key];
+      Object.assign(target, { [key]: legacy[key] });
       migrated = true;
     }
     delete legacy[key];
   }
-
   if ('rank_model' in legacy) {
     if (!target.actions) target.actions = {};
     if (!('rank_connections' in target.actions)) {

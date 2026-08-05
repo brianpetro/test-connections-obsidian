@@ -3,7 +3,7 @@ import { filter_hidden_results } from '../utils/filter_hidden_results.js';
 
 /**
  * Build a Smart Connections codeblock view toolbar + list container.
- * @this {import('jsbrains/smart-types').ConnectionsComponentContext}
+ * @this {import('jsbrains/smart-types').SmartViewInstance<unknown>}
  * @param {import('jsbrains/smart-types').ConnectionsListScope} connections_list
  * @param {import('jsbrains/smart-types').ConnectionsComponentOptions} opts
  * @returns {Promise<string>}
@@ -69,7 +69,7 @@ export async function build_html(connections_list, opts = {}) {
 }
 
 /**
- * @this {import('jsbrains/smart-types').ConnectionsComponentContext}
+ * @this {import('jsbrains/smart-types').SmartViewInstance<unknown>}
  * @param {import('jsbrains/smart-types').ConnectionsListScope} connections_list
  * @param {import('jsbrains/smart-types').ConnectionsComponentOptions} [opts]
  * @returns {Promise<DocumentFragment>}
@@ -85,7 +85,7 @@ export async function render(connections_list, opts = {}) {
 
 /**
  * Post-process DOM fragment for codeblock behavior.
- * @this {import('jsbrains/smart-types').ConnectionsComponentContext}
+ * @this {import('jsbrains/smart-types').SmartViewInstance<unknown>}
  * @param {import('jsbrains/smart-types').ConnectionsListScope} connections_list
  * @param {import('jsbrains/smart-types').ConnectionsViewElement} container
  * @param {import('jsbrains/smart-types').ConnectionsComponentOptions} opts

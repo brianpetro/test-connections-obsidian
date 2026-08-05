@@ -14,7 +14,7 @@ export async function source_view_connections(params = {}) {
     || env?.obsidian_app?.workspace
     || env?.plugin?.app?.workspace
     || env?.smart_connections_plugin?.app?.workspace
-    || /** @type {Window & {app?: import('jsbrains/smart-types').ConnectionsApp}} */ (activeWindow).app?.workspace
+    || /** @type {import('jsbrains/smart-types').ConnectionsWorkspace|undefined} */ (activeWindow.app?.workspace)
   ;
 
   if (!source_item?.key || !workspace) return false;
@@ -68,7 +68,9 @@ async function get_or_open_connections_view(workspace) {
     ConnectionsItemView.get_leaf?.(workspace) || opened_view?.leaf
   );
   await reveal_connections_leaf(workspace, opened_leaf);
-  return opened_view || opened_leaf?.view || null;
+  return opened_view || /** @type {import('jsbrains/smart-types').ConnectionsItemViewScope|null} */ (
+    /** @type {unknown} */ (opened_leaf?.view || null)
+  );
 }
 
 /**
@@ -126,10 +128,8 @@ export const menus = {
     icon: 'smart-connections',
     order: 20,
     disabled() {
-      const scope = /** @type {{key?: string}} */ (/** @type {unknown} */ (this.scope));
+      const scope = /** @type {{key?: string}} */ (this.scope);
       return !scope.key || !this.env?.connections_lists;
     },
   },
 };
-
-

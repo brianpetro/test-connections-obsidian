@@ -29,13 +29,11 @@ import {
 /** @typedef {import('jsbrains/smart-types').ConnectionItem} ConnectionItem */
 /** @typedef {import('jsbrains/smart-types').ConnectionResult} ConnectionResult */
 /** @typedef {import('jsbrains/smart-types').ConnectionsCollection} ConnectionsCollection */
-/** @typedef {import('jsbrains/smart-types').ConnectionsComponentContext} ConnectionsComponentContext */
+/** @typedef {import('jsbrains/smart-types').SmartViewInstance<unknown>} SmartViewInstance */
 /** @typedef {import('jsbrains/smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
 /** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
 /** @typedef {import('jsbrains/smart-types').ConnectionsListScope} ConnectionsListScope */
 /** @typedef {import('jsbrains/smart-types').ConnectionsState} ConnectionsState */
-
-/** @typedef {ConnectionResult} ConnectionsGraphResult */
 
 /**
  * @typedef {Object} ConnectionsGraphNode
@@ -119,7 +117,7 @@ import {
 
 /**
  * Builds a Set of prefixed keys for the provided results.
- * @param {ConnectionsGraphResult[]} results
+ * @param {ConnectionResult[]} results
  * @returns {Set<string>}
  */
 export function build_prefixed_key_set(results = []) {
@@ -147,7 +145,7 @@ export function prefixed_key_for_item(item) {
  * @param {ConnectionsState} [options.connections_state]
  * @param {Set<string>} [options.existing_keys]
  * @param {(collection_key: string, item_key: string) => ConnectionItem|undefined} [options.resolve_item]
- * @returns {ConnectionsGraphResult[]}
+ * @returns {ConnectionResult[]}
  */
 export function collect_hidden_entries({
   connections_state = {},
@@ -155,7 +153,7 @@ export function collect_hidden_entries({
   resolve_item,
 } = {}) {
   if (typeof resolve_item !== 'function') return [];
-  /** @type {ConnectionsGraphResult[]} */
+  /** @type {ConnectionResult[]} */
   const hidden_entries = [];
   for (const [prefixed_key, state] of Object.entries(connections_state)) {
     if (!state?.hidden || state?.pinned) continue;
@@ -254,7 +252,7 @@ async function load_d3() {
 
 /**
  * Build HTML container for the graph. Thin function returning an unattached element via render().
- * @this {ConnectionsComponentContext}
+ * @this {SmartViewInstance}
  * @param {ConnectionsListScope} connections_list
  * @param {ConnectionsComponentOptions} [params]
  * @returns {Promise<string>}
@@ -282,7 +280,7 @@ async function build_html(connections_list, params = {}) {
 
 /**
  * Render method (thin): returns unattached DOM element.
- * @this {ConnectionsComponentContext}
+ * @this {SmartViewInstance}
  * @param {ConnectionsListScope} connections_list
  * @param {ConnectionsComponentOptions} [params]
  * @returns {Promise<HTMLElement>}
@@ -301,7 +299,7 @@ export async function render(connections_list, params = {}) {
 /* -------------------------------------------------------------------------- */
 
 /**
- * @this {ConnectionsComponentContext}
+ * @this {SmartViewInstance}
  * @param {ConnectionsListScope} connections_list
  * @param {HTMLElement} container
  * @param {ConnectionsComponentOptions} [params]
@@ -349,10 +347,7 @@ async function post_process(connections_list, container, params = {}) {
 
     /** @param {ConnectionItem} item */
     const build_label_text = (item) => {
-      const display = /** @type {string} */ (get_item_display_name(
-        /** @type {import('smart-collections').CollectionItem} */ (/** @type {unknown} */ (item)),
-        {show_full_path: false},
-      )) || item?.key || '';
+      const display = get_item_display_name(item, {show_full_path: false}) || item?.key || '';
       return truncate_middle(display, 70);
     };
 
@@ -595,7 +590,7 @@ async function post_process(connections_list, container, params = {}) {
         .distanceMax(half_min);
 
       // cluster attraction strength: gentler baseline with similarity scaling
-      /** @param {ConnectionsGraphNode} d */
+      /** @type {(d: ConnectionsGraphNode) => number} */
       const cluster_strength_fn = (d) => {
         if (d.isCenter) return 0;
         const base = 0.04;
@@ -686,9 +681,7 @@ async function post_process(connections_list, container, params = {}) {
 
   } catch (err) {
     console.error('[connections_graph] post_process error:', err);
-    const fallback = /** @type {HTMLParagraphElement} */ (
-      /** @type {Document} */ (activeDocument).createElement('p')
-    );
+    const fallback = /** @type {HTMLParagraphElement} */ (activeDocument.createElement('p'));
     fallback.className = 'sc-no-results';
     fallback.textContent = 'Unable to render graph. See console for details.';
     container.appendChild(fallback);
@@ -734,4 +727,3 @@ function build_result_detail(node, center_item) {
     center_key: center_item?.key,
   };
 }
-

@@ -7,7 +7,8 @@ import {
  * Remove all pinned flags from the current source item's Connections state.
  *
  * @this {import('jsbrains/smart-types').ConnectionsListScope}
- * @param {import('jsbrains/smart-types').ConnectionsActionParams} [params={}]
+ * @param {object} [params={}]
+ * @param {HTMLElement} [params.container]
  * @returns {boolean}
  */
 export function connections_list_unpin_all(params = {}) {
