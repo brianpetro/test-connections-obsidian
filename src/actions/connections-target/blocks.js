@@ -64,7 +64,9 @@ export const menus = {
  * @returns {import('smart-types').ConnectionItem[]}
  */
 function resolve_target_candidates(menu_ctx) {
-  const action = menu_ctx.resolve_action?.();
+  const action = /** @type {((params: import('smart-types').ConnectionsActionParams) => import('smart-types').ConnectionItem[])|undefined} */ (
+    menu_ctx.resolve_action?.()
+  );
   if (typeof action !== 'function') return [];
 
   const candidates = action(menu_ctx.params);
@@ -87,10 +89,10 @@ function get_block_first_line(block) {
  * @returns {string}
  */
 function get_block_title(block) {
-  return get_block_display_name(block, { show_full_path: false })
-    || block?.key
-    || 'Block'
-  ;
+  const display_name = /** @type {string} */ (
+    /** @type {unknown} */ (get_block_display_name(block, { show_full_path: false }))
+  );
+  return display_name || block?.key || 'Block';
 }
 
 /**
@@ -99,11 +101,15 @@ function get_block_title(block) {
  * @returns {Promise<boolean>}
  */
 async function run_select_target(menu_ctx, target_item) {
-  const action = menu_ctx.env.config?.actions?.connections_list_select_target?.action;
+  const action = /** @type {((params: import('smart-types').ConnectionsActionParams) => boolean|Promise<boolean>)|undefined} */ (
+    menu_ctx.env.config?.actions?.connections_list_select_target?.action
+  );
   if (typeof action !== 'function') return false;
 
-  return await action.call(menu_ctx.scope, {
-    target_item,
-    event_source: menu_ctx.event_source,
-  });
+  return /** @type {boolean} */ (
+    /** @type {unknown} */ (await action.call(menu_ctx.scope, {
+      target_item,
+      event_source: menu_ctx.event_source,
+    }))
+  );
 }

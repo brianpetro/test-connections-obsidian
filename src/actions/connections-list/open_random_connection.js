@@ -67,7 +67,7 @@ function get_app(env, params = {}) {
     || params.plugin?.app
     || env?.obsidian_app
     || env?.plugin?.app
-    || /** @type {import('smart-types').ConnectionsApp|undefined} */ (activeWindow.app)
+    || /** @type {Window & {app?: import('smart-types').ConnectionsApp}} */ (activeWindow).app
     || null
   ;
 }

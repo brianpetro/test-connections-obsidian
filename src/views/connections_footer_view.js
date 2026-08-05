@@ -41,8 +41,10 @@ const is_last_line_visible = (editor_view) => {
     const last_line = doc.line(doc.lines);
     const start = last_line.from;
     const end = last_line.to;
-    return (Array.isArray(editor_view.visibleRanges) ? editor_view.visibleRanges : [])
-      .some((range) => range.from <= end && range.to >= start);
+    const visible_ranges = /** @type {readonly {from: number, to: number}[]} */ (
+      Array.isArray(editor_view.visibleRanges) ? editor_view.visibleRanges : []
+    );
+    return visible_ranges.some((range) => range.from <= end && range.to >= start);
   } catch (err) {
     console.warn('[Smart Connections] last-line visibility check failed', err);
     return false;
@@ -194,6 +196,7 @@ export class ConnectionsFooterView {
   }
 
   register_env_listeners() {
+    /** @type {number|undefined} */
     let handle_current_source_debounce;
     this.register_env_listener('sources:opened', () => {
       if (handle_current_source_debounce) window.clearTimeout(handle_current_source_debounce);
@@ -225,7 +228,7 @@ export class ConnectionsFooterView {
   unload() {
     this.detach_visibility_guard();
     if (this.env_listeners) {
-      this.env_listeners.forEach((off) => off());
+      this.env_listeners.forEach((/** @type {ConnectionsEventDisposer} */ off) => off());
       this.env_listeners = [];
     }
   }

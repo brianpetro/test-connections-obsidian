@@ -79,6 +79,7 @@ export const action_scope = {
 };
 export const tool = {
   name: 'smart_connections_list',
+  /** @param {{env: import('smart-types/smart-environment.js').SmartEnv<import('smart-types').ConnectionsEnvExtensions>}} context */
   when({ env }) {
     return Boolean(env.connections_lists && env.smart_sources);
   },

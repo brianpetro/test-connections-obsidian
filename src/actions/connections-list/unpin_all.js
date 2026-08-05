@@ -6,9 +6,8 @@ import {
 /**
  * Remove all pinned flags from the current source item's Connections state.
  *
- * @this {import('../../items/connections_list.js').ConnectionsList}
- * @param {object} [params={}]
- * @param {HTMLElement} [params.container]
+ * @this {import('smart-types').ConnectionsListScope}
+ * @param {import('smart-types').ConnectionsActionParams} [params={}]
  * @returns {boolean}
  */
 export function connections_list_unpin_all(params = {}) {
@@ -40,16 +39,19 @@ export function connections_list_unpin_all(params = {}) {
   }
 }
 
+/** @type {import('smart-types').ConnectionsMenusConfig} */
 export const menus = {
   'connections:list_menu': {
     title() {
-      const pinned_count = count_pinned_connections(this.scope?.item?.data?.connections);
+      const scope = /** @type {import('smart-types').ConnectionsListScope} */ (this.scope);
+      const pinned_count = count_pinned_connections(scope.item?.data?.connections);
       return `Unpin All (${pinned_count})`;
     },
     icon: 'pin-off',
     order: 70,
     disabled() {
-      return !count_pinned_connections(this.scope?.item?.data?.connections);
+      const scope = /** @type {import('smart-types').ConnectionsListScope} */ (this.scope);
+      return !count_pinned_connections(scope.item?.data?.connections);
     },
   },
 };

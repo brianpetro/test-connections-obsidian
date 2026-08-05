@@ -6,7 +6,8 @@ export const SMART_GRAPH_URL = 'https://smartconnections.app/smart-graph/';
  * Smart Graph Pro replaces this placeholder with an actual graph action via
  * its own `connections:list_menu` menu action.
  *
- * @this {import('../../items/connections_list.js').ConnectionsList}
+ * @this {import('smart-types').ConnectionsListScope}
+ * @returns {void}
  */
 export function connections_list_send_to_smart_graph() {
   if (this?.env?.event_logs?.settings?.native_notice_attention) {
@@ -21,10 +22,11 @@ export function connections_list_send_to_smart_graph() {
   }
 
   // open directly if attention notifications are disabled
-  activeWindow.open(SMART_GRAPH_URL, '_external');
+  /** @type {Window} */ (activeWindow).open(SMART_GRAPH_URL, '_external');
   return;
 }
 
+/** @type {import('smart-types').ConnectionsMenusConfig} */
 export const menus = {
   'connections:list_menu': {
     title: 'Explore in Smart Graph',

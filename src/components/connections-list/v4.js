@@ -45,7 +45,8 @@ export async function post_process(connections_list, container, opts = {}) {
     register_graph_events(graph, list_container);
   } catch (_err) {
     this.empty(graph_container);
-    const error_message = this.create_doc_fragment(`<p class="sc-graph-error">Unable to load graph visualization: ${typeof _err?.message === 'string' ? _err.message : 'Unknown error'}</p>`);
+    const error = /** @type {Error|undefined} */ (_err);
+    const error_message = this.create_doc_fragment(`<p class="sc-graph-error">Unable to load graph visualization: ${typeof error?.message === 'string' ? error.message : 'Unknown error'}</p>`);
     graph_container.appendChild(error_message);
   }
 

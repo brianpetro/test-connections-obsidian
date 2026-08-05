@@ -131,6 +131,7 @@ export class ConnectionsItemView extends SmartItemView {
   /** @this {ConnectionsItemViewScope} */
   register_env_listeners() {
     // Added debounce
+    /** @type {number|undefined} */
     let handle_current_source_debounce;
     register_env_event_listener(this, 'sources:opened', (event = {}) => {
       if (this.paused) return;

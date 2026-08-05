@@ -29,7 +29,8 @@ export function connections_list_send_to_context(params = {}) {
     return true;
   }
 
-  const open_url = /** @type {typeof window.open|undefined} */ (activeWindow?.open
+  const open_url = /** @type {typeof window.open|undefined} */ (
+    (/** @type {Window|undefined} */ (activeWindow))?.open
     || window?.open
     || open
   );

@@ -1,3 +1,9 @@
+/**
+ * @param {string} anchor_key
+ * @param {import('smart-types').SettingsConfig} config
+ * @param {import('smart-types').SettingsConfig} merge_object
+ * @returns {import('smart-types').SettingsConfig}
+ */
 export function insert_settings_after(anchor_key, config, merge_object) {
   const config_entries = Object.entries({ ...config });
   const anchor_i = config_entries.findIndex(([key]) => key === anchor_key);

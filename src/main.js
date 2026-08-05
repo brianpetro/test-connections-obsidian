@@ -67,8 +67,11 @@ export default class SmartConnectionsPlugin extends SmartPlugin {
     return /** @type {ConnectionsSmartEnv|undefined} */ (/** @type {unknown} */ (this.env));
   }
 
+  /** @returns {void} */
   onload() {
-    this.app.workspace.onLayoutReady(this.initialize.bind(this));
+    this.app.workspace.onLayoutReady(() => {
+      void this.initialize();
+    });
     this.SmartEnv.create(this, this.smart_env_config);
     this.addSettingTab(new this.ConnectionsSettingsTab(this.app, /** @type {import('smart-types').ConnectionsPlugin} */ (/** @type {unknown} */ (this))));
     add_smart_dice_icon();
@@ -82,6 +85,7 @@ export default class SmartConnectionsPlugin extends SmartPlugin {
     this.env?.unload_main?.(this);
   }
 
+  /** @returns {Promise<void>} */
   async initialize() {
     this.register_ribbon_actions();
     this.smart_connections_view = null;
@@ -163,6 +167,7 @@ export default class SmartConnectionsPlugin extends SmartPlugin {
     }));
   }
 
+  /** @returns {Promise<void>} */
   async check_for_updates() {
     if (await this.is_new_plugin_version(this.manifest.version)) {
       // console.log("opening release notes modal");
@@ -173,9 +178,12 @@ export default class SmartConnectionsPlugin extends SmartPlugin {
       }
       await this.set_last_known_version(this.manifest.version);
     }
-    window.setTimeout(this.check_for_update.bind(this), 3000);
+    window.setTimeout(() => {
+      void this.check_for_update();
+    }, 3000);
   }
 
+  /** @returns {Promise<void>} */
   async check_for_update() {
     try {
       const { json: response } = /** @type {ConnectionsReleaseRequestResponse} */ (await requestUrl({
@@ -231,10 +239,18 @@ export default class SmartConnectionsPlugin extends SmartPlugin {
     }
   }
 
+  /**
+   * @param {string} target_path
+   * @param {Event|null} [event]
+   * @returns {Promise<void>}
+   */
   async open_note(target_path, event = null) { await open_note(this, target_path, event); }
 
   /**
    * @deprecated extract into utility
+   * @param {string} ignore
+   * @param {string|null} [message]
+   * @returns {Promise<void>}
    */
   async add_to_gitignore(ignore, message = null) {
     if (!(await this.app.vault.adapter.exists(".gitignore"))) return;

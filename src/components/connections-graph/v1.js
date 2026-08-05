@@ -527,6 +527,7 @@ async function post_process(connections_list, container, params = {}) {
         node_sel.classed('sc-graph-node-hover', false);
       };
 
+      /** @param {Element|null} node */
       const set_hover = (node) => {
         if (!node) return;
         clear_hover();
@@ -594,6 +595,7 @@ async function post_process(connections_list, container, params = {}) {
         .distanceMax(half_min);
 
       // cluster attraction strength: gentler baseline with similarity scaling
+      /** @param {ConnectionsGraphNode} d */
       const cluster_strength_fn = (d) => {
         if (d.isCenter) return 0;
         const base = 0.04;
@@ -684,7 +686,9 @@ async function post_process(connections_list, container, params = {}) {
 
   } catch (err) {
     console.error('[connections_graph] post_process error:', err);
-    const fallback = /** @type {HTMLParagraphElement} */ (activeDocument.createElement('p'));
+    const fallback = /** @type {HTMLParagraphElement} */ (
+      /** @type {Document} */ (activeDocument).createElement('p')
+    );
     fallback.className = 'sc-no-results';
     fallback.textContent = 'Unable to render graph. See console for details.';
     container.appendChild(fallback);

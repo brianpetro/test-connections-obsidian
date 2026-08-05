@@ -33,10 +33,10 @@ export class ConnectionsLists extends Collection {
 
   /**
    * @param {SmartEnv} env
-   * @param {object} [opts]
+   * @param {import('smart-types').CollectionOptions} [opts]
    */
   constructor(env, opts = {}) {
-    migrate_connections_lists_settings(env); // probably should be removed soon
+    (/** @type {(env: SmartEnv) => void} */ (migrate_connections_lists_settings))(env); // probably should be removed soon
     super(env, opts);
   }
 
@@ -216,7 +216,7 @@ export function settings_config(scope) {
       name: "Footer connections list component",
       type: "dropdown",
       description: "Select the component used to render the connections list in note footers.",
-      options_callback: (scope) => scope.get_connections_list_component_options(),
+      options_callback: (/** @type {ConnectionsListsCollection} */ scope) => scope.get_connections_list_component_options(),
     },
     filters_helper: {
       group: 'Connections filters',

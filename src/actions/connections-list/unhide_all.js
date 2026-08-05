@@ -6,9 +6,8 @@ import {
 /**
  * Remove all hidden flags from the current source item's Connections state.
  *
- * @this {import('../../items/connections_list.js').ConnectionsList}
- * @param {object} [params={}]
- * @param {(params?: object) => Promise<void>|void} [params.render_connections]
+ * @this {import('smart-types').ConnectionsListScope}
+ * @param {import('smart-types').ConnectionsActionParams} [params={}]
  * @returns {boolean}
  */
 export function connections_list_unhide_all(params = {}) {
@@ -39,16 +38,19 @@ export function connections_list_unhide_all(params = {}) {
   }
 }
 
+/** @type {import('smart-types').ConnectionsMenusConfig} */
 export const menus = {
   'connections:list_menu': {
     title() {
-      const hidden_count = count_hidden_connections(this.scope?.item?.data?.connections);
+      const scope = /** @type {import('smart-types').ConnectionsListScope} */ (this.scope);
+      const hidden_count = count_hidden_connections(scope.item?.data?.connections);
       return `Unhide All (${hidden_count})`;
     },
     icon: 'eye',
     order: 60,
     disabled() {
-      return !count_hidden_connections(this.scope?.item?.data?.connections);
+      const scope = /** @type {import('smart-types').ConnectionsListScope} */ (this.scope);
+      return !count_hidden_connections(scope.item?.data?.connections);
     },
   },
 };
