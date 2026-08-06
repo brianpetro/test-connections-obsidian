@@ -35,6 +35,40 @@ import {
 /** @typedef {import('jsbrains/smart-types').ConnectionsListScope} ConnectionsListScope */
 /** @typedef {import('jsbrains/smart-types').ConnectionsState} ConnectionsState */
 
+const connections_graph_styles = /** @type {string} */ (
+  /** @type {unknown} */ (styles_css)
+);
+
+const calculate_cosine_similarity = /** @type {(
+  left: ArrayLike<number>,
+  right: ArrayLike<number>
+) => number} */ (
+  /** @type {unknown} */ (cos_sim)
+);
+
+const get_connection_item_display_name = /** @type {(
+  item: {key?: string},
+  settings?: {show_full_path?: boolean}
+) => string} */ (
+  /** @type {unknown} */ (get_item_display_name)
+);
+
+const register_connection_item_drag = /** @type {(
+  container: HTMLElement,
+  item: ConnectionItem,
+  params?: {drag_event_key?: string}
+) => void} */ (
+  /** @type {unknown} */ (register_item_drag)
+);
+
+const register_connection_item_hover = /** @type {(
+  container: HTMLElement,
+  item: ConnectionItem,
+  params?: {event_key_domain?: string}
+) => void} */ (
+  /** @type {unknown} */ (register_item_hover_popover)
+);
+
 /**
  * @typedef {Object} ConnectionsGraphNode
  * @property {string} id
@@ -286,7 +320,7 @@ async function build_html(connections_list, params = {}) {
  * @returns {Promise<HTMLElement>}
  */
 export async function render(connections_list, params = {}) {
-  this.apply_style_sheet(styles_css);
+  this.apply_style_sheet(connections_graph_styles);
   const html = /** @type {string} */ (await build_html.call(this, connections_list, params));
   const frag = this.create_doc_fragment(html);
   const container = /** @type {HTMLElement} */ (frag.querySelector('.connections-graph'));
@@ -347,8 +381,8 @@ async function post_process(connections_list, container, params = {}) {
 
     /** @param {ConnectionItem} item */
     const build_label_text = (item) => {
-      const display = /** @type {string} */ (get_item_display_name(
-        /** @type {import('smart-collections').CollectionItem} */ (/** @type {unknown} */ (item)),
+      const display = /** @type {string} */ (get_connection_item_display_name(
+        item,
         {show_full_path: false},
       )) || item?.key || '';
       return truncate_middle(display, 70);
@@ -374,7 +408,7 @@ async function post_process(connections_list, container, params = {}) {
 
       // --- radial placement uses true similarity-to-center (not result.score) ---
       const non_center_vecs = result_entries.map((r) => is_vec(r?.item?.vec) ? to_unit(r.item.vec) : null);
-      const sims_to_center_raw = non_center_vecs.map((v) => (center_vec && v) ? Math.max(0, Math.min(1, cos_sim(center_vec, v))) : null);
+      const sims_to_center_raw = non_center_vecs.map((v) => (center_vec && v) ? Math.max(0, Math.min(1, calculate_cosine_similarity(center_vec, v))) : null);
       const { norm: sims_center_norm } = normalize_scores(sims_to_center_raw);
 
       // --- build nodes: center (fixed) + others ---
@@ -398,7 +432,7 @@ async function post_process(connections_list, container, params = {}) {
       // similarity between cluster-centers and the main center
       const center_to_cluster_sims = (centers.length ? centers : [null, null, null, null])
         .slice(0, 4)
-        .map((c) => (center_vec && c) ? Math.max(0, Math.min(1, cos_sim(center_vec, c))) : 0.5);
+        .map((c) => (center_vec && c) ? Math.max(0, Math.min(1, calculate_cosine_similarity(center_vec, c))) : 0.5);
 
       // anchor radii: clusters more similar to the center sit closer to it
       const cluster_anchor_radii = center_to_cluster_sims.map((s) => score_to_radius(s, min_r, outer_r));
@@ -420,12 +454,12 @@ async function post_process(connections_list, container, params = {}) {
         const cluster = Number.isInteger(assign[i]) ? assign[i] : Math.floor(hash_to_unit(r_item.key || String(i)) * 4);
         const v = non_center_vecs[i];
         const cluster_vec = centers[cluster] || null;
-        const node_to_cluster_sim = (v && cluster_vec) ? Math.max(0, Math.min(1, cos_sim(v, cluster_vec))) : 0;
+        const node_to_cluster_sim = (v && cluster_vec) ? Math.max(0, Math.min(1, calculate_cosine_similarity(v, cluster_vec))) : 0;
         const score = Number.isFinite(res?.score)
           ? +res.score
           : Number.isFinite(res?.og_score)
             ? +res.og_score
-            : (center_vec && v ? cos_sim(center_vec, v) : null)
+            : (center_vec && v ? calculate_cosine_similarity(center_vec, v) : null)
         ;
 
         const prefixed_key = prefixed_key_for_item(r_item);
@@ -552,13 +586,13 @@ async function post_process(connections_list, container, params = {}) {
           if (this.dataset.scDragBound === 'true') return;
           this.dataset.scDragBound = 'true';
           const drag_item = resolve_drag_item(datum);
-          if (drag_item) register_item_drag(this, drag_item, { drag_event_key });
+          if (drag_item) register_connection_item_drag(this, drag_item, { drag_event_key });
           if (
             this.getAttribute('data-sc-hover-preview-bound') !== 'true'
             && is_hover_preview_eligible(datum)
           ) {
             this.setAttribute('data-sc-hover-preview-bound', 'true');
-            register_item_hover_popover(this, datum.item, { event_key_domain });
+            register_connection_item_hover(this, datum.item, { event_key_domain });
           }
           const node = this.closest('g.sc-graph-node');
           this.addEventListener('mouseenter', () => set_hover(node));
@@ -684,7 +718,10 @@ async function post_process(connections_list, container, params = {}) {
 
   } catch (err) {
     console.error('[connections_graph] post_process error:', err);
-    const fallback = /** @type {HTMLParagraphElement} */ (activeDocument.createElement('p'));
+    const graph_document = /** @type {Document} */ (
+      /** @type {unknown} */ (activeDocument)
+    );
+    const fallback = graph_document.createElement('p');
     fallback.className = 'sc-no-results';
     fallback.textContent = 'Unable to render graph. See console for details.';
     container.appendChild(fallback);

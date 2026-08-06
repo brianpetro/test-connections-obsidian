@@ -12,7 +12,14 @@ import { SmartItemView } from 'obsidian-smart-env/views/smart_item_view.js';
 /** @typedef {import('jsbrains/smart-types').ConnectionsPlugin} ConnectionsPlugin */
 /** @typedef {import('jsbrains/smart-types').ConnectionsWorkspaceLeaf} ConnectionsWorkspaceLeaf */
 
-export class ConnectionsItemView extends SmartItemView {
+const ConnectionsItemViewBase = /** @type {new (
+  leaf: ConnectionsWorkspaceLeaf,
+  plugin: ConnectionsPlugin
+) => ConnectionsItemViewScope} */ (
+  /** @type {unknown} */ (SmartItemView)
+);
+
+export class ConnectionsItemView extends ConnectionsItemViewBase {
   static get view_type() { return 'smart-connections-view'; }
   static get display_text() { return 'Connections'; }
   static get icon_name() { return 'smart-connections'; }
@@ -136,9 +143,11 @@ export class ConnectionsItemView extends SmartItemView {
     register_env_event_listener(this, 'sources:opened', (event = {}) => {
       if (this.paused) return;
       if (!is_visible(this.container)) return;
-      const connections_item = /** @type {ConnectionItem} */ (
-        this.env[event.collection_key || 'smart_sources']?.get(event.item_key || event.key)
-      );
+      const collection = event.collection_key === 'smart_blocks'
+        ? this.env.smart_blocks
+        : this.env.smart_sources
+      ;
+      const connections_item = collection.get(event.item_key || event.key);
       if (connections_item.is_media && connections_item.should_embed === false) return;
       if (connections_item.key === this.current?.key) return;
       if (handle_current_source_debounce) window.clearTimeout(handle_current_source_debounce);
@@ -155,7 +164,10 @@ export class ConnectionsItemView extends SmartItemView {
     register_env_event_listener(this, 'connections:show', (event) => {
       // console.log('connections:show event received', {event});
       if(event.collection_key && event.item_key){
-        const collection = /** @type {ConnectionsCollection} */ (this.env[event.collection_key]);
+        const collection = event.collection_key === 'smart_blocks'
+          ? this.env.smart_blocks
+          : this.env.smart_sources
+        ;
         const item = collection.get(event.item_key);
         // console.log({collection, item});
         if(item){

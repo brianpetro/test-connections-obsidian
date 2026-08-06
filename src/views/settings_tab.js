@@ -1,13 +1,32 @@
 import { SmartPluginSettingsTab } from "obsidian-smart-env";
 import {render_settings_config} from "obsidian-smart-env/src/utils/render_settings_config.js";
 
+/** @typedef {import('jsbrains/smart-types').ConnectionsApp} ConnectionsApp */
 /** @typedef {import('jsbrains/smart-types').ConnectionsDomElement} ConnectionsDomElement */
+/** @typedef {import('jsbrains/smart-types').ConnectionsListsCollection} ConnectionsListsCollection */
 /** @typedef {import('jsbrains/smart-types').ConnectionsPlugin} ConnectionsPlugin */
 /** @typedef {import('jsbrains/smart-types').ConnectionsSettingsTabScope} ConnectionsSettingsTabScope */
+/** @typedef {import('jsbrains/smart-types').SettingsConfig} SettingsConfig */
 
-export class ScEarlySettingsTab extends SmartPluginSettingsTab {
+const ConnectionsSettingsTab = /** @type {new (
+  app: ConnectionsApp,
+  plugin: ConnectionsPlugin
+) => ConnectionsSettingsTabScope} */ (
+  /** @type {unknown} */ (SmartPluginSettingsTab)
+);
+
+const render_connections_settings_config = /** @type {(
+  config: SettingsConfig,
+  scope: ConnectionsListsCollection,
+  container: ConnectionsDomElement,
+  options?: Object.<string, unknown>
+) => void} */ (
+  /** @type {unknown} */ (render_settings_config)
+);
+
+export class ScEarlySettingsTab extends ConnectionsSettingsTab {
   /**
-   * @param {import('obsidian').App} app
+   * @param {ConnectionsApp} app
    * @param {ConnectionsPlugin} plugin
    */
   constructor(app, plugin) {
@@ -51,7 +70,7 @@ export class ScEarlySettingsTab extends SmartPluginSettingsTab {
     const connections_lists_settings_config = /** @type {import('jsbrains/smart-types').SettingsConfig} */ (
       this.env.config.collections.connections_lists.settings_config
     );
-    render_settings_config(
+    render_connections_settings_config(
       connections_lists_settings_config,
       this.env.connections_lists,
       cl_container,

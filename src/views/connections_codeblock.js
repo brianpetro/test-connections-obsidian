@@ -1,6 +1,6 @@
 /** @typedef {import('jsbrains/smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
 /** @typedef {import('jsbrains/smart-types').ConnectionsDomElement} ConnectionsDomElement */
-/** @typedef {import('obsidian').MarkdownPostProcessorContext} MarkdownPostProcessorContext */
+/** @typedef {import('jsbrains/smart-types').ConnectionsMarkdownPostProcessorContext} MarkdownPostProcessorContext */
 /** @typedef {import('jsbrains/smart-types').ConnectionsPlugin} ConnectionsPlugin */
 
 /**
@@ -18,7 +18,9 @@ export async function register_smart_connections_codeblock(plugin) {
     async (cb_content, container, mpp_ctx) => {
       container.empty();
       container.createEl('span', { text: 'Loading…' });
-      const cb_config = /** @type {ConnectionsComponentOptions} */ (JSON.parse(cb_content.trim() || '{}'));
+      const cb_config = /** @type {ConnectionsComponentOptions} */ (
+        /** @type {unknown} */ (JSON.parse(cb_content.trim() || '{}'))
+      );
       const env = plugin.env;
       const entity =
         env.smart_sources.get(mpp_ctx.sourcePath) ??

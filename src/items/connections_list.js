@@ -9,16 +9,37 @@ import { migrate_hidden_connections } from '../../migrations/migrate_hidden_conn
 /** @typedef {import('jsbrains/smart-types').ConnectionsListScope} ConnectionsListScope */
 /** @typedef {import('jsbrains/smart-types').ConnectionsQueryParams} ConnectionsQueryParams */
 
-export class ConnectionsList extends CollectionItem {
+const ConnectionsListItem = /** @type {new (...args: unknown[]) => ConnectionsListScope} */ (
+  /** @type {unknown} */ (CollectionItem)
+);
+
+const accumulate_connection_result = /** @type {(
+  accumulator: {min: number, minResult: ConnectionResult|null, results: Set<ConnectionResult>},
+  result: ConnectionResult,
+  limit?: number
+) => void} */ (
+  /** @type {unknown} */ (results_acc)
+);
+
+const sort_connections_by_score = /** @type {(
+  left: ConnectionResult,
+  right: ConnectionResult
+) => number} */ (
+  /** @type {unknown} */ (sort_by_score_descending)
+);
+
+export class ConnectionsList extends ConnectionsListItem {
   static key = 'connections_list';
   static get defaults() {
     return { data: {} };
   }
 
-  /** @returns {string} */
+  /**
+   * @this {ConnectionsListScope}
+   * @returns {string}
+   */
   get_key() {
-    const scope = /** @type {ConnectionsListScope} */ (/** @type {unknown} */ (this));
-    return `${scope.data.collection_key}:${scope.data.item_key}`;
+    return `${this.data.collection_key}:${this.data.item_key}`;
   }
 
   /**
@@ -90,8 +111,11 @@ export class ConnectionsList extends CollectionItem {
    * @returns {ConnectionResult[]}
    */
   filter_and_score (params = {}) {
-    const scope = /** @type {ConnectionsListScope} */ (/** @type {unknown} */ (this));
-    const collection = scope.env[params.results_collection_key];
+    const collection = params.results_collection_key === 'smart_blocks'
+      ? this.env.smart_blocks
+      : this.env.smart_sources
+    ;
+    /** @type {string[]} */
     const score_errors = [];
     const { results: raw_results } = /** @type {{results: Set<ConnectionResult>}} */ (Object.values(collection.items)
       .reduce((acc, target) => {
@@ -100,7 +124,7 @@ export class ConnectionsList extends CollectionItem {
           if(scored?.error) score_errors.push(scored.error);
           return acc; // skip if errored/filtered out
         }
-        results_acc(acc, scored, params.limit); // update acc
+        accumulate_connection_result(acc, scored, params.limit); // update acc
         return acc;
       }, {
         min: Number.POSITIVE_INFINITY,
@@ -108,7 +132,7 @@ export class ConnectionsList extends CollectionItem {
         results: new Set(),
       })
     );
-    const results = Array.from(raw_results).sort(sort_by_score_descending);
+    const results = Array.from(raw_results).sort(sort_connections_by_score);
     if(!results.length) return results;
     // TODO: 2026-04-13 remove this normailization (only applies to custom algos anyway) 
     if(!results.some(r => r.score > 0)) return results;
@@ -150,7 +174,11 @@ export class ConnectionsList extends CollectionItem {
    * @returns {ConnectionItem}
    */
   get item () {
-    return this.env[this.data.collection_key]?.items[this.data.item_key];
+    const collection = this.data.collection_key === 'smart_blocks'
+      ? this.env.smart_blocks
+      : this.env.smart_sources
+    ;
+    return collection.items[this.data.item_key];
   }
   /**
    * @this {ConnectionsListScope}

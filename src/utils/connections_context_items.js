@@ -7,7 +7,9 @@
  */
 export function build_connections_context_items(params = {}) {
   const { source_item, results = [] } = params;
+  /** @type {Array<{key: string, score: number}>} */
   const items = [];
+  /** @type {Set<string>} */
   const seen_keys = new Set();
 
   /**

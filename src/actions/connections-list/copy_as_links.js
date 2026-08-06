@@ -1,6 +1,18 @@
 import { copy_to_clipboard } from 'obsidian-smart-env/src/utils/copy_to_clipboard.js';
 import { format_connections_as_links } from '../../utils/format_connections_as_links.js';
 
+/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
+
+const copy_links_to_clipboard = /** @type {(text: string, params?: {
+  env?: SmartEnv,
+  event_source?: string,
+  success_event_key?: string,
+  error_event_key?: string,
+  unavailable_event_key?: string
+}) => Promise<boolean>} */ (
+  /** @type {unknown} */ (copy_to_clipboard)
+);
+
 /**
  * @param {import('jsbrains/smart-types').ConnectionsListScope} connections_list
  * @param {import('jsbrains/smart-types').ConnectionsActionParams} [params={}]
@@ -33,13 +45,13 @@ export async function connections_list_copy_as_links(params = {}) {
     return false;
   }
 
-  const copied = /** @type {boolean} */ (await copy_to_clipboard(links_payload, {
+  const copied = await copy_links_to_clipboard(links_payload, {
     env: this.env,
     event_source,
     success_event_key: 'connections:list_copied',
     error_event_key: 'connections:list_copy_failed',
     unavailable_event_key: 'connections:list_copy_unavailable',
-  }));
+  });
   if (!copied) return false;
 
   this.emit_event('connections:copied_list', {
@@ -57,7 +69,7 @@ export const menus = {
     order: 20,
     disabled() {
       return !get_links_payload(
-        /** @type {import('jsbrains/smart-types').ConnectionsListScope} */ (this.scope),
+        /** @type {import('jsbrains/smart-types').ConnectionsListScope} */ (/** @type {unknown} */ (this.scope)),
         this.params,
       );
     },

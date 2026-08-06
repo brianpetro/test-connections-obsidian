@@ -1,5 +1,11 @@
 import { StoryModal } from 'obsidian-smart-env/src/modals/story.js';
 
+const HelpStoryModal = /** @type {{
+  open: (plugin: import('jsbrains/smart-types').ConnectionsPlugin, params: {title: string, url: string}) => void
+}} */ (
+  /** @type {unknown} */ (StoryModal)
+);
+
 const HELP_TITLE = 'Getting Started With Smart Connections';
 const HELP_URL = 'https://smartconnections.app/story/smart-connections-getting-started/?utm_source=connections-view-help#page=understanding-connections-1';
 const COMMAND_HELP_URL = 'https://smartconnections.app/story/smart-connections-getting-started/?utm_source=sc-op-command';
@@ -19,7 +25,7 @@ export function connections_list_open_help(params = {}) {
   ;
   if (!plugin) return false;
 
-  StoryModal.open(plugin, {
+  HelpStoryModal.open(plugin, {
     title: HELP_TITLE,
     url: params.url || HELP_URL,
   });

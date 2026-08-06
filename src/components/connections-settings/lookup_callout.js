@@ -6,6 +6,20 @@ import { enable_plugin } from "obsidian-smart-env/src/utils/smart_plugins.js";
 /** @typedef {import('jsbrains/smart-types').ConnectionsPlugin} ConnectionsPlugin */
 /** @typedef {import('jsbrains/smart-types').ConnectionsReleaseResponse} ConnectionsReleaseResponse */
 /** @typedef {import('jsbrains/smart-types').SmartHttpRequestResponse<unknown>} SmartHttpRequestResponse */
+/** @typedef {import('jsbrains/smart-types').SmartHttpRequestResponse<ConnectionsReleaseResponse>} ConnectionsReleaseRequestResponse */
+
+const set_lookup_icon = /** @type {(container: HTMLElement, icon_name: string) => void} */ (
+  /** @type {unknown} */ (setIcon)
+);
+const request_lookup_url = /** @type {(params: object) => Promise<SmartHttpRequestResponse>} */ (
+  /** @type {unknown} */ (requestUrl)
+);
+const enable_lookup_plugin = /** @type {(
+  app: import('jsbrains/smart-types').ConnectionsApp,
+  plugin_id: string
+) => Promise<void>|void} */ (
+  /** @type {unknown} */ (enable_plugin)
+);
 
 /**
  * @this {SmartViewInstance}
@@ -50,7 +64,7 @@ export function render(plugin, params={}) {
  */
 function post_process(plugin, container) {
   const icon_container = /** @type {HTMLElement} */ (container.querySelector('.callout-icon'));
-  setIcon(icon_container, 'smart-lookup');
+  set_lookup_icon(icon_container, 'smart-lookup');
   const has_lookup = plugin.app.plugins.enabledPlugins.has('smart-lookup');
   const content_container = /** @type {HTMLElement} */ (container.querySelector('.callout-content'));
   const callout_text = /** @type {HTMLParagraphElement} */ (content_container.querySelector('p'));
@@ -75,7 +89,7 @@ function post_process(plugin, container) {
 async function install_smart_lookup(plugin) {
   const app = plugin.app;
   const env = plugin.env;
-  const vault = /** @type {import('obsidian').Vault} */ (app.vault);
+  const vault = app.vault;
   const adapter = vault.adapter;
 
   /**
@@ -85,10 +99,10 @@ async function install_smart_lookup(plugin) {
    */
   async function download_and_write(url, _path) {
     try {
-      const resp = /** @type {SmartHttpRequestResponse} */ (await requestUrl({
+      const resp = await request_lookup_url({
         url,
         method: "GET",
-      }));
+      });
       await adapter.write(_path, resp.text);
       return true;
     } catch (error) {
@@ -102,14 +116,17 @@ async function install_smart_lookup(plugin) {
     }
   }
 
-  const { json: response } = /** @type {import('jsbrains/smart-types').SmartHttpRequestResponse<ConnectionsReleaseResponse>} */ (await requestUrl({
-    url: "https://api.github.com/repos/brianpetro/smart-lookup-obsidian/releases/latest",
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    contentType: "application/json",
-  }));
+  const release_response = /** @type {ConnectionsReleaseRequestResponse} */ (
+    /** @type {unknown} */ (await request_lookup_url({
+      url: "https://api.github.com/repos/brianpetro/smart-lookup-obsidian/releases/latest",
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      contentType: "application/json",
+    }))
+  );
+  const { json: response } = release_response;
   // get browser_download_url for main.js, manifest.json, and styles.css
   const assets = response.assets;
   const main_asset = assets.find((asset) => asset.name === 'main.js');
@@ -142,7 +159,7 @@ async function install_smart_lookup(plugin) {
   // enable the plugin
   await app.plugins.loadManifests();
   if (!app.plugins.enabledPlugins.has('smart-lookup')) {
-    enable_plugin(app, 'smart-lookup'); // no await to emit notice before enabling (thus unloading env)
+    enable_lookup_plugin(app, 'smart-lookup'); // no await to emit notice before enabling (thus unloading env)
   }
 
   env.events.emit('plugin:install_completed', {

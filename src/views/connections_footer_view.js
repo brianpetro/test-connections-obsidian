@@ -9,13 +9,19 @@ import { set_connections_footer_dom_effect } from './connections_footer_deco.js'
 /** @typedef {import('jsbrains/smart-types').ConnectionItem} ConnectionItem */
 /** @typedef {import('jsbrains/smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
 /** @typedef {import('jsbrains/smart-types').ConnectionsDomElement} ConnectionsDomElement */
-/** @typedef {import('@codemirror/view').EditorView} EditorView */
+/** @typedef {import('jsbrains/smart-types').ConnectionsEditorView} ConnectionsEditorView */
 /** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
 /** @typedef {import('jsbrains/smart-types').SmartEventDisposer} SmartEventDisposer */
 /** @typedef {import('jsbrains/smart-types').ConnectionsEventPayload} ConnectionsEventPayload */
 /** @typedef {import('jsbrains/smart-types').ConnectionsPlugin} ConnectionsPlugin */
 /** @typedef {import('jsbrains/smart-types').ConnectionsFooterViewScope} ConnectionsFooterViewScope */
 /** @typedef {import('jsbrains/smart-types').ConnectionsWorkspace} ConnectionsWorkspace */
+
+const connections_footer_dom_effect = /** @type {{
+  of: (value: ConnectionsDomElement|null) => unknown
+}} */ (
+  /** @type {unknown} */ (set_connections_footer_dom_effect)
+);
 
 /**
  * Resolve the Smart Sources entity for the active file.
@@ -32,7 +38,7 @@ const get_active_entity = (env, workspace) => {
 /**
  * Determine whether the editor's last line is currently visible in the viewport.
  * Uses CodeMirror 6 visibleRanges to avoid any DOM measurement thrash.
- * @param {EditorView} editor_view
+ * @param {ConnectionsEditorView} editor_view
  * @returns {boolean}
  */
 const is_last_line_visible = (editor_view) => {
@@ -81,7 +87,7 @@ export class ConnectionsFooterView {
   /**
    * Attach a lightweight scroll/resize guard that waits until the last line becomes visible.
    * When the condition is met, it detaches itself and triggers render_view() again.
-   * @param {EditorView} editor_view
+   * @param {ConnectionsEditorView} editor_view
    */
   attach_visibility_guard(editor_view) {
     this.detach_visibility_guard();
@@ -131,7 +137,7 @@ export class ConnectionsFooterView {
     // Gate: only render once the last line is visible
     if (!is_last_line_visible(editor_view)) {
       try {
-        editor_view.dispatch({ effects: [set_connections_footer_dom_effect.of(null)] });
+        editor_view.dispatch({ effects: [connections_footer_dom_effect.of(null)] });
       } catch (err) {
         console.warn('[Smart Connections] footer hide dispatch failed', err);
       }
@@ -143,7 +149,7 @@ export class ConnectionsFooterView {
 
     const entity = get_active_entity(this.env, this.app.workspace);
     if (!entity) {
-      editor_view.dispatch({ effects: [set_connections_footer_dom_effect.of(null)] });
+      editor_view.dispatch({ effects: [connections_footer_dom_effect.of(null)] });
       return;
     }
 
@@ -153,7 +159,7 @@ export class ConnectionsFooterView {
     }
 
     if (this.container_map[entity.key]?.isConnected) {
-      editor_view.dispatch({ effects: [set_connections_footer_dom_effect.of(this.container_map[entity.key])] });
+      editor_view.dispatch({ effects: [connections_footer_dom_effect.of(this.container_map[entity.key])] });
       return;
     }
 
@@ -169,7 +175,7 @@ export class ConnectionsFooterView {
       this.container_map[entity.key].remove();
     }
     this.container_map[entity.key] = footer_container;
-    editor_view.dispatch({ effects: [set_connections_footer_dom_effect.of(footer_container)] });
+    editor_view.dispatch({ effects: [connections_footer_dom_effect.of(footer_container)] });
 
     if (Platform.isMobile) {
       const container = this.container_map[entity.key];
@@ -189,7 +195,7 @@ export class ConnectionsFooterView {
     this.detach_visibility_guard();
     if (editor_view) {
       try {
-        editor_view.dispatch({ effects: [set_connections_footer_dom_effect.of(null)] });
+        editor_view.dispatch({ effects: [connections_footer_dom_effect.of(null)] });
       } catch (err) {
         console.warn('[Smart Connections] footer remove dispatch failed', err);
       }

@@ -1,5 +1,12 @@
 import { get_block_display_name } from 'obsidian-smart-env/src/utils/get_block_display_name.js';
 
+const get_connection_block_display_name = /** @type {(
+  item: {key?: string, lines?: number[]},
+  settings?: import('jsbrains/smart-types').BlockDisplayParams
+) => string} */ (
+  /** @type {unknown} */ (get_block_display_name)
+);
+
 /**
  * Return selectable blocks from the current Connections item-view target.
  *
@@ -64,7 +71,11 @@ export const menus = {
  * @returns {import('jsbrains/smart-types').ConnectionItem[]}
  */
 function resolve_target_candidates(menu_ctx) {
-  const action = menu_ctx.resolve_action?.();
+  const action = /** @type {((
+    params: import('jsbrains/smart-types').ConnectionsActionParams
+  ) => import('jsbrains/smart-types').ConnectionItem[])|undefined} */ (
+    /** @type {unknown} */ (menu_ctx.resolve_action?.())
+  );
   if (typeof action !== 'function') return [];
 
   const candidates = action(menu_ctx.params);
@@ -87,7 +98,7 @@ function get_block_first_line(block) {
  * @returns {string}
  */
 function get_block_title(block) {
-  return get_block_display_name(block, { show_full_path: false })
+  return get_connection_block_display_name(block, { show_full_path: false })
     || block?.key
     || 'Block'
   ;

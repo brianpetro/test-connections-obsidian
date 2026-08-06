@@ -1,5 +1,11 @@
 import { StoryModal } from 'obsidian-smart-env/src/modals/story.js';
 
+const SettingsStoryModal = /** @type {{
+  open: (plugin: import('jsbrains/smart-types').ConnectionsPlugin, params: {title: string, url: string}) => void
+}} */ (
+  /** @type {unknown} */ (StoryModal)
+);
+
 /** @typedef {import('jsbrains/smart-types').SmartViewInstance<unknown>} SmartViewInstance */
 /** @typedef {import('jsbrains/smart-types').ConnectionsDomElement} ConnectionsDomElement */
 /** @typedef {import('jsbrains/smart-types').ConnectionsPlugin} ConnectionsPlugin */
@@ -65,7 +71,7 @@ export async function post_process(scope_plugin, frag) {
 
   /* buttons */
   frag.querySelector('.sc-getting-started-button')?.addEventListener('click', () => {
-    StoryModal.open(scope_plugin, {
+    SettingsStoryModal.open(scope_plugin, {
       title: 'Getting Started With Smart Connections',
       url: 'https://smartconnections.app/story/smart-connections-getting-started/?utm_source=sc-op-settings'
     });

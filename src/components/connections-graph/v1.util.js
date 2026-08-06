@@ -2,6 +2,13 @@ import { cos_sim } from 'smart-utils/cos_sim.js';
 
 /** @typedef {number[]|Float32Array} NumericVector */
 
+const calculate_cosine_similarity = /** @type {(
+  left: ArrayLike<number>,
+  right: ArrayLike<number>
+) => number} */ (
+  /** @type {unknown} */ (cos_sim)
+);
+
 /**
  * Fast string hash -> [0,1).
  * @param {string} [str]
@@ -132,7 +139,13 @@ export function kmeans_cosine_unit(vecs = [], k = 4, max_iter = 100, seed = 1337
   const xs = vecs.map((v) => (v ? to_unit(v) : null));
   const idx = xs.map((v, i) => v ? i : -1).filter((i) => i >= 0);
   const m = idx.length;
-  if (m === 0) return { centers: [], assign: new Array(vecs.length).fill(-1), sims: new Array(vecs.length).fill(0) };
+  if (m === 0) {
+    return {
+      centers: [],
+      assign: /** @type {number[]} */ (new Array(vecs.length).fill(-1)),
+      sims: /** @type {number[]} */ (new Array(vecs.length).fill(0)),
+    };
+  }
 
   const rand = prng_from_seed(seed);
 
@@ -149,7 +162,7 @@ export function kmeans_cosine_unit(vecs = [], k = 4, max_iter = 100, seed = 1337
       const v = xs[idx[ii]];
       let best = -Infinity;
       for (const c of centers) {
-        const s = cos_sim(v, c);
+        const s = calculate_cosine_similarity(v, c);
         if (s > best) best = s;
       }
       const d = 1 - Math.max(0, Math.min(1, best));
@@ -175,7 +188,7 @@ export function kmeans_cosine_unit(vecs = [], k = 4, max_iter = 100, seed = 1337
       const v = xs[idx[ii]];
       let best_c = 0, best_s = -Infinity;
       for (let c = 0; c < centers.length; c++) {
-        const s = cos_sim(v, centers[c]);
+        const s = calculate_cosine_similarity(v, centers[c]);
         if (s > best_s) { best_s = s; best_c = c; }
       }
       if (assign[ii] !== best_c) { assign[ii] = best_c; changed = true; }

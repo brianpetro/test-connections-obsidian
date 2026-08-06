@@ -12,6 +12,47 @@ import { register_item_drag } from 'obsidian-smart-env/src/utils/register_item_d
 import { open_source } from "obsidian-smart-env/src/utils/open_source.js";
 import { filter_hidden_results } from '../../utils/filter_hidden_results.js';
 
+/** @typedef {import('jsbrains/smart-types').ConnectionItem} ConnectionItem */
+/** @typedef {import('jsbrains/smart-types').ConnectionsMenu} ConnectionsMenu */
+
+const display_separator = /** @type {string} */ (
+  /** @type {unknown} */ (DISPLAY_SEPARATOR)
+);
+
+const get_connection_item_display_name = /** @type {(
+  item: {key?: string},
+  settings?: {show_full_path?: boolean}
+) => string} */ (
+  /** @type {unknown} */ (get_item_display_name)
+);
+
+const register_connection_item_drag = /** @type {(
+  container: HTMLElement,
+  item: ConnectionItem,
+  params?: {drag_event_key?: string}
+) => void} */ (
+  /** @type {unknown} */ (register_item_drag)
+);
+
+const register_connection_item_hover = /** @type {(
+  container: HTMLElement,
+  item: ConnectionItem,
+  params?: {event_key_domain?: string}
+) => void} */ (
+  /** @type {unknown} */ (register_item_hover_popover)
+);
+
+const open_connection_source = /** @type {(
+  item: ConnectionItem,
+  event?: Event|null
+) => Promise<void>} */ (
+  /** @type {unknown} */ (open_source)
+);
+
+const ConnectionsMenuClass = /** @type {new () => ConnectionsMenu} */ (
+  /** @type {unknown} */ (Menu)
+);
+
 const SC_RESULT_HIDDEN_CLASS = 'sc-result-hidden-by-feedback';
 
 /**
@@ -130,10 +171,10 @@ export async function post_process(result_scope, container, params = {}) {
   toggle_fold_elm.addEventListener('click', toggle_result);
   const event_key_domain = params.event_key_domain || 'connections';
   const drag_event_key = `${event_key_domain}:drag_result`;
-  register_item_drag(container, item, { drag_event_key });
-  register_item_hover_popover(container, item, { event_key_domain });
+  register_connection_item_drag(container, item, { drag_event_key });
+  register_connection_item_hover(container, item, { event_key_domain });
   container.addEventListener('click', (event) => {
-    open_source(item, event);
+    open_connection_source(item, event);
     item.emit_event(`${event_key_domain}:open_result`, { event_source: 'connections-list-item-v3' });
   });
 
@@ -165,11 +206,11 @@ export async function post_process(result_scope, container, params = {}) {
     const raw_results = Array.isArray(connections_list?.results) ? connections_list.results : [];
     const visible_results = filter_hidden_results(raw_results, source_item.data.connections);
     const list_container = /** @type {HTMLElement} */ (container.closest('.connections-list') || container);
-    const target_name = /** @type {string} */ (get_item_display_name(
-      /** @type {import('smart-collections').CollectionItem} */ (/** @type {unknown} */ (item)),
+    const target_name = /** @type {string} */ (get_connection_item_display_name(
+      item,
       component_settings,
     )) || item.key;
-    const menu = /** @type {import('jsbrains/smart-types').ConnectionsMenu} */ (new Menu());
+    const menu = /** @type {import('jsbrains/smart-types').ConnectionsMenu} */ (new ConnectionsMenuClass());
 
     env.build_menu?.('connections:list_item_menu', menu, connections_list, {
       container,
@@ -204,10 +245,10 @@ export async function post_process(result_scope, container, params = {}) {
  * @returns {string}
  */
 function get_result_header_html(score, item, component_settings = {}) {
-  const raw_parts = /** @type {string} */ (get_item_display_name(
-    /** @type {import('smart-collections').CollectionItem} */ (/** @type {unknown} */ (item)),
+  const raw_parts = /** @type {string} */ (get_connection_item_display_name(
+    item,
     component_settings,
-  )).split(DISPLAY_SEPARATOR).filter(Boolean);
+  )).split(display_separator).filter(Boolean);
   const parts = format_item_parts(raw_parts, item?.lines);
   const name = parts.pop();
   const formatted_score = typeof score === 'number' ? score.toFixed(2) : score;

@@ -61,7 +61,11 @@ export const menus = {
  * @returns {import('jsbrains/smart-types').ConnectionItem[]}
  */
 function resolve_target_candidates(menu_ctx) {
-  const action = menu_ctx.resolve_action?.();
+  const action = /** @type {((
+    params: import('jsbrains/smart-types').ConnectionsActionParams
+  ) => import('jsbrains/smart-types').ConnectionItem[])|undefined} */ (
+    /** @type {unknown} */ (menu_ctx.resolve_action?.())
+  );
   if (typeof action !== 'function') return [];
 
   const candidates = action(menu_ctx.params);

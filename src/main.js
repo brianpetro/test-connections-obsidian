@@ -1,7 +1,9 @@
 import Obsidian from "obsidian";
 const {
   requestUrl,
-} = /** @type {{requestUrl: (params: object) => Promise<import('jsbrains/smart-types').SmartHttpRequestResponse<unknown>>}} */ (Obsidian);
+} = /** @type {{requestUrl: (params: object) => Promise<import('jsbrains/smart-types').SmartHttpRequestResponse<unknown>>}} */ (
+  /** @type {unknown} */ (Obsidian)
+);
 
 import { SmartEnv } from 'obsidian-smart-env';
 import { smart_env_config } from "../smart_env.config.js";
@@ -24,35 +26,86 @@ import { connections_footer_plugin } from './views/connections_footer_deco.js';
 import { ConnectionsFooterView } from './views/connections_footer_view.js';
 import { register_smart_connections_codeblock } from "./views/connections_codeblock.js";
 
-/** @typedef {import('@codemirror/view').EditorView} EditorView */
-/** @typedef {import('obsidian').TFile} TFile */
+/** @typedef {import('jsbrains/smart-types').ConnectionsApp} ConnectionsApp */
+/** @typedef {import('jsbrains/smart-types').ConnectionsEditorView} ConnectionsEditorView */
+/** @typedef {import('jsbrains/smart-types').ConnectionsEnvConfig} ConnectionsEnvConfig */
+/** @typedef {import('jsbrains/smart-types').ConnectionsItemViewClass} ConnectionsItemViewClass */
 /** @typedef {import('jsbrains/smart-types').ConnectionsMarkdownView} ConnectionsMarkdownView */
+/** @typedef {import('jsbrains/smart-types').ConnectionsPlugin} ConnectionsPlugin */
 /** @typedef {import('jsbrains/smart-types').ConnectionsReleaseResponse} ConnectionsReleaseResponse */
 /** @typedef {import('jsbrains/smart-types').SmartHttpRequestResponse<ConnectionsReleaseResponse>} ConnectionsReleaseRequestResponse */
+/** @typedef {import('jsbrains/smart-types').ConnectionsSettingsTabScope} ConnectionsSettingsTabScope */
+/** @typedef {import('jsbrains/smart-types').ConnectionsSmartEnvClass} ConnectionsSmartEnvClass */
 /** @typedef {import('jsbrains/smart-types').ConnectionsWorkspace} ConnectionsWorkspace */
 /** @typedef {import('jsbrains/smart-types').ConnectionsWorkspaceLeaf} ConnectionsWorkspaceLeaf */
 /** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} ConnectionsSmartEnv */
 
-/** @extends {SmartPlugin<import('jsbrains/smart-types').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>>} */
-export default class SmartConnectionsPlugin extends SmartPlugin {
+const ConnectionsPluginBase = /** @type {new (...args: unknown[]) => ConnectionsPlugin} */ (
+  /** @type {unknown} */ (SmartPlugin)
+);
+
+const ConnectionsEnvironment = /** @type {ConnectionsSmartEnvClass} */ (
+  /** @type {unknown} */ (SmartEnv)
+);
+
+const ConnectionsView = /** @type {ConnectionsItemViewClass} */ (
+  /** @type {unknown} */ (ConnectionsItemView)
+);
+
+const ConnectionsSettingsTab = /** @type {new (
+  app: ConnectionsApp,
+  plugin: ConnectionsPlugin
+) => ConnectionsSettingsTabScope} */ (
+  /** @type {unknown} */ (ScEarlySettingsTab)
+);
+
+const ConnectionsReleaseNotesView = /** @type {{
+  open: (workspace: ConnectionsWorkspace, version: string) => void
+}} */ (
+  /** @type {unknown} */ (ReleaseNotesView)
+);
+
+const GettingStartedStoryModal = /** @type {{
+  open: (plugin: ConnectionsPlugin, params: {title: string, url: string}) => void
+}} */ (
+  /** @type {unknown} */ (StoryModal)
+);
+
+const open_connection_note = /** @type {(
+  plugin: ConnectionsPlugin,
+  target_path: string,
+  event?: Event|null
+) => Promise<void>} */ (
+  /** @type {unknown} */ (open_note)
+);
+
+const connections_smart_env_config = /** @type {ConnectionsEnvConfig} */ (
+  /** @type {unknown} */ (smart_env_config)
+);
+
+export default class SmartConnectionsPlugin extends ConnectionsPluginBase {
   /** @type {unknown} */
   _api;
 
-  SmartEnv = SmartEnv;
-  ReleaseNotesView = ReleaseNotesView;
+  /** @type {ConnectionsEnvConfig|undefined} */
+  _smart_env_config;
 
+  SmartEnv = ConnectionsEnvironment;
+  ReleaseNotesView = ConnectionsReleaseNotesView;
+
+  /** @returns {ConnectionsEnvConfig} */
   get smart_env_config() {
     if (!this._smart_env_config) {
-      this._smart_env_config = { ...smart_env_config };
+      this._smart_env_config = { ...connections_smart_env_config };
     }
     return this._smart_env_config;
   }
 
-  ConnectionsSettingsTab = ScEarlySettingsTab;
+  ConnectionsSettingsTab = ConnectionsSettingsTab;
 
   get item_views() {
     return {
-      ConnectionsItemView,
+      ConnectionsItemView: ConnectionsView,
       ReleaseNotesView: this.ReleaseNotesView,
       // DEPRECATED 2026-05-14: Smart Lookup is a standalone plugin available in plugin index.
       // Keep the legacy Connections-hosted Lookup view disabled to avoid importing smart-lookup-obsidian here.
@@ -88,7 +141,7 @@ export default class SmartConnectionsPlugin extends SmartPlugin {
     this.is_new_user().then(async (is_new) => {
       if (!is_new) return;
       window.setTimeout(() => {
-        StoryModal.open(this, {
+        GettingStartedStoryModal.open(this, {
           title: 'Getting Started With Smart Connections',
           url: 'https://smartconnections.app/story/smart-connections-getting-started/?utm_source=sc-op-new-user',
         });
@@ -124,7 +177,7 @@ export default class SmartConnectionsPlugin extends SmartPlugin {
     const connections_view_location = /** @type {'left'|'right'|'root'|'tab'} */ (
       this.connections_env?.connections_lists?.settings?.connections_view_location ?? 'right'
     );
-    ConnectionsItemView.default_open_location = connections_view_location === 'left' ? 'left' : 'right';
+    ConnectionsView.default_open_location = connections_view_location === 'left' ? 'left' : 'right';
     this.ensure_connections_view_leaf_location();
   }
 
@@ -149,8 +202,8 @@ export default class SmartConnectionsPlugin extends SmartPlugin {
     if (!workspace) {
       return;
     }
-    const desired_location = /** @type {'left'|'right'|'root'|'tab'} */ (ConnectionsItemView.default_open_location);
-    const connections_leaf = /** @type {ConnectionsWorkspaceLeaf|null} */ (ConnectionsItemView.get_leaf(workspace));
+    const desired_location = /** @type {'left'|'right'|'root'|'tab'} */ (ConnectionsView.default_open_location);
+    const connections_leaf = ConnectionsView.get_leaf(workspace) || null;
     if (!should_relocate_leaf({ workspace, leaf: connections_leaf, desired_location })) {
       return;
     }
@@ -209,10 +262,10 @@ export default class SmartConnectionsPlugin extends SmartPlugin {
 
   /**
    * Attempts to retrieve the CodeMirror 6 EditorView for the active markdown file.
-   * @returns {EditorView|null}
+   * @returns {ConnectionsEditorView|null}
    */
   get_editor_view() {
-    const file = /** @type {TFile|null} */ (this.app.workspace.getActiveFile());
+    const file = this.app.workspace.getActiveFile();
     if (!file) {
       // console.log("Smart Connections: No active file found");
       return null;
@@ -234,7 +287,13 @@ export default class SmartConnectionsPlugin extends SmartPlugin {
     }
   }
 
-  async open_note(target_path, event = null) { await open_note(this, target_path, event); }
+  /**
+   * @param {string} target_path
+   * @param {Event|null} [event]
+   */
+  async open_note(target_path, event = null) {
+    await open_connection_note(this, target_path, event);
+  }
 
   /**
    * @deprecated extract into utility

@@ -18,10 +18,11 @@ export async function get_random_connection(env, file_path, { rng = Math.random 
   const connections_list = source.connections || env.connections_lists?.new_item?.(source);
   if (typeof connections_list?.get_results !== 'function') return null;
 
+  /** @type {import('jsbrains/smart-types').ConnectionResult[]} */
   let connections = [];
   try {
     connections = /** @type {import('jsbrains/smart-types').ConnectionResult[]} */ (
-      await connections_list.get_results({ limit: DEFAULT_RESULTS_LIMIT })
+      /** @type {unknown} */ (await connections_list.get_results({ limit: DEFAULT_RESULTS_LIMIT }))
     );
   } catch (err) {
     console.error('get_random_connection: failed to get connections', err);

@@ -15,6 +15,10 @@ const CONNECTIONS_TARGET_HISTORY_LIMIT = 10;
 /** @typedef {import('jsbrains/smart-types').ConnectionsMenu} ConnectionsMenu */
 /** @typedef {import('jsbrains/smart-types').ConnectionsViewElement} ConnectionsViewElement */
 
+const ConnectionsMenuClass = /** @type {new () => ConnectionsMenu} */ (
+  /** @type {unknown} */ (Menu)
+);
+
 /**
  * Build the main HTML structure for 'Smart Connections Pro' view.
  * @this {SmartViewInstance}
@@ -134,7 +138,7 @@ export async function post_process(view, container, opts = {}) {
 
     const menu_button = container.querySelector('[data-action="open-menu"]');
     menu_button?.addEventListener('click', (event) => {
-      const menu = /** @type {ConnectionsMenu} */ (new Menu());
+      const menu = new ConnectionsMenuClass();
       const state = container._connections_menu_state;
 
       env.build_menu?.(
@@ -176,7 +180,7 @@ export async function post_process(view, container, opts = {}) {
       event.stopPropagation();
 
       const state = container._connections_menu_state;
-      const menu = /** @type {ConnectionsMenu} */ (new Menu());
+      const menu = new ConnectionsMenuClass();
       env.build_menu?.('connections:target_menu', menu, state.view);
       if (!(menu.items?.length > 0)) return;
 

@@ -8,6 +8,19 @@ import { insert_settings_after } from '../utils/insert_settings_after.js';
 /** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
 /** @typedef {import('jsbrains/smart-types').ConnectionsListsCollection} ConnectionsListsCollection */
 
+const ConnectionsCollection = /** @type {new (
+  env: SmartEnv,
+  opts?: import('jsbrains/smart-types').CollectionOptions
+) => ConnectionsListsCollection} */ (
+  /** @type {unknown} */ (Collection)
+);
+
+const parse_connections_frontmatter_filter_lines = /** @type {(
+  value?: string|string[]
+) => import('jsbrains/smart-types').FrontmatterFilterEntry[]} */ (
+  /** @type {unknown} */ (parse_frontmatter_filter_lines)
+);
+
 /**
  * Configuration for filtering connections results.
  * Copied from SmartEntities to avoid additional dependency.
@@ -27,7 +40,7 @@ export const connections_filter_config = {
   },
 };
 
-export class ConnectionsLists extends Collection {
+export class ConnectionsLists extends ConnectionsCollection {
   static version = 1;
   async process_load_queue() {} // no persisting data (for now)
 
@@ -117,12 +130,12 @@ export class ConnectionsLists extends Collection {
 
   /** @this {ConnectionsListsCollection} */
   get frontmatter_inclusions() {
-    return parse_frontmatter_filter_lines(this.settings.frontmatter_filter_include);
+    return parse_connections_frontmatter_filter_lines(this.settings.frontmatter_filter_include);
   }
 
   /** @this {ConnectionsListsCollection} */
   get frontmatter_exclusions() {
-    return parse_frontmatter_filter_lines(this.settings.frontmatter_filter_exclude);
+    return parse_connections_frontmatter_filter_lines(this.settings.frontmatter_filter_exclude);
   }
 
   /** @this {ConnectionsListsCollection} */

@@ -4,7 +4,7 @@ import { build_connections_codeblock } from '../../utils/build_connections_codeb
  * Insert a Smart Connections codeblock at the current editor selection.
  *
  * @this {import('jsbrains/smart-types').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>}
- * @param {{editor?: import('obsidian').Editor}} [params={}]
+ * @param {{editor?: import('jsbrains/smart-types').ConnectionsEditor}} [params={}]
  * @returns {boolean}
  */
 export function env_insert_connections_codeblock(params = {}) {
@@ -25,7 +25,7 @@ export const commands = {
       return plugin.manifest.id === 'smart-connections';
     },
 
-    /** @param {{editor?: import('obsidian').Editor}} context */
+    /** @param {{editor?: import('jsbrains/smart-types').ConnectionsEditor}} context */
     params({ editor }) {
       return { editor };
     },

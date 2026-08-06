@@ -1,5 +1,9 @@
 import { ConnectionsItemView } from '../../views/connections_item_view.js';
 
+const ConnectionsView = /** @type {import('jsbrains/smart-types').ConnectionsItemViewClass} */ (
+  /** @type {unknown} */ (ConnectionsItemView)
+);
+
 /**
  * Open the Connections view focused on this source or block item.
  *
@@ -10,11 +14,15 @@ import { ConnectionsItemView } from '../../views/connections_item_view.js';
 export async function source_view_connections(params = {}) {
   const source_item = params.source_item || params.target_item || this;
   const env = source_item?.env || this?.env;
+  const host_window = /** @type {{app?: import('jsbrains/smart-types').ConnectionsApp}} */ (
+    /** @type {unknown} */ (activeWindow)
+  );
+  const active_workspace = host_window.app?.workspace;
   const workspace = params.workspace
     || env?.obsidian_app?.workspace
     || env?.plugin?.app?.workspace
     || env?.smart_connections_plugin?.app?.workspace
-    || /** @type {import('jsbrains/smart-types').ConnectionsWorkspace|undefined} */ (activeWindow.app?.workspace)
+    || active_workspace
   ;
 
   if (!source_item?.key || !workspace) return false;
@@ -40,7 +48,7 @@ export async function source_view_connections(params = {}) {
  */
 async function get_or_open_connections_view(workspace) {
   const existing_view = /** @type {import('jsbrains/smart-types').ConnectionsItemViewScope|null|undefined} */ (
-    /** @type {unknown} */ (ConnectionsItemView.get_view?.(workspace))
+    /** @type {unknown} */ (ConnectionsView.get_view?.(workspace))
   );
   if (existing_view) {
     await reveal_connections_leaf(workspace, existing_view.leaf);
@@ -48,24 +56,24 @@ async function get_or_open_connections_view(workspace) {
   }
 
   const existing_leaf = /** @type {import('jsbrains/smart-types').ConnectionsWorkspaceLeaf|null|undefined} */ (
-    ConnectionsItemView.get_leaf?.(workspace)
+    ConnectionsView.get_leaf?.(workspace)
   );
   if (existing_leaf) {
     await reveal_connections_leaf(workspace, existing_leaf);
     return /** @type {import('jsbrains/smart-types').ConnectionsItemViewScope|null} */ (
-      /** @type {unknown} */ (ConnectionsItemView.get_view?.(workspace) || existing_leaf.view || null)
+      /** @type {unknown} */ (ConnectionsView.get_view?.(workspace) || existing_leaf.view || null)
     );
   }
 
   const opened = /** @type {import('jsbrains/smart-types').ConnectionsItemViewScope|null|undefined} */ (
-    /** @type {unknown} */ (await ConnectionsItemView.open?.(workspace, { active: true }))
+    /** @type {unknown} */ (await ConnectionsView.open?.(workspace, { active: true }))
   );
 
   const opened_view = /** @type {import('jsbrains/smart-types').ConnectionsItemViewScope|null} */ (
-    /** @type {unknown} */ (ConnectionsItemView.get_view?.(workspace) || opened || null)
+    /** @type {unknown} */ (ConnectionsView.get_view?.(workspace) || opened || null)
   );
   const opened_leaf = /** @type {import('jsbrains/smart-types').ConnectionsWorkspaceLeaf|null|undefined} */ (
-    ConnectionsItemView.get_leaf?.(workspace) || opened_view?.leaf
+    ConnectionsView.get_leaf?.(workspace) || opened_view?.leaf
   );
   await reveal_connections_leaf(workspace, opened_leaf);
   return opened_view || /** @type {import('jsbrains/smart-types').ConnectionsItemViewScope|null} */ (opened_leaf?.view || null);

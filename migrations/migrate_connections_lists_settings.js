@@ -6,14 +6,33 @@ const MIGRATED_SETTING_KEYS = [
 ];
 
 /**
- * @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv
+ * @typedef {Object} LegacyConnectionsSettings
+ * @property {boolean} [inline_connections]
+ * @property {number} [inline_connections_score_threshold]
+ * @property {boolean} [footer_connections]
+ * @property {string} [rank_model]
+ */
+
+/**
+ * @typedef {Object} MigratedConnectionsListSettings
+ * @property {boolean} [inline_connections]
+ * @property {number} [inline_connections_score_threshold]
+ * @property {boolean} [footer_connections]
+ * @property {Object.<string, string>} [actions]
+ */
+
+/**
+ * @typedef {{settings?: {
+ *   connections_pro?: LegacyConnectionsSettings,
+ *   connections_lists?: MigratedConnectionsListSettings
+ * }}} ConnectionsSettingsMigrationEnv
  */
 
 /**
  * Safely migrate legacy Smart Connections settings into the connections_lists
  * collection settings bucket.
  *
- * @param {SmartEnv} env - Smart Env instance provided to the plugin.
+ * @param {ConnectionsSettingsMigrationEnv} env - Smart Env instance provided to the plugin.
  * @returns {boolean} true when any value was migrated.
  */
 export function migrate_connections_lists_settings(env) {

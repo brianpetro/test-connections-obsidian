@@ -4,6 +4,14 @@ import { get_random_connection } from '../../utils/get_random_connection.js';
 
 /** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
 
+const open_connection_note = /** @type {(
+  plugin: import('jsbrains/smart-types').ConnectionsPlugin,
+  target_path: string,
+  event?: Event|null
+) => Promise<void>} */ (
+  /** @type {unknown} */ (open_note)
+);
+
 const NATIVE_RANDOM_NOTE_COMMAND_IDS = [
   'random-note:open',
   'random-note',
@@ -20,7 +28,9 @@ const NATIVE_RANDOM_NOTE_COMMAND_IDS = [
 export async function connections_list_open_random_connection(params = {}) {
   const env = this?.env || params.plugin?.env || params.env;
   const app = get_app(env, params);
-  const scope_item = /** @type {{item?: import('jsbrains/smart-types').ConnectionItem}} */ (this).item;
+  const scope_item = /** @type {{item?: import('jsbrains/smart-types').ConnectionItem}} */ (
+    /** @type {unknown} */ (this)
+  ).item;
   const file_path = resolve_file_path(scope_item, params, app);
 
   if (!file_path) {
@@ -61,11 +71,15 @@ export async function connections_list_open_random_connection(params = {}) {
  * @returns {import('jsbrains/smart-types').ConnectionsApp|null}
  */
 function get_app(env, params = {}) {
+  const host_window = /** @type {{app?: import('jsbrains/smart-types').ConnectionsApp}} */ (
+    /** @type {unknown} */ (activeWindow)
+  );
+  const active_app = host_window.app;
   return params.app
     || params.plugin?.app
     || env?.obsidian_app
     || env?.plugin?.app
-    || /** @type {import('jsbrains/smart-types').ConnectionsApp|undefined} */ (activeWindow.app)
+    || active_app
     || null
   ;
 }
@@ -108,7 +122,7 @@ async function open_random_connection_target(env, target_path, params = {}) {
   }
 
   if (plugin) {
-    await open_note(plugin, target_path, event);
+    await open_connection_note(plugin, target_path, event);
   }
 }
 
@@ -191,3 +205,4 @@ export const menus = {
     },
   },
 };
+
