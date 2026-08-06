@@ -1,7 +1,7 @@
 import { copy_to_clipboard } from 'obsidian-smart-env/src/utils/copy_to_clipboard.js';
 import { format_connections_as_links } from '../../utils/format_connections_as_links.js';
 
-/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
+/** @typedef {import('jsbrains/smart-types').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
 
 const copy_links_to_clipboard = /** @type {(text: string, params?: {
   env?: SmartEnv,

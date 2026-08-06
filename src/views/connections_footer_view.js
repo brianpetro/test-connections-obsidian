@@ -10,7 +10,7 @@ import { set_connections_footer_dom_effect } from './connections_footer_deco.js'
 /** @typedef {import('jsbrains/smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
 /** @typedef {import('jsbrains/smart-types').ConnectionsDomElement} ConnectionsDomElement */
 /** @typedef {import('jsbrains/smart-types').ConnectionsEditorView} ConnectionsEditorView */
-/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
+/** @typedef {import('jsbrains/smart-types').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
 /** @typedef {import('jsbrains/smart-types').SmartEventDisposer} SmartEventDisposer */
 /** @typedef {import('jsbrains/smart-types').ConnectionsEventPayload} ConnectionsEventPayload */
 /** @typedef {import('jsbrains/smart-types').ConnectionsPlugin} ConnectionsPlugin */

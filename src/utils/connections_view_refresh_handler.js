@@ -1,6 +1,11 @@
+/**
+ * @this {import('jsbrains/smart-types').ConnectionsItemViewScope}
+ * @param {Event & {target: Element}} event
+ * @returns {Promise<void>}
+ */
 export async function connections_view_refresh_handler(event) {
   const view_container = event.target.closest('.connections-view');
-  const list_el = view_container?.querySelector('.connections-list');
+  const list_el = /** @type {HTMLElement|null} */ (view_container?.querySelector('.connections-list') ?? null);
   const entity_key = list_el?.dataset?.key;
   // console.log(`Refreshing smart connections view entity ${entity_key}`);
   const refresh_entity = this.env.smart_sources.get(entity_key);

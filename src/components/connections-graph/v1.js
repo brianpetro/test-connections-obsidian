@@ -31,7 +31,7 @@ import {
 /** @typedef {import('jsbrains/smart-types').ConnectionsCollection} ConnectionsCollection */
 /** @typedef {import('jsbrains/smart-types').SmartViewInstance<unknown>} SmartViewInstance */
 /** @typedef {import('jsbrains/smart-types').ConnectionsComponentOptions} ConnectionsComponentOptions */
-/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
+/** @typedef {import('jsbrains/smart-types').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
 /** @typedef {import('jsbrains/smart-types').ConnectionsListScope} ConnectionsListScope */
 /** @typedef {import('jsbrains/smart-types').ConnectionsState} ConnectionsState */
 
@@ -155,6 +155,7 @@ const register_connection_item_hover = /** @type {(
  * @returns {Set<string>}
  */
 export function build_prefixed_key_set(results = []) {
+  /** @type {Set<string>} */
   const prefixed_keys = new Set();
   for (const result of results) {
     const prefixed = prefixed_key_for_item(result?.item);

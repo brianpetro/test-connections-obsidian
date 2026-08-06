@@ -1,6 +1,6 @@
 const DEFAULT_RESULTS_LIMIT = 20;
 
-/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
+/** @typedef {import('jsbrains/smart-types').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
 
 /**
  * Returns a random connection for a given file path.

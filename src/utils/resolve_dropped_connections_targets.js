@@ -56,7 +56,7 @@ const classify_connections_dropped_entry = /** @type {(
 );
 
 /**
- * @param {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} env
+ * @param {import('jsbrains/smart-types').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} env
  * @param {import('jsbrains/smart-types').ConnectionsCollectionKey} collection_key
  * @param {string} item_key
  * @returns {import('jsbrains/smart-types').ConnectionItem|null}
@@ -82,7 +82,7 @@ function is_connections_target(item) {
 }
 
 /**
- * @param {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} env
+ * @param {import('jsbrains/smart-types').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} env
  * @param {DataTransfer|object} data_transfer
  * @returns {import('jsbrains/smart-types').ConnectionItem[]}
  */
@@ -111,7 +111,7 @@ function get_smart_targets(env, data_transfer) {
 }
 
 /**
- * @param {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} env
+ * @param {import('jsbrains/smart-types').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} env
  * @param {DataTransfer|object} data_transfer
  * @returns {import('jsbrains/smart-types').ConnectionItem[]}
  */
@@ -187,7 +187,7 @@ function get_native_targets(env, data_transfer) {
  * The caller intentionally decides whether zero, one, or several resolved
  * targets are acceptable for its surface.
  *
- * @param {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} env
+ * @param {import('jsbrains/smart-types').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} env
  * @param {DataTransfer|object} data_transfer
  * @returns {import('jsbrains/smart-types').ConnectionItem[]}
  */

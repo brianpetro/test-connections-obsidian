@@ -2,7 +2,7 @@ import { Notice } from 'obsidian';
 import { open_note } from 'obsidian-smart-env/utils/open_note.js';
 import { get_random_connection } from '../../utils/get_random_connection.js';
 
-/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
+/** @typedef {import('jsbrains/smart-types').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
 
 const open_connection_note = /** @type {(
   plugin: import('jsbrains/smart-types').ConnectionsPlugin,

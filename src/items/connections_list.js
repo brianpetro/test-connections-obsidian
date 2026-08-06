@@ -159,7 +159,7 @@ export class ConnectionsList extends ConnectionsListItem {
     if (typeof post_process_action === 'function') {
       const response = await post_process_action(results, params);
       if (Array.isArray(response)) {
-        processed_results = response.filter(Boolean);
+        processed_results = /** @type {ConnectionResult[]} */ (response.filter(Boolean));
         if (!processed_results.length) processed_results = results;
       } else if (response !== undefined && response !== null) {
         console.warn(`connections post_process '${action_key}' returned non-array`, response);

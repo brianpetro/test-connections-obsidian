@@ -30,15 +30,12 @@ import { register_smart_connections_codeblock } from "./views/connections_codebl
 /** @typedef {import('jsbrains/smart-types').ConnectionsEditorView} ConnectionsEditorView */
 /** @typedef {import('jsbrains/smart-types').ConnectionsEnvConfig} ConnectionsEnvConfig */
 /** @typedef {import('jsbrains/smart-types').ConnectionsItemViewClass} ConnectionsItemViewClass */
-/** @typedef {import('jsbrains/smart-types').ConnectionsMarkdownView} ConnectionsMarkdownView */
 /** @typedef {import('jsbrains/smart-types').ConnectionsPlugin} ConnectionsPlugin */
 /** @typedef {import('jsbrains/smart-types').ConnectionsReleaseResponse} ConnectionsReleaseResponse */
 /** @typedef {import('jsbrains/smart-types').SmartHttpRequestResponse<ConnectionsReleaseResponse>} ConnectionsReleaseRequestResponse */
 /** @typedef {import('jsbrains/smart-types').ConnectionsSettingsTabScope} ConnectionsSettingsTabScope */
 /** @typedef {import('jsbrains/smart-types').ConnectionsSmartEnvClass} ConnectionsSmartEnvClass */
 /** @typedef {import('jsbrains/smart-types').ConnectionsWorkspace} ConnectionsWorkspace */
-/** @typedef {import('jsbrains/smart-types').ConnectionsWorkspaceLeaf} ConnectionsWorkspaceLeaf */
-/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} ConnectionsSmartEnv */
 
 const ConnectionsPluginBase = /** @type {new (...args: unknown[]) => ConnectionsPlugin} */ (
   /** @type {unknown} */ (SmartPlugin)
@@ -115,15 +112,11 @@ export default class SmartConnectionsPlugin extends ConnectionsPluginBase {
 
   get obsidian() { return Obsidian; }
   get api() { return this._api; }
-  /** @returns {ConnectionsSmartEnv|undefined} */
-  get connections_env() {
-    return /** @type {ConnectionsSmartEnv|undefined} */ (/** @type {unknown} */ (this.env));
-  }
 
   onload() {
     this.app.workspace.onLayoutReady(() => this.initialize());
     this.SmartEnv.create(this, this.smart_env_config);
-    this.addSettingTab(new this.ConnectionsSettingsTab(this.app, /** @type {import('jsbrains/smart-types').ConnectionsPlugin} */ (/** @type {unknown} */ (this))));
+    this.addSettingTab(new this.ConnectionsSettingsTab(this.app, this));
     add_smart_dice_icon();
     this.register_item_views({skip_command_registration: true});
   }
@@ -158,25 +151,23 @@ export default class SmartConnectionsPlugin extends ConnectionsPluginBase {
     this.wrap_connections_view_open();
     this.apply_connections_view_location();
     this.register_connections_view_location_listener();
-    register_smart_connections_codeblock(/** @type {import('jsbrains/smart-types').ConnectionsPlugin} */ (/** @type {unknown} */ (this)));
+    register_smart_connections_codeblock(this);
     if (!this.connections_footer_view) {
       this.registerEditorExtension(connections_footer_plugin);
-      this.connections_footer_view = new ConnectionsFooterView(/** @type {import('jsbrains/smart-types').ConnectionsPlugin} */ (/** @type {unknown} */ (this)));
+      this.connections_footer_view = new ConnectionsFooterView(this);
     }
     this.toggled_footer_connections();
     await this.check_for_updates();
   }
 
-  get settings() { return this.connections_env?.settings || {}; }
+  get settings() { return this.env?.settings || {}; }
 
   /**
    * Sync connections view location with settings.
    * @returns {void}
    */
   apply_connections_view_location() {
-    const connections_view_location = /** @type {'left'|'right'|'root'|'tab'} */ (
-      this.connections_env?.connections_lists?.settings?.connections_view_location ?? 'right'
-    );
+    const connections_view_location = this.env?.connections_lists?.settings?.connections_view_location ?? 'right';
     ConnectionsView.default_open_location = connections_view_location === 'left' ? 'left' : 'right';
     this.ensure_connections_view_leaf_location();
   }
@@ -198,11 +189,11 @@ export default class SmartConnectionsPlugin extends ConnectionsPluginBase {
   }
 
   ensure_connections_view_leaf_location() {
-    const workspace = /** @type {ConnectionsWorkspace|undefined} */ (this.app?.workspace);
+    const workspace = this.app?.workspace;
     if (!workspace) {
       return;
     }
-    const desired_location = /** @type {'left'|'right'|'root'|'tab'} */ (ConnectionsView.default_open_location);
+    const desired_location = ConnectionsView.default_open_location;
     const connections_leaf = ConnectionsView.get_leaf(workspace) || null;
     if (!should_relocate_leaf({ workspace, leaf: connections_leaf, desired_location })) {
       return;
@@ -211,12 +202,11 @@ export default class SmartConnectionsPlugin extends ConnectionsPluginBase {
   }
 
   register_connections_view_location_listener() {
-    const env = this.connections_env;
-    if (this.connections_view_location_listener || !env?.events) return;
-    this.connections_view_location_listener = /** @type {import('jsbrains/smart-types').SmartEventDisposer} */ (env.events.on('settings:changed', (event) => {
+    if (this.connections_view_location_listener || !this.env?.events) return;
+    this.connections_view_location_listener = this.env.events.on('settings:changed', (event) => {
       if (!event?.path?.includes?.('connections_view_location')) return;
       this.apply_connections_view_location();
-    }));
+    });
   }
 
   async check_for_updates() {
@@ -245,7 +235,7 @@ export default class SmartConnectionsPlugin extends ConnectionsPluginBase {
       const latest_release = response.tag_name;
       if (latest_release !== this.manifest.version) {
         if (!this.update_available || this.latest_release_version !== latest_release) {
-          this.connections_env?.events?.emit('plugin:new_version_available', {
+          this.env?.events?.emit('plugin:new_version_available', {
             level: 'attention',
             message: `Smart Connections ${latest_release} is available.`,
             version: latest_release,
@@ -270,7 +260,7 @@ export default class SmartConnectionsPlugin extends ConnectionsPluginBase {
       // console.log("Smart Connections: No active file found");
       return null;
     }
-    const markdown_view = /** @type {ConnectionsMarkdownView|null} */ (this.app.workspace.getActiveFileView());
+    const markdown_view = this.app.workspace.getActiveFileView();
     if (!markdown_view) {
       // console.log("Smart Connections: No active file view found");
       return null;
@@ -280,7 +270,7 @@ export default class SmartConnectionsPlugin extends ConnectionsPluginBase {
 
   toggled_footer_connections() {
     const view = this.get_editor_view();
-    if (view && this.connections_env?.connections_lists?.settings?.footer_connections) {
+    if (view && this.env?.connections_lists?.settings?.footer_connections) {
       this.connections_footer_view?.render_view();
     } else {
       this.connections_footer_view?.remove();

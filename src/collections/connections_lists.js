@@ -5,7 +5,7 @@ import { migrate_connections_lists_settings } from '../../migrations/migrate_con
 import { insert_settings_after } from '../utils/insert_settings_after.js';
 
 /** @typedef {import('jsbrains/smart-types').ConnectionItem} ConnectionItem */
-/** @typedef {import('smart-types/smart-environment.js').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
+/** @typedef {import('jsbrains/smart-types').SmartEnv<import('jsbrains/smart-types').ConnectionsEnvExtensions>} SmartEnv */
 /** @typedef {import('jsbrains/smart-types').ConnectionsListsCollection} ConnectionsListsCollection */
 
 const ConnectionsCollection = /** @type {new (
