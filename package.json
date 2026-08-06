@@ -33,13 +33,13 @@
     "ava": "^6.0.1",
     "esbuild": "^0.25.9",
     "eslint": "^10.3.0",
+    "jsbrains": "github:brianpetro/jsbrains#4916663abda31a347d0ef9e50fd1c5cad4088222",
     "swagger-jsdoc": "^6.2.8"
   },
   "dependencies": {
     "@codemirror/state": "6.5.0",
     "@codemirror/view": "6.38.6",
     "js-tiktoken": "^1.0.19",
-    "jsbrains": "github:brianpetro/jsbrains#4916663abda31a347d0ef9e50fd1c5cad4088222",
     "obsidian": "latest",
     "obsidian-smart-env": "file:../obsidian-smart-env",
     "smart-blocks": "file:../jsbrains/smart-blocks",
