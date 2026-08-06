@@ -347,7 +347,10 @@ async function post_process(connections_list, container, params = {}) {
 
     /** @param {ConnectionItem} item */
     const build_label_text = (item) => {
-      const display = get_item_display_name(item, {show_full_path: false}) || item?.key || '';
+      const display = /** @type {string} */ (get_item_display_name(
+        /** @type {import('smart-collections').CollectionItem} */ (/** @type {unknown} */ (item)),
+        {show_full_path: false},
+      )) || item?.key || '';
       return truncate_middle(display, 70);
     };
 
@@ -727,3 +730,4 @@ function build_result_detail(node, center_item) {
     center_key: center_item?.key,
   };
 }
+

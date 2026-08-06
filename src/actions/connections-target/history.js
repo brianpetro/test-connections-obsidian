@@ -79,11 +79,10 @@ async function run_select_target(menu_ctx, target_item) {
   );
   if (typeof action !== 'function') return false;
 
-  const result = /** @type {boolean|Promise<boolean>} */ (
+  return await /** @type {boolean|Promise<boolean>} */ (
     /** @type {unknown} */ (action.call(menu_ctx.scope, {
       target_item,
       event_source: menu_ctx.event_source,
     }))
   );
-  return await result;
 }

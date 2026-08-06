@@ -25,7 +25,7 @@ const SMART_CONNECTIONS_COLLECTION_KEYS = new Set([
  * @returns {import('jsbrains/smart-types').ConnectionItem|null}
  */
 function get_collection_item(env, collection_key, item_key) {
-  const collection = env[collection_key];
+  const collection = /** @type {import('jsbrains/smart-types').ConnectionsCollection|import('jsbrains/smart-types').ConnectionsSourcesCollection|undefined} */ (env?.[collection_key]);
   return collection?.get?.(item_key)
     || collection?.items?.[item_key]
     || null
@@ -83,7 +83,9 @@ function get_native_targets(env, data_transfer) {
 
   const smart_sources = env?.smart_sources;
   const smart_fs = smart_sources?.fs || env?.fs;
-  const source_items = Object.values(smart_sources?.items || {});
+  const source_items = /** @type {Array<Partial<import('jsbrains/smart-types').ConnectionItem>>} */ (
+    Object.values(smart_sources?.items || {})
+  );
   const file_paths = Array.from(new Set([
     ...(smart_fs?.file_paths || []),
     ...source_items.map((source) => source?.key).filter(Boolean),
@@ -107,10 +109,10 @@ function get_native_targets(env, data_transfer) {
 
     const classified_entry = /** @type {ClassifiedDroppedEntry} */ (
       classify_dropped_obsidian_entry(entry, {
-        file_paths,
-        folder_paths,
-        available_file_paths,
-        vault_path,
+      file_paths,
+      folder_paths,
+      available_file_paths,
+      vault_path,
       })
     );
     if (

@@ -335,3 +335,4 @@ function show_menu(menu, event, anchor_el) {
     clientY: rect.bottom,
   }));
 }
+

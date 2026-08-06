@@ -42,16 +42,16 @@ export function connections_list_unhide_all(params = {}) {
 /** @type {import('jsbrains/smart-types').ConnectionsMenusConfig} */
 export const menus = {
   'connections:list_menu': {
+    /** @this {Omit<import('jsbrains/smart-types').ConnectionsMenuContext, 'scope'> & {scope?: import('jsbrains/smart-types').ConnectionsListScope}} */
     title() {
-      const scope = /** @type {import('jsbrains/smart-types').ConnectionsListScope} */ (this.scope);
-      const hidden_count = count_hidden_connections(scope.item?.data?.connections);
+      const hidden_count = count_hidden_connections(this.scope?.item?.data?.connections);
       return `Unhide All (${hidden_count})`;
     },
     icon: 'eye',
     order: 60,
+    /** @this {Omit<import('jsbrains/smart-types').ConnectionsMenuContext, 'scope'> & {scope?: import('jsbrains/smart-types').ConnectionsListScope}} */
     disabled() {
-      const scope = /** @type {import('jsbrains/smart-types').ConnectionsListScope} */ (this.scope);
-      return !count_hidden_connections(scope.item?.data?.connections);
+      return !count_hidden_connections(this.scope?.item?.data?.connections);
     },
   },
 };

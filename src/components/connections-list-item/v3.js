@@ -165,7 +165,10 @@ export async function post_process(result_scope, container, params = {}) {
     const raw_results = Array.isArray(connections_list?.results) ? connections_list.results : [];
     const visible_results = filter_hidden_results(raw_results, source_item.data.connections);
     const list_container = /** @type {HTMLElement} */ (container.closest('.connections-list') || container);
-    const target_name = get_item_display_name(item, component_settings) || item.key;
+    const target_name = /** @type {string} */ (get_item_display_name(
+      /** @type {import('smart-collections').CollectionItem} */ (/** @type {unknown} */ (item)),
+      component_settings,
+    )) || item.key;
     const menu = /** @type {import('jsbrains/smart-types').ConnectionsMenu} */ (new Menu());
 
     env.build_menu?.('connections:list_item_menu', menu, connections_list, {
@@ -201,10 +204,10 @@ export async function post_process(result_scope, container, params = {}) {
  * @returns {string}
  */
 function get_result_header_html(score, item, component_settings = {}) {
-  const raw_parts = get_item_display_name(item, component_settings)
-    .split(DISPLAY_SEPARATOR)
-    .filter(Boolean)
-  ;
+  const raw_parts = /** @type {string} */ (get_item_display_name(
+    /** @type {import('smart-collections').CollectionItem} */ (/** @type {unknown} */ (item)),
+    component_settings,
+  )).split(DISPLAY_SEPARATOR).filter(Boolean);
   const parts = format_item_parts(raw_parts, item?.lines);
   const name = parts.pop();
   const formatted_score = typeof score === 'number' ? score.toFixed(2) : score;

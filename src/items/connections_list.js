@@ -17,7 +17,7 @@ export class ConnectionsList extends CollectionItem {
 
   /** @returns {string} */
   get_key() {
-    const scope = /** @type {ConnectionsListScope} */ (this);
+    const scope = /** @type {ConnectionsListScope} */ (/** @type {unknown} */ (this));
     return `${scope.data.collection_key}:${scope.data.item_key}`;
   }
 
@@ -90,7 +90,7 @@ export class ConnectionsList extends CollectionItem {
    * @returns {ConnectionResult[]}
    */
   filter_and_score (params = {}) {
-    const scope = /** @type {ConnectionsListScope} */ (this);
+    const scope = /** @type {ConnectionsListScope} */ (/** @type {unknown} */ (this));
     const collection = scope.env[params.results_collection_key];
     const score_errors = [];
     const { results: raw_results } = /** @type {{results: Set<ConnectionResult>}} */ (Object.values(collection.items)

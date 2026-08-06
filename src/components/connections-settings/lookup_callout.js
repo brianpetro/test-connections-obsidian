@@ -75,7 +75,7 @@ function post_process(plugin, container) {
 async function install_smart_lookup(plugin) {
   const app = plugin.app;
   const env = plugin.env;
-  const vault = app.vault;
+  const vault = /** @type {import('obsidian').Vault} */ (app.vault);
   const adapter = vault.adapter;
 
   /**

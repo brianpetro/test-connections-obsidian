@@ -43,16 +43,16 @@ export function connections_list_unpin_all(params = {}) {
 /** @type {import('jsbrains/smart-types').ConnectionsMenusConfig} */
 export const menus = {
   'connections:list_menu': {
+    /** @this {Omit<import('jsbrains/smart-types').ConnectionsMenuContext, 'scope'> & {scope?: import('jsbrains/smart-types').ConnectionsListScope}} */
     title() {
-      const scope = /** @type {import('jsbrains/smart-types').ConnectionsListScope} */ (this.scope);
-      const pinned_count = count_pinned_connections(scope.item?.data?.connections);
+      const pinned_count = count_pinned_connections(this.scope?.item?.data?.connections);
       return `Unpin All (${pinned_count})`;
     },
     icon: 'pin-off',
     order: 70,
+    /** @this {Omit<import('jsbrains/smart-types').ConnectionsMenuContext, 'scope'> & {scope?: import('jsbrains/smart-types').ConnectionsListScope}} */
     disabled() {
-      const scope = /** @type {import('jsbrains/smart-types').ConnectionsListScope} */ (this.scope);
-      return !count_pinned_connections(scope.item?.data?.connections);
+      return !count_pinned_connections(this.scope?.item?.data?.connections);
     },
   },
 };
